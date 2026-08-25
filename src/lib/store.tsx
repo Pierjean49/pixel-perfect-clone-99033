@@ -14,8 +14,20 @@ type Ctx = {
 
 const FormContext = createContext<Ctx | null>(null);
 
+function deep<T>(base: T, saved: unknown): T {
+  if (!saved || typeof saved !== "object" || Array.isArray(saved) || Array.isArray(base)) {
+    return (saved === undefined ? base : (saved as T)) ?? base;
+  }
+  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const [k, v] of Object.entries(saved as Record<string, unknown>)) {
+    const b = (base as Record<string, unknown>)[k];
+    out[k] = b && typeof b === "object" && !Array.isArray(b) ? deep(b, v) : (v ?? b);
+  }
+  return out as T;
+}
+
 function merge(base: FormState, saved: Partial<FormState>): FormState {
-  return { ...base, ...saved, meta: { ...base.meta, ...(saved.meta ?? {}) } } as FormState;
+  return deep(base, saved);
 }
 
 export function FormProvider({ children }: { children: ReactNode }) {

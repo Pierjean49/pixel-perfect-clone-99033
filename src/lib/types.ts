@@ -71,15 +71,24 @@ export type FormState = {
   identite: {
     nom_pharmacie: string;
     ville: string;
+    prenom_titulaire: string;
     nom_titulaire: string;
     nb_titulaires: string;
+    cotitulaires: string;
     groupement: string;
-    grossiste: string;
     lgo: string;
     ca_annuel: string;
     part_ca_para: string;
     surface: string;
-    lineaire_para: string;
+    nb_descentes: string;
+    nb_gondoles: string;
+    nb_tg: string;
+    nb_comptoirs_ordonnance: string;
+    nb_comptoirs_para: string;
+    comptoir_accueil: string;
+    nb_salles_confidentialite: string;
+    nb_ecrans_vente: string;
+    nb_ecrans_vitrine: string;
     nb_vitrines: string;
   };
   poles: Pole[];
@@ -147,15 +156,24 @@ export const emptyForm = (): FormState => ({
   identite: {
     nom_pharmacie: "",
     ville: "",
+    prenom_titulaire: "",
     nom_titulaire: "",
     nb_titulaires: "",
+    cotitulaires: "",
     groupement: "",
-    grossiste: "",
     lgo: "",
     ca_annuel: "",
     part_ca_para: "20",
     surface: "",
-    lineaire_para: "",
+    nb_descentes: "",
+    nb_gondoles: "",
+    nb_tg: "",
+    nb_comptoirs_ordonnance: "",
+    nb_comptoirs_para: "",
+    comptoir_accueil: "",
+    nb_salles_confidentialite: "",
+    nb_ecrans_vente: "",
+    nb_ecrans_vitrine: "",
     nb_vitrines: "",
   },
   poles: [

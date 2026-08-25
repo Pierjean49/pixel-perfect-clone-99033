@@ -15,7 +15,6 @@ import {
   CRITERES_QUALITATIFS,
   EMPLACEMENTS,
   EXTENSIONS,
-  GROSSISTES,
   GROUPEMENTS,
   INDICATEURS,
   LGOS,
@@ -191,7 +190,7 @@ function Formulaire() {
             titre="Identité de l'officine"
             intro="Ces informations nomment le projet, calibrent les objectifs et conditionnent le format d'import des ventes."
             rempli={rempli(...Object.values(form.identite))}
-            total={12}
+            total={20}
             defaultOpen
           >
             <Grid>
@@ -207,6 +206,12 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.ville = v))}
               />
               <Text
+                label="Prénom du titulaire"
+                required
+                value={form.identite.prenom_titulaire}
+                onChange={(v) => update((d) => void (d.identite.prenom_titulaire = v))}
+              />
+              <Text
                 label="Nom du titulaire"
                 required
                 value={form.identite.nom_titulaire}
@@ -218,19 +223,19 @@ function Formulaire() {
                 value={form.identite.nb_titulaires}
                 onChange={(v) => update((d) => void (d.identite.nb_titulaires = v))}
               />
+              {Number(form.identite.nb_titulaires || "1") > 1 && (
+                <Text
+                  label="Autres titulaires (nom et prénom, séparés par une virgule)"
+                  value={form.identite.cotitulaires}
+                  onChange={(v) => update((d) => void (d.identite.cotitulaires = v))}
+                />
+              )}
               <Select
                 label="Groupement ou enseigne"
                 options={GROUPEMENTS}
                 allowFree
                 value={form.identite.groupement}
                 onChange={(v) => update((d) => void (d.identite.groupement = v))}
-              />
-              <Select
-                label="Grossiste-répartiteur principal"
-                options={GROSSISTES}
-                allowFree
-                value={form.identite.grossiste}
-                onChange={(v) => update((d) => void (d.identite.grossiste = v))}
               />
               <Select
                 label="Logiciel de gestion d'officine (LGO)"
@@ -258,10 +263,58 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.surface = v))}
               />
               <Text
-                label="Mètres linéaires para"
-                suffix="ml"
-                value={form.identite.lineaire_para}
-                onChange={(v) => update((d) => void (d.identite.lineaire_para = v))}
+                label="Nombre de descentes murales"
+                type="number"
+                value={form.identite.nb_descentes}
+                onChange={(v) => update((d) => void (d.identite.nb_descentes = v))}
+              />
+              <Text
+                label="Nombre de gondoles"
+                type="number"
+                value={form.identite.nb_gondoles}
+                onChange={(v) => update((d) => void (d.identite.nb_gondoles = v))}
+              />
+              <Text
+                label="Nombre de têtes de gondole (TG)"
+                type="number"
+                value={form.identite.nb_tg}
+                onChange={(v) => update((d) => void (d.identite.nb_tg = v))}
+              />
+              <Text
+                label="Nombre de comptoirs ordonnance"
+                type="number"
+                value={form.identite.nb_comptoirs_ordonnance}
+                onChange={(v) => update((d) => void (d.identite.nb_comptoirs_ordonnance = v))}
+              />
+              <Text
+                label="Nombre de comptoirs para"
+                type="number"
+                value={form.identite.nb_comptoirs_para}
+                onChange={(v) => update((d) => void (d.identite.nb_comptoirs_para = v))}
+              />
+              <Select
+                label="Comptoir d'accueil"
+                options={["Oui", "Non"]}
+                value={form.identite.comptoir_accueil}
+                onChange={(v) => update((d) => void (d.identite.comptoir_accueil = v))}
+              />
+              <Text
+                label="Salles de confidentialité (vaccination, tests, contention, soins)"
+                type="number"
+                value={form.identite.nb_salles_confidentialite}
+                onChange={(v) => update((d) => void (d.identite.nb_salles_confidentialite = v))}
+              />
+              <Text
+                label="Écrans en surface de vente"
+                type="number"
+                value={form.identite.nb_ecrans_vente}
+                onChange={(v) => update((d) => void (d.identite.nb_ecrans_vente = v))}
+              />
+              <Text
+                label="Écrans en vitrine"
+                type="number"
+                value={form.identite.nb_ecrans_vitrine}
+                onChange={(v) => update((d) => void (d.identite.nb_ecrans_vitrine = v))}
               />
               <Text
                 label="Nombre de vitrines"
