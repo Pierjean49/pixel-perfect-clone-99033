@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { emptyForm, type FormState } from "./types";
 
 const KEY = "module-trade-gammes-v1";
+const BACKUP_KEY = "module-trade-gammes-v1-backup";
 
 type Ctx = {
   form: FormState;
@@ -10,6 +11,10 @@ type Ctx = {
   reset: () => void;
   savedAt: string | null;
   hydrated: boolean;
+  backupAt: string | null;
+  loadDemo: (demo: FormState) => void;
+  saveBackup: () => void;
+  restoreBackup: () => boolean;
 };
 
 const FormContext = createContext<Ctx | null>(null);
@@ -34,6 +39,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const [form, setForm] = useState<FormState>(() => emptyForm());
   const [hydrated, setHydrated] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [backupAt, setBackupAt] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -42,6 +48,12 @@ export function FormProvider({ children }: { children: ReactNode }) {
       if (raw) setForm((f) => merge(f, JSON.parse(raw)));
     } catch {
       /* stockage indisponible : on repart d'un formulaire vide */
+    }
+    try {
+      const rawBackup = window.localStorage.getItem(BACKUP_KEY);
+      if (rawBackup) setBackupAt("sauvegarde disponible");
+    } catch {
+      /* ignore */
     }
     setHydrated(true);
   }, []);
