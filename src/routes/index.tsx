@@ -46,7 +46,7 @@ const VISIOS = [
 ];
 
 function Accueil() {
-  const { form, replace, hydrated } = useForm();
+  const { form, hydrated, backupAt, loadDemo, restoreBackup } = useForm();
 
   const champsCles = [
     form.identite.nom_pharmacie,
@@ -98,9 +98,24 @@ function Accueil() {
             <Link to="/formulaire">
               <Button>Commencer le formulaire</Button>
             </Link>
-            <Button variant="secondary" onClick={() => replace(demoForm())}>
+            <Button variant="secondary" onClick={() => loadDemo(demoForm())}>
               Charger un exemple
             </Button>
+            {backupAt && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Revenir à la dernière sauvegarde de ta pharmacie ? La saisie actuelle sera remplacée.",
+                    )
+                  )
+                    restoreBackup();
+                }}
+              >
+                Revenir à ma pharmacie
+              </Button>
+            )}
           </div>
         </div>
       </Card>

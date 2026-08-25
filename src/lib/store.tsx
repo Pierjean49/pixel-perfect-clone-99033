@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { emptyForm, type FormState } from "./types";
 
 const KEY = "module-trade-gammes-v1";
+const BACKUP_KEY = "module-trade-gammes-v1-backup";
 
 type Ctx = {
   form: FormState;
@@ -10,6 +11,10 @@ type Ctx = {
   reset: () => void;
   savedAt: string | null;
   hydrated: boolean;
+  backupAt: string | null;
+  loadDemo: (demo: FormState) => void;
+  saveBackup: () => void;
+  restoreBackup: () => boolean;
 };
 
 const FormContext = createContext<Ctx | null>(null);
@@ -34,6 +39,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const [form, setForm] = useState<FormState>(() => emptyForm());
   const [hydrated, setHydrated] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [backupAt, setBackupAt] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -42,6 +48,12 @@ export function FormProvider({ children }: { children: ReactNode }) {
       if (raw) setForm((f) => merge(f, JSON.parse(raw)));
     } catch {
       /* stockage indisponible : on repart d'un formulaire vide */
+    }
+    try {
+      const rawBackup = window.localStorage.getItem(BACKUP_KEY);
+      if (rawBackup) setBackupAt("sauvegarde disponible");
+    } catch {
+      /* ignore */
     }
     setHydrated(true);
   }, []);
@@ -75,8 +87,54 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const replace = useCallback((next: FormState) => setForm(next), []);
   const reset = useCallback(() => setForm(emptyForm()), []);
 
+  // Sauvegarde de la saisie réelle avant de charger un exemple / réinitialiser
+  const snapshot = useCallback((current: FormState) => {
+    try {
+      window.localStorage.setItem(BACKUP_KEY, JSON.stringify(current));
+      setBackupAt(new Date().toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }));
+    } catch {
+      /* stockage indisponible */
+    }
+  }, []);
+
+  const loadDemo = useCallback(
+    (demo: FormState) => {
+      setForm((prev) => {
+        snapshot(prev);
+        return demo;
+      });
+    },
+    [snapshot],
+  );
+
+  const saveBackup = useCallback(() => snapshot(form), [form, snapshot]);
+
+  const restoreBackup = useCallback(() => {
+    try {
+      const raw = window.localStorage.getItem(BACKUP_KEY);
+      if (!raw) return false;
+      setForm(merge(emptyForm(), JSON.parse(raw)));
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
   return (
-    <FormContext.Provider value={{ form, update, replace, reset, savedAt, hydrated }}>
+    <FormContext.Provider
+      value={{
+        form,
+        update,
+        replace,
+        reset,
+        savedAt,
+        hydrated,
+        backupAt,
+        loadDemo,
+        saveBackup,
+        restoreBackup,
+      }}
+    >
       {children}
     </FormContext.Provider>
   );

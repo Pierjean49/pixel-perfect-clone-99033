@@ -58,7 +58,8 @@ const couleurPole = (nom: string) =>
   COULEURS_RESERVE[Math.abs(nom.length * 7) % COULEURS_RESERVE.length];
 
 function Formulaire() {
-  const { form, update, replace, reset, savedAt } = useForm();
+  const { form, update, replace, reset, savedAt, backupAt, loadDemo, saveBackup, restoreBackup } =
+    useForm();
   const navigate = useNavigate();
   const [apercuOuvert, setApercuOuvert] = useState(true);
   const [tousSecteurs, setTousSecteurs] = useState(false);
@@ -157,9 +158,27 @@ function Formulaire() {
         <Badge color="var(--color-success)">
           {savedAt ? `Enregistré à ${savedAt}` : "Enregistrement automatique actif"}
         </Badge>
-        <Button variant="secondary" onClick={() => replace(demoForm())}>
+        <Button variant="secondary" onClick={() => loadDemo(demoForm())}>
           Charger un exemple
         </Button>
+        <Button variant="secondary" onClick={saveBackup}>
+          Sauvegarder ma saisie
+        </Button>
+        {backupAt && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Revenir à la dernière sauvegarde de ta pharmacie ? La saisie actuelle sera remplacée.",
+                )
+              )
+                restoreBackup();
+            }}
+          >
+            Revenir à ma pharmacie
+          </Button>
+        )}
         <Button variant="secondary" onClick={exporter}>
           Exporter mon formulaire (.json)
         </Button>
