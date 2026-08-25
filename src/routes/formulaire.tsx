@@ -58,7 +58,8 @@ const couleurPole = (nom: string) =>
   COULEURS_RESERVE[Math.abs(nom.length * 7) % COULEURS_RESERVE.length];
 
 function Formulaire() {
-  const { form, update, replace, reset, savedAt } = useForm();
+  const { form, update, replace, reset, savedAt, backupAt, loadDemo, saveBackup, restoreBackup } =
+    useForm();
   const navigate = useNavigate();
   const [apercuOuvert, setApercuOuvert] = useState(true);
   const [tousSecteurs, setTousSecteurs] = useState(false);
