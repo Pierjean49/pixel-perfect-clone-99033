@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FormulaireRouteImport } from './routes/formulaire'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as PromptsRouteImport } from './routes/prompts'
+import { Route as SecurisationRouteImport } from './routes/securisation'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const PromptsRoute = PromptsRouteImport.update({
   path: '/prompts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SecurisationRoute = SecurisationRouteImport.update({
+  id: '/securisation',
+  path: '/securisation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/formulaire': typeof FormulaireRoute
   '/guide': typeof GuideRoute
   '/prompts': typeof PromptsRoute
+  '/securisation': typeof SecurisationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/formulaire': typeof FormulaireRoute
   '/guide': typeof GuideRoute
   '/prompts': typeof PromptsRoute
+  '/securisation': typeof SecurisationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/formulaire': typeof FormulaireRoute
   '/guide': typeof GuideRoute
   '/prompts': typeof PromptsRoute
+  '/securisation': typeof SecurisationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/formulaire' | '/guide' | '/prompts'
+  fullPaths: '/' | '/formulaire' | '/guide' | '/prompts' | '/securisation'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/formulaire' | '/guide' | '/prompts'
-  id: '__root__' | '/' | '/formulaire' | '/guide' | '/prompts'
+  to: '/' | '/formulaire' | '/guide' | '/prompts' | '/securisation'
+  id: '__root__' | '/' | '/formulaire' | '/guide' | '/prompts' | '/securisation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   FormulaireRoute: typeof FormulaireRoute
   GuideRoute: typeof GuideRoute
   PromptsRoute: typeof PromptsRoute
+  SecurisationRoute: typeof SecurisationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromptsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/securisation': {
+      id: '/securisation'
+      path: '/securisation'
+      fullPath: '/securisation'
+      preLoaderRoute: typeof SecurisationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   FormulaireRoute: FormulaireRoute,
   GuideRoute: GuideRoute,
   PromptsRoute: PromptsRoute,
+  SecurisationRoute: SecurisationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
