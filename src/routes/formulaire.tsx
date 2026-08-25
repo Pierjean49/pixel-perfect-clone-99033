@@ -15,7 +15,6 @@ import {
   CRITERES_QUALITATIFS,
   EMPLACEMENTS,
   EXTENSIONS,
-  GROSSISTES,
   GROUPEMENTS,
   INDICATEURS,
   LGOS,
@@ -191,7 +190,7 @@ function Formulaire() {
             titre="Identité de l'officine"
             intro="Ces informations nomment le projet, calibrent les objectifs et conditionnent le format d'import des ventes."
             rempli={rempli(...Object.values(form.identite))}
-            total={12}
+            total={20}
             defaultOpen
           >
             <Grid>
