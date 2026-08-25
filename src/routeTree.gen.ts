@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FormulaireRouteImport } from './routes/formulaire'
+import { Route as GlossaireRouteImport } from './routes/glossaire'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as PromptsRouteImport } from './routes/prompts'
 import { Route as SecurisationRouteImport } from './routes/securisation'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const FormulaireRoute = FormulaireRouteImport.update({
   id: '/formulaire',
   path: '/formulaire',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlossaireRoute = GlossaireRouteImport.update({
+  id: '/glossaire',
+  path: '/glossaire',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuideRoute = GuideRouteImport.update({
@@ -44,6 +50,7 @@ const SecurisationRoute = SecurisationRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/formulaire': typeof FormulaireRoute
+  '/glossaire': typeof GlossaireRoute
   '/guide': typeof GuideRoute
   '/prompts': typeof PromptsRoute
   '/securisation': typeof SecurisationRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/formulaire': typeof FormulaireRoute
+  '/glossaire': typeof GlossaireRoute
   '/guide': typeof GuideRoute
   '/prompts': typeof PromptsRoute
   '/securisation': typeof SecurisationRoute
@@ -59,21 +67,32 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/formulaire': typeof FormulaireRoute
+  '/glossaire': typeof GlossaireRoute
   '/guide': typeof GuideRoute
   '/prompts': typeof PromptsRoute
   '/securisation': typeof SecurisationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/formulaire' | '/guide' | '/prompts' | '/securisation'
+  fullPaths:
+    '/' | '/formulaire' | '/glossaire' | '/guide' | '/prompts' | '/securisation'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/formulaire' | '/guide' | '/prompts' | '/securisation'
-  id: '__root__' | '/' | '/formulaire' | '/guide' | '/prompts' | '/securisation'
+  to:
+    '/' | '/formulaire' | '/glossaire' | '/guide' | '/prompts' | '/securisation'
+  id:
+    | '__root__'
+    | '/'
+    | '/formulaire'
+    | '/glossaire'
+    | '/guide'
+    | '/prompts'
+    | '/securisation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FormulaireRoute: typeof FormulaireRoute
+  GlossaireRoute: typeof GlossaireRoute
   GuideRoute: typeof GuideRoute
   PromptsRoute: typeof PromptsRoute
   SecurisationRoute: typeof SecurisationRoute
@@ -93,6 +112,13 @@ declare module '@tanstack/react-router' {
       path: '/formulaire'
       fullPath: '/formulaire'
       preLoaderRoute: typeof FormulaireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/glossaire': {
+      id: '/glossaire'
+      path: '/glossaire'
+      fullPath: '/glossaire'
+      preLoaderRoute: typeof GlossaireRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guide': {
@@ -122,6 +148,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FormulaireRoute: FormulaireRoute,
+  GlossaireRoute: GlossaireRoute,
   GuideRoute: GuideRoute,
   PromptsRoute: PromptsRoute,
   SecurisationRoute: SecurisationRoute,
