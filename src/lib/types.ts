@@ -71,15 +71,24 @@ export type FormState = {
   identite: {
     nom_pharmacie: string;
     ville: string;
+    prenom_titulaire: string;
     nom_titulaire: string;
     nb_titulaires: string;
+    cotitulaires: string;
     groupement: string;
-    grossiste: string;
     lgo: string;
     ca_annuel: string;
     part_ca_para: string;
     surface: string;
-    lineaire_para: string;
+    nb_descentes: string;
+    nb_gondoles: string;
+    nb_tg: string;
+    nb_comptoirs_ordonnance: string;
+    nb_comptoirs_para: string;
+    comptoir_accueil: string;
+    nb_salles_confidentialite: string;
+    nb_ecrans_vente: string;
+    nb_ecrans_vitrine: string;
     nb_vitrines: string;
   };
   poles: Pole[];
