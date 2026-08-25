@@ -10,33 +10,92 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FormulaireRouteImport } from './routes/formulaire'
+import { Route as GlossaireRouteImport } from './routes/glossaire'
+import { Route as GuideRouteImport } from './routes/guide'
+import { Route as PromptsRouteImport } from './routes/prompts'
+import { Route as SecurisationRouteImport } from './routes/securisation'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormulaireRoute = FormulaireRouteImport.update({
+  id: '/formulaire',
+  path: '/formulaire',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlossaireRoute = GlossaireRouteImport.update({
+  id: '/glossaire',
+  path: '/glossaire',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideRoute = GuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromptsRoute = PromptsRouteImport.update({
+  id: '/prompts',
+  path: '/prompts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecurisationRoute = SecurisationRouteImport.update({
+  id: '/securisation',
+  path: '/securisation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/formulaire': typeof FormulaireRoute
+  '/glossaire': typeof GlossaireRoute
+  '/guide': typeof GuideRoute
+  '/prompts': typeof PromptsRoute
+  '/securisation': typeof SecurisationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/formulaire': typeof FormulaireRoute
+  '/glossaire': typeof GlossaireRoute
+  '/guide': typeof GuideRoute
+  '/prompts': typeof PromptsRoute
+  '/securisation': typeof SecurisationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/formulaire': typeof FormulaireRoute
+  '/glossaire': typeof GlossaireRoute
+  '/guide': typeof GuideRoute
+  '/prompts': typeof PromptsRoute
+  '/securisation': typeof SecurisationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/formulaire' | '/glossaire' | '/guide' | '/prompts' | '/securisation'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    '/' | '/formulaire' | '/glossaire' | '/guide' | '/prompts' | '/securisation'
+  id:
+    | '__root__'
+    | '/'
+    | '/formulaire'
+    | '/glossaire'
+    | '/guide'
+    | '/prompts'
+    | '/securisation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FormulaireRoute: typeof FormulaireRoute
+  GlossaireRoute: typeof GlossaireRoute
+  GuideRoute: typeof GuideRoute
+  PromptsRoute: typeof PromptsRoute
+  SecurisationRoute: typeof SecurisationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +107,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/formulaire': {
+      id: '/formulaire'
+      path: '/formulaire'
+      fullPath: '/formulaire'
+      preLoaderRoute: typeof FormulaireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/glossaire': {
+      id: '/glossaire'
+      path: '/glossaire'
+      fullPath: '/glossaire'
+      preLoaderRoute: typeof GlossaireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide': {
+      id: '/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof GuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prompts': {
+      id: '/prompts'
+      path: '/prompts'
+      fullPath: '/prompts'
+      preLoaderRoute: typeof PromptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/securisation': {
+      id: '/securisation'
+      path: '/securisation'
+      fullPath: '/securisation'
+      preLoaderRoute: typeof SecurisationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FormulaireRoute: FormulaireRoute,
+  GlossaireRoute: GlossaireRoute,
+  GuideRoute: GuideRoute,
+  PromptsRoute: PromptsRoute,
+  SecurisationRoute: SecurisationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
