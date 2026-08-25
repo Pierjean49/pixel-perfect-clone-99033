@@ -264,10 +264,58 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.surface = v))}
               />
               <Text
-                label="Mètres linéaires para"
-                suffix="ml"
-                value={form.identite.lineaire_para}
-                onChange={(v) => update((d) => void (d.identite.lineaire_para = v))}
+                label="Nombre de descentes murales"
+                type="number"
+                value={form.identite.nb_descentes}
+                onChange={(v) => update((d) => void (d.identite.nb_descentes = v))}
+              />
+              <Text
+                label="Nombre de gondoles"
+                type="number"
+                value={form.identite.nb_gondoles}
+                onChange={(v) => update((d) => void (d.identite.nb_gondoles = v))}
+              />
+              <Text
+                label="Nombre de têtes de gondole (TG)"
+                type="number"
+                value={form.identite.nb_tg}
+                onChange={(v) => update((d) => void (d.identite.nb_tg = v))}
+              />
+              <Text
+                label="Nombre de comptoirs ordonnance"
+                type="number"
+                value={form.identite.nb_comptoirs_ordonnance}
+                onChange={(v) => update((d) => void (d.identite.nb_comptoirs_ordonnance = v))}
+              />
+              <Text
+                label="Nombre de comptoirs para"
+                type="number"
+                value={form.identite.nb_comptoirs_para}
+                onChange={(v) => update((d) => void (d.identite.nb_comptoirs_para = v))}
+              />
+              <Select
+                label="Comptoir d'accueil"
+                options={["Oui", "Non"]}
+                value={form.identite.comptoir_accueil}
+                onChange={(v) => update((d) => void (d.identite.comptoir_accueil = v))}
+              />
+              <Text
+                label="Salles de confidentialité (vaccination, tests, contention, soins)"
+                type="number"
+                value={form.identite.nb_salles_confidentialite}
+                onChange={(v) => update((d) => void (d.identite.nb_salles_confidentialite = v))}
+              />
+              <Text
+                label="Écrans en surface de vente"
+                type="number"
+                value={form.identite.nb_ecrans_vente}
+                onChange={(v) => update((d) => void (d.identite.nb_ecrans_vente = v))}
+              />
+              <Text
+                label="Écrans en vitrine"
+                type="number"
+                value={form.identite.nb_ecrans_vitrine}
+                onChange={(v) => update((d) => void (d.identite.nb_ecrans_vitrine = v))}
               />
               <Text
                 label="Nombre de vitrines"
