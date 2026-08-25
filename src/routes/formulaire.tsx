@@ -207,6 +207,12 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.ville = v))}
               />
               <Text
+                label="Prénom du titulaire"
+                required
+                value={form.identite.prenom_titulaire}
+                onChange={(v) => update((d) => void (d.identite.prenom_titulaire = v))}
+              />
+              <Text
                 label="Nom du titulaire"
                 required
                 value={form.identite.nom_titulaire}
@@ -218,19 +224,19 @@ function Formulaire() {
                 value={form.identite.nb_titulaires}
                 onChange={(v) => update((d) => void (d.identite.nb_titulaires = v))}
               />
+              {Number(form.identite.nb_titulaires || "1") > 1 && (
+                <Text
+                  label="Autres titulaires (nom et prénom, séparés par une virgule)"
+                  value={form.identite.cotitulaires}
+                  onChange={(v) => update((d) => void (d.identite.cotitulaires = v))}
+                />
+              )}
               <Select
                 label="Groupement ou enseigne"
                 options={GROUPEMENTS}
                 allowFree
                 value={form.identite.groupement}
                 onChange={(v) => update((d) => void (d.identite.groupement = v))}
-              />
-              <Select
-                label="Grossiste-répartiteur principal"
-                options={GROSSISTES}
-                allowFree
-                value={form.identite.grossiste}
-                onChange={(v) => update((d) => void (d.identite.grossiste = v))}
               />
               <Select
                 label="Logiciel de gestion d'officine (LGO)"
