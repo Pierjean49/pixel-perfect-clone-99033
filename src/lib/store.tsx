@@ -75,8 +75,54 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const replace = useCallback((next: FormState) => setForm(next), []);
   const reset = useCallback(() => setForm(emptyForm()), []);
 
+  // Sauvegarde de la saisie réelle avant de charger un exemple / réinitialiser
+  const snapshot = useCallback((current: FormState) => {
+    try {
+      window.localStorage.setItem(BACKUP_KEY, JSON.stringify(current));
+      setBackupAt(new Date().toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }));
+    } catch {
+      /* stockage indisponible */
+    }
+  }, []);
+
+  const loadDemo = useCallback(
+    (demo: FormState) => {
+      setForm((prev) => {
+        snapshot(prev);
+        return demo;
+      });
+    },
+    [snapshot],
+  );
+
+  const saveBackup = useCallback(() => snapshot(form), [form, snapshot]);
+
+  const restoreBackup = useCallback(() => {
+    try {
+      const raw = window.localStorage.getItem(BACKUP_KEY);
+      if (!raw) return false;
+      setForm(merge(emptyForm(), JSON.parse(raw)));
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
   return (
-    <FormContext.Provider value={{ form, update, replace, reset, savedAt, hydrated }}>
+    <FormContext.Provider
+      value={{
+        form,
+        update,
+        replace,
+        reset,
+        savedAt,
+        hydrated,
+        backupAt,
+        loadDemo,
+        saveBackup,
+        restoreBackup,
+      }}
+    >
       {children}
     </FormContext.Provider>
   );
