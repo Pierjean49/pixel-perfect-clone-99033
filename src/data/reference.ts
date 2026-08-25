@@ -101,8 +101,9 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
 };
 
 export const GROUPEMENTS = [
-  "Giphar", "Giropharm", "Pharmabest", "Wellpharma", "Aprium", "Leadersanté",
-  "Univers Pharmacie", "Forum Santé", "Elsie Santé", "Pharmavie", "Pharmactiv", "Aucun", "Autre",
+  "Apothical", "Aprium", "BePharma", "Elsie Santé", "Forum Santé", "Giphar", "Giropharm",
+  "Leadersanté", "Mediprix", "Pharmaccord", "Pharmabest", "Pharmactiv", "Pharmavie", "Synaps",
+  "Unipharm", "Univers Pharmacie", "Wellpharma", "Aucun", "Autre",
 ];
 
 export const GROSSISTES = ["CERP", "OCP", "Alliance Healthcare", "Phoenix", "Autre"];
