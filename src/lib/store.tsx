@@ -76,7 +76,10 @@ export function FormProvider({ children }: { children: ReactNode }) {
     try {
       const current = readStored(KEY);
       const recovery = readStored(RECOVERY_KEY);
-      const safest = current && (!recovery || score(current) >= score(recovery)) ? current : recovery;
+      const backup = readStored(BACKUP_KEY);
+      const safest = [current, recovery, backup]
+        .filter((candidate): candidate is FormState => candidate !== null)
+        .sort((a, b) => score(b) - score(a))[0];
       if (safest) {
         setForm(safest);
         window.localStorage.setItem(KEY, JSON.stringify(safest));
