@@ -40,6 +40,9 @@ export function buildVariables(f: FormState): Record<string, string> {
         clean(p.poids) && `poids visé ${p.poids} % du CA para`,
         clean(p.objectif_progression) && `objectif +${p.objectif_progression} % sur 12 mois`,
         clean(p.priorite) && `priorité ${p.priorite}`,
+        (p.sous_poles ?? []).filter(Boolean).length > 0
+          ? `sous-pôles : ${(p.sous_poles ?? []).filter(Boolean).join(", ")}`
+          : "",
       ]),
     )
     .join("\n");

@@ -7,6 +7,7 @@ export type Pole = {
   poids: string;
   objectif_progression: string;
   priorite: string;
+  sous_poles?: string[];
 };
 
 export type Collaborateur = {

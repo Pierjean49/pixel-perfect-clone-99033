@@ -385,13 +385,13 @@ function Formulaire() {
           {/* BLOC 2 */}
           <Section
             numero={2}
-            titre="Pôles principaux"
-            intro="Les pôles structurent tout l'agent : couleurs, graphiques, responsabilités, planning d'animation."
+            titre="Pôles principaux et sous-pôles"
+            intro="Les pôles principaux sont les univers affichés en page d'accueil de l'agent (8 maximum). Chaque pôle principal peut contenir des sous-pôles."
             rempli={form.poles.filter((p) => p.responsable && p.poids).length}
             total={Math.max(form.poles.length, 1)}
           >
             <CheckGroup
-              label="Pôles de l'officine"
+              label="Pôles principaux (univers de la page d'accueil)"
               columns={3}
               options={POLES.map((p) => p.nom)}
               values={nomsPoles}
@@ -408,6 +408,7 @@ function Formulaire() {
                       poids: "",
                       objectif_progression: "",
                       priorite: "2",
+                      sous_poles: [],
                     });
                 })
               }
@@ -416,6 +417,14 @@ function Formulaire() {
               Le pôle Dermo-cosmétique est le pôle pilote de la construction (brique 1) : il ne peut
               pas être décoché.
             </p>
+            {form.poles.length > 8 ? (
+              <p className="mt-2 rounded-lg bg-[var(--color-warning-soft,#FDF5E3)] px-3 py-2 text-xs text-muted-foreground">
+                Tu as sélectionné {form.poles.length} pôles principaux. Au-delà de 8, la page
+                d'accueil de l'agent devient illisible : regroupe plutôt certains univers en
+                sous-pôles (ex. « Maquillage », « Soins », « Capillaire » sous « Cosmétique »).
+              </p>
+            ) : null}
+
 
             <div className="mt-4 space-y-3">
               {form.poles.map((p, i) => (
@@ -471,7 +480,16 @@ function Formulaire() {
                       onChange={(v) => update((d) => void (d.poles[i].priorite = v))}
                     />
                   </Grid>
+                  <div className="mt-3">
+                    <SousPolesInput
+                      pole={p.nom}
+                      value={p.sous_poles ?? []}
+                      onChange={(arr) => update((d) => void (d.poles[i].sous_poles = arr))}
+                    />
+                  </div>
+
                 </div>
+
               ))}
             </div>
           </Section>
@@ -1544,5 +1562,33 @@ function Formulaire() {
         </aside>
       </div>
     </main>
+  );
+}
+
+function SousPolesInput({
+  pole,
+  value,
+  onChange,
+}: {
+  pole: string;
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const [texte, setTexte] = useState(value.join(", "));
+  return (
+    <Text
+      label={`Sous-pôles de « ${pole} » (séparés par une virgule)`}
+      placeholder="Ex. : Maquillage, Soins visage, Capillaire"
+      value={texte}
+      onChange={(v) => {
+        setTexte(v);
+        onChange(
+          v
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean),
+        );
+      }}
+    />
   );
 }
