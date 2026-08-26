@@ -379,163 +379,6 @@ function Formulaire() {
           {/* BLOC 2 */}
           <Section
             numero={2}
-            titre="Pôles principaux"
-            intro="Les pôles structurent tout l'agent : couleurs, graphiques, responsabilités, planning d'animation."
-            rempli={form.poles.filter((p) => p.responsable && p.poids).length}
-            total={Math.max(form.poles.length, 1)}
-          >
-            <CheckGroup
-              label="Pôles de l'officine"
-              columns={3}
-              options={POLES.map((p) => p.nom)}
-              values={nomsPoles}
-              onToggle={(nom) =>
-                update((d) => {
-                  if (nom === "Dermo-cosmétique") return;
-                  const i = d.poles.findIndex((p) => p.nom === nom);
-                  if (i >= 0) d.poles.splice(i, 1);
-                  else
-                    d.poles.push({
-                      nom,
-                      couleur: couleurPole(nom),
-                      responsable: "",
-                      poids: "",
-                      objectif_progression: "",
-                      priorite: "2",
-                    });
-                })
-              }
-            />
-            <p className="mt-2 text-xs text-muted-foreground">
-              Le pôle Dermo-cosmétique est le pôle pilote de la construction (brique 1) : il ne peut
-              pas être décoché.
-            </p>
-
-            <div className="mt-4 space-y-3">
-              {form.poles.map((p, i) => (
-                <div key={p.nom} className="rounded-lg border border-border p-3">
-                  <div className="mb-3 flex items-center gap-2">
-                    <span
-                      className="h-4 w-4 rounded-full"
-                      style={{ backgroundColor: p.couleur }}
-                      aria-hidden
-                    />
-                    <strong className="text-sm">{p.nom}</strong>
-                  </div>
-                  <Grid>
-                    <Text
-                      label="Nom du pôle"
-                      value={p.nom}
-                      onChange={(v) => update((d) => void (d.poles[i].nom = v))}
-                    />
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-medium text-muted-foreground">
-                        Couleur
-                      </span>
-                      <input
-                        type="color"
-                        className="h-9 w-full rounded-lg border border-input bg-card"
-                        value={p.couleur}
-                        onChange={(e) => update((d) => void (d.poles[i].couleur = e.target.value))}
-                      />
-                    </label>
-                    <Select
-                      label="Responsable de pôle"
-                      options={nomsCollaborateurs}
-                      allowFree
-                      value={p.responsable}
-                      onChange={(v) => update((d) => void (d.poles[i].responsable = v))}
-                    />
-                    <Text
-                      label="Poids actuel dans le CA para"
-                      suffix="%"
-                      value={p.poids}
-                      onChange={(v) => update((d) => void (d.poles[i].poids = v))}
-                    />
-                    <Text
-                      label="Objectif de progression sur 12 mois"
-                      suffix="%"
-                      value={p.objectif_progression}
-                      onChange={(v) => update((d) => void (d.poles[i].objectif_progression = v))}
-                    />
-                    <Select
-                      label="Priorité stratégique"
-                      options={["1", "2", "3"]}
-                      value={p.priorite}
-                      onChange={(v) => update((d) => void (d.poles[i].priorite = v))}
-                    />
-                  </Grid>
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          {/* BLOC 3 */}
-          <Section
-            numero={3}
-            titre="Spécialités et positionnement"
-            intro="Ce bloc donne à l'agent la personnalité commerciale de ton officine : ton, priorités, arguments."
-            rempli={rempli(
-              form.positionnement.axes,
-              form.positionnement.services,
-              form.positionnement.prix,
-              form.positionnement.typologie_clientele,
-              form.positionnement.force_distinctive,
-            )}
-            total={5}
-          >
-            <div className="space-y-5">
-              <CheckGroup
-                label="Axes de différenciation"
-                columns={2}
-                options={AXES_DIFFERENCIATION}
-                values={form.positionnement.axes}
-                onToggle={(v) =>
-                  update((d) => {
-                    const i = d.positionnement.axes.indexOf(v);
-                    i >= 0 ? d.positionnement.axes.splice(i, 1) : d.positionnement.axes.push(v);
-                  })
-                }
-              />
-              <CheckGroup
-                label="Services proposés"
-                columns={2}
-                options={SERVICES_PROPOSES}
-                values={form.positionnement.services}
-                onToggle={(v) =>
-                  update((d) => {
-                    const i = d.positionnement.services.indexOf(v);
-                    i >= 0
-                      ? d.positionnement.services.splice(i, 1)
-                      : d.positionnement.services.push(v);
-                  })
-                }
-              />
-              <Radio
-                label="Positionnement prix"
-                options={["premium", "équilibré", "accessible", "discount"]}
-                value={form.positionnement.prix}
-                onChange={(v) => update((d) => void (d.positionnement.prix = v))}
-              />
-              <Area
-                label="Typologie de clientèle"
-                rows={3}
-                placeholder="Centre-ville, quartier, rural, centre commercial, médicalisée, passage, touristique…"
-                value={form.positionnement.typologie_clientele}
-                onChange={(v) => update((d) => void (d.positionnement.typologie_clientele = v))}
-              />
-              <Area
-                label="Ce que ton officine fait mieux que les autres"
-                rows={5}
-                value={form.positionnement.force_distinctive}
-                onChange={(v) => update((d) => void (d.positionnement.force_distinctive = v))}
-              />
-            </div>
-          </Section>
-
-          {/* BLOC 4 */}
-          <Section
-            numero={4}
             titre="Équipe"
             intro="Nom, prénom, rôle et rattachement suffisent. Les objectifs individuels et les résultats se saisiront dans l'agent, à la brique 4."
             rempli={form.equipe.filter((c) => c.nom && c.prenom && c.role).length}
@@ -644,6 +487,164 @@ function Formulaire() {
               </Button>
             </div>
           </Section>
+
+          {/* BLOC 3 */}
+          <Section
+            numero={3}
+            titre="Pôles principaux"
+            intro="Les pôles structurent tout l'agent : couleurs, graphiques, responsabilités, planning d'animation."
+            rempli={form.poles.filter((p) => p.responsable && p.poids).length}
+            total={Math.max(form.poles.length, 1)}
+          >
+            <CheckGroup
+              label="Pôles de l'officine"
+              columns={3}
+              options={POLES.map((p) => p.nom)}
+              values={nomsPoles}
+              onToggle={(nom) =>
+                update((d) => {
+                  if (nom === "Dermo-cosmétique") return;
+                  const i = d.poles.findIndex((p) => p.nom === nom);
+                  if (i >= 0) d.poles.splice(i, 1);
+                  else
+                    d.poles.push({
+                      nom,
+                      couleur: couleurPole(nom),
+                      responsable: "",
+                      poids: "",
+                      objectif_progression: "",
+                      priorite: "2",
+                    });
+                })
+              }
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              Le pôle Dermo-cosmétique est le pôle pilote de la construction (brique 1) : il ne peut
+              pas être décoché.
+            </p>
+
+            <div className="mt-4 space-y-3">
+              {form.poles.map((p, i) => (
+                <div key={p.nom} className="rounded-lg border border-border p-3">
+                  <div className="mb-3 flex items-center gap-2">
+                    <span
+                      className="h-4 w-4 rounded-full"
+                      style={{ backgroundColor: p.couleur }}
+                      aria-hidden
+                    />
+                    <strong className="text-sm">{p.nom}</strong>
+                  </div>
+                  <Grid>
+                    <Text
+                      label="Nom du pôle"
+                      value={p.nom}
+                      onChange={(v) => update((d) => void (d.poles[i].nom = v))}
+                    />
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-medium text-muted-foreground">
+                        Couleur
+                      </span>
+                      <input
+                        type="color"
+                        className="h-9 w-full rounded-lg border border-input bg-card"
+                        value={p.couleur}
+                        onChange={(e) => update((d) => void (d.poles[i].couleur = e.target.value))}
+                      />
+                    </label>
+                    <Select
+                      label="Responsable de pôle"
+                      options={nomsCollaborateurs}
+                      allowFree
+                      value={p.responsable}
+                      onChange={(v) => update((d) => void (d.poles[i].responsable = v))}
+                    />
+                    <Text
+                      label="Poids actuel dans le CA para"
+                      suffix="%"
+                      value={p.poids}
+                      onChange={(v) => update((d) => void (d.poles[i].poids = v))}
+                    />
+                    <Text
+                      label="Objectif de progression sur 12 mois"
+                      suffix="%"
+                      value={p.objectif_progression}
+                      onChange={(v) => update((d) => void (d.poles[i].objectif_progression = v))}
+                    />
+                    <Select
+                      label="Priorité stratégique"
+                      options={["1", "2", "3"]}
+                      value={p.priorite}
+                      onChange={(v) => update((d) => void (d.poles[i].priorite = v))}
+                    />
+                  </Grid>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          {/* BLOC 4 */}
+          <Section
+            numero={4}
+            titre="Spécialités et positionnement"
+            intro="Ce bloc donne à l'agent la personnalité commerciale de ton officine : ton, priorités, arguments."
+            rempli={rempli(
+              form.positionnement.axes,
+              form.positionnement.services,
+              form.positionnement.prix,
+              form.positionnement.typologie_clientele,
+              form.positionnement.force_distinctive,
+            )}
+            total={5}
+          >
+            <div className="space-y-5">
+              <CheckGroup
+                label="Axes de différenciation"
+                columns={2}
+                options={AXES_DIFFERENCIATION}
+                values={form.positionnement.axes}
+                onToggle={(v) =>
+                  update((d) => {
+                    const i = d.positionnement.axes.indexOf(v);
+                    i >= 0 ? d.positionnement.axes.splice(i, 1) : d.positionnement.axes.push(v);
+                  })
+                }
+              />
+              <CheckGroup
+                label="Services proposés"
+                columns={2}
+                options={SERVICES_PROPOSES}
+                values={form.positionnement.services}
+                onToggle={(v) =>
+                  update((d) => {
+                    const i = d.positionnement.services.indexOf(v);
+                    i >= 0
+                      ? d.positionnement.services.splice(i, 1)
+                      : d.positionnement.services.push(v);
+                  })
+                }
+              />
+              <Radio
+                label="Positionnement prix"
+                options={["premium", "équilibré", "accessible", "discount"]}
+                value={form.positionnement.prix}
+                onChange={(v) => update((d) => void (d.positionnement.prix = v))}
+              />
+              <Area
+                label="Typologie de clientèle"
+                rows={3}
+                placeholder="Centre-ville, quartier, rural, centre commercial, médicalisée, passage, touristique…"
+                value={form.positionnement.typologie_clientele}
+                onChange={(v) => update((d) => void (d.positionnement.typologie_clientele = v))}
+              />
+              <Area
+                label="Ce que ton officine fait mieux que les autres"
+                rows={5}
+                value={form.positionnement.force_distinctive}
+                onChange={(v) => update((d) => void (d.positionnement.force_distinctive = v))}
+              />
+            </div>
+          </Section>
+
 
           {/* BLOC 5 */}
           <Section
