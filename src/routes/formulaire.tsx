@@ -1564,3 +1564,31 @@ function Formulaire() {
     </main>
   );
 }
+
+function SousPolesInput({
+  pole,
+  value,
+  onChange,
+}: {
+  pole: string;
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const [texte, setTexte] = useState(value.join(", "));
+  return (
+    <Text
+      label={`Sous-pôles de « ${pole} » (séparés par une virgule)`}
+      placeholder="Ex. : Maquillage, Soins visage, Capillaire"
+      value={texte}
+      onChange={(v) => {
+        setTexte(v);
+        onChange(
+          v
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean),
+        );
+      }}
+    />
+  );
+}
