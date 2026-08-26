@@ -472,13 +472,23 @@ function Formulaire() {
                         onChange={(e) => update((d) => void (d.poles[i].couleur = e.target.value))}
                       />
                     </label>
-                    <Select
-                      label="Responsable de pôle (rempli depuis le bloc Équipe)"
-                      options={nomsCollaborateurs}
-                      allowFree
-                      value={p.responsable || responsableAuto(p.nom)}
-                      onChange={(v) => update((d) => void (d.poles[i].responsable = v))}
-                    />
+                    <div className="block">
+                      <span className="mb-1 block text-xs font-medium text-muted-foreground">
+                        Responsable de pôle
+                      </span>
+                      <div className="flex h-9 items-center rounded-lg border border-dashed border-input bg-muted/30 px-3 text-sm">
+                        {p.responsable || responsableAuto(p.nom) || (
+                          <span className="text-muted-foreground">
+                            Sera déterminé dans le bloc « Équipe »
+                          </span>
+                        )}
+                      </div>
+                      <span className="mt-1 block text-[11px] text-muted-foreground">
+                        Renseigné automatiquement depuis le bloc « Équipe » (responsabilité
+                        « Responsable de pôle »).
+                      </span>
+                    </div>
+
                     <Text
                       label="Poids actuel dans le CA para"
                       suffix="%"
