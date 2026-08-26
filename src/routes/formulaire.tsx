@@ -79,6 +79,12 @@ function Formulaire() {
     .map((c) => `${c.prenom} ${c.nom}`.trim())
     .filter((n) => n.length > 1);
   const nomsGammes = form.gammes.map((g) => g.nom).filter(Boolean);
+  const responsableAuto = (pole: string) => {
+    const c =
+      form.equipe.find((e) => e.pole === pole && e.responsabilite === "Responsable de pôle") ??
+      form.equipe.find((e) => e.pole === pole);
+    return c ? `${c.prenom} ${c.nom}`.trim() : "";
+  };
   const nomsPoles = form.poles.map((p) => p.nom);
 
   const apercu = useMemo(() => apercuPromptMaitre(form), [form]);
@@ -379,118 +385,6 @@ function Formulaire() {
           {/* BLOC 2 */}
           <Section
             numero={2}
-            titre="Équipe"
-            intro="Nom, prénom, rôle et rattachement suffisent. Les objectifs individuels et les résultats se saisiront dans l'agent, à la brique 4."
-            rempli={form.equipe.filter((c) => c.nom && c.prenom && c.role).length}
-            total={Math.max(form.equipe.length, 1)}
-          >
-            <div className="space-y-3">
-              {form.equipe.map((c, i) => (
-                <div key={c.id} className="rounded-lg border border-border p-3">
-                  <Grid>
-                    <Text
-                      label="Prénom"
-                      required
-                      value={c.prenom}
-                      onChange={(v) => update((d) => void (d.equipe[i].prenom = v))}
-                    />
-                    <Text
-                      label="Nom"
-                      required
-                      value={c.nom}
-                      onChange={(v) => update((d) => void (d.equipe[i].nom = v))}
-                    />
-                    <Select
-                      label="Rôle"
-                      required
-                      options={ROLES_EQUIPE}
-                      value={c.role}
-                      onChange={(v) => update((d) => void (d.equipe[i].role = v))}
-                    />
-                    <Select
-                      label="Pôle principal"
-                      options={nomsPoles}
-                      allowFree
-                      value={c.pole}
-                      onChange={(v) => update((d) => void (d.equipe[i].pole = v))}
-                    />
-                    <Text
-                      label="Sous-pôles"
-                      value={c.sous_poles}
-                      onChange={(v) => update((d) => void (d.equipe[i].sous_poles = v))}
-                    />
-                    <Select
-                      label="Responsabilité trade"
-                      options={RESPONSABILITES_TRADE}
-                      value={c.responsabilite}
-                      onChange={(v) => update((d) => void (d.equipe[i].responsabilite = v))}
-                    />
-                    <Text
-                      label="Temps hebdomadaire dédié au trade"
-                      suffix="h"
-                      value={c.heures_trade}
-                      onChange={(v) => update((d) => void (d.equipe[i].heures_trade = v))}
-                    />
-                    <Text
-                      label="Date d'entrée dans l'officine"
-                      placeholder="JJ/MM/AAAA"
-                      value={c.date_entree}
-                      onChange={(v) => update((d) => void (d.equipe[i].date_entree = v))}
-                    />
-                  </Grid>
-                  {nomsGammes.length ? (
-                    <div className="mt-3">
-                      <CheckGroup
-                        label="Gammes référentes"
-                        columns={3}
-                        options={nomsGammes}
-                        values={c.gammes_referentes}
-                        onToggle={(v) =>
-                          update((d) => {
-                            const arr = d.equipe[i].gammes_referentes;
-                            const k = arr.indexOf(v);
-                            k >= 0 ? arr.splice(k, 1) : arr.push(v);
-                          })
-                        }
-                      />
-                    </div>
-                  ) : null}
-                  <div className="mt-3 text-right">
-                    <Button
-                      variant="ghost"
-                      onClick={() => update((d) => void d.equipe.splice(i, 1))}
-                    >
-                      Supprimer
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              <Button
-                onClick={() =>
-                  update((d) =>
-                    void d.equipe.push({
-                      id: uid(),
-                      nom: "",
-                      prenom: "",
-                      role: "",
-                      pole: "",
-                      sous_poles: "",
-                      gammes_referentes: [],
-                      responsabilite: "Aucune",
-                      heures_trade: "",
-                      date_entree: "",
-                    }),
-                  )
-                }
-              >
-                Ajouter un collaborateur
-              </Button>
-            </div>
-          </Section>
-
-          {/* BLOC 3 */}
-          <Section
-            numero={3}
             titre="Pôles principaux"
             intro="Les pôles structurent tout l'agent : couleurs, graphiques, responsabilités, planning d'animation."
             rempli={form.poles.filter((p) => p.responsable && p.poids).length}
@@ -552,10 +446,10 @@ function Formulaire() {
                       />
                     </label>
                     <Select
-                      label="Responsable de pôle"
+                      label="Responsable de pôle (rempli depuis le bloc Équipe)"
                       options={nomsCollaborateurs}
                       allowFree
-                      value={p.responsable}
+                      value={p.responsable || responsableAuto(p.nom)}
                       onChange={(v) => update((d) => void (d.poles[i].responsable = v))}
                     />
                     <Text
@@ -582,73 +476,9 @@ function Formulaire() {
             </div>
           </Section>
 
-          {/* BLOC 4 */}
+          {/* BLOC 3 */}
           <Section
-            numero={4}
-            titre="Spécialités et positionnement"
-            intro="Ce bloc donne à l'agent la personnalité commerciale de ton officine : ton, priorités, arguments."
-            rempli={rempli(
-              form.positionnement.axes,
-              form.positionnement.services,
-              form.positionnement.prix,
-              form.positionnement.typologie_clientele,
-              form.positionnement.force_distinctive,
-            )}
-            total={5}
-          >
-            <div className="space-y-5">
-              <CheckGroup
-                label="Axes de différenciation"
-                columns={2}
-                options={AXES_DIFFERENCIATION}
-                values={form.positionnement.axes}
-                onToggle={(v) =>
-                  update((d) => {
-                    const i = d.positionnement.axes.indexOf(v);
-                    i >= 0 ? d.positionnement.axes.splice(i, 1) : d.positionnement.axes.push(v);
-                  })
-                }
-              />
-              <CheckGroup
-                label="Services proposés"
-                columns={2}
-                options={SERVICES_PROPOSES}
-                values={form.positionnement.services}
-                onToggle={(v) =>
-                  update((d) => {
-                    const i = d.positionnement.services.indexOf(v);
-                    i >= 0
-                      ? d.positionnement.services.splice(i, 1)
-                      : d.positionnement.services.push(v);
-                  })
-                }
-              />
-              <Radio
-                label="Positionnement prix"
-                options={["premium", "équilibré", "accessible", "discount"]}
-                value={form.positionnement.prix}
-                onChange={(v) => update((d) => void (d.positionnement.prix = v))}
-              />
-              <Area
-                label="Typologie de clientèle"
-                rows={3}
-                placeholder="Centre-ville, quartier, rural, centre commercial, médicalisée, passage, touristique…"
-                value={form.positionnement.typologie_clientele}
-                onChange={(v) => update((d) => void (d.positionnement.typologie_clientele = v))}
-              />
-              <Area
-                label="Ce que ton officine fait mieux que les autres"
-                rows={5}
-                value={form.positionnement.force_distinctive}
-                onChange={(v) => update((d) => void (d.positionnement.force_distinctive = v))}
-              />
-            </div>
-          </Section>
-
-
-          {/* BLOC 5 */}
-          <Section
-            numero={5}
+            numero={3}
             titre="Cartographie des gammes par secteur"
             intro="Le bloc le plus important : coche les marques présentes, puis complète les fiches. Toute marque absente s'ajoute librement."
             rempli={form.gammes.filter((g) => g.statut && g.pole).length}
@@ -834,6 +664,196 @@ function Formulaire() {
                   </details>
                 ))}
               </div>
+            </div>
+          </Section>
+
+          {/* BLOC 4 */}
+          <Section
+            numero={4}
+            titre="Spécialités et positionnement"
+            intro="Ce bloc donne à l'agent la personnalité commerciale de ton officine : ton, priorités, arguments."
+            rempli={rempli(
+              form.positionnement.axes,
+              form.positionnement.services,
+              form.positionnement.prix,
+              form.positionnement.typologie_clientele,
+              form.positionnement.force_distinctive,
+            )}
+            total={5}
+          >
+            <div className="space-y-5">
+              <CheckGroup
+                label="Axes de différenciation"
+                columns={2}
+                options={AXES_DIFFERENCIATION}
+                values={form.positionnement.axes}
+                onToggle={(v) =>
+                  update((d) => {
+                    const i = d.positionnement.axes.indexOf(v);
+                    i >= 0 ? d.positionnement.axes.splice(i, 1) : d.positionnement.axes.push(v);
+                  })
+                }
+              />
+              <CheckGroup
+                label="Services proposés"
+                columns={2}
+                options={SERVICES_PROPOSES}
+                values={form.positionnement.services}
+                onToggle={(v) =>
+                  update((d) => {
+                    const i = d.positionnement.services.indexOf(v);
+                    i >= 0
+                      ? d.positionnement.services.splice(i, 1)
+                      : d.positionnement.services.push(v);
+                  })
+                }
+              />
+              <Radio
+                label="Positionnement prix"
+                options={["premium", "équilibré", "accessible", "discount"]}
+                value={form.positionnement.prix}
+                onChange={(v) => update((d) => void (d.positionnement.prix = v))}
+              />
+              <Area
+                label="Typologie de clientèle"
+                rows={3}
+                placeholder="Centre-ville, quartier, rural, centre commercial, médicalisée, passage, touristique…"
+                value={form.positionnement.typologie_clientele}
+                onChange={(v) => update((d) => void (d.positionnement.typologie_clientele = v))}
+              />
+              <Area
+                label="Ce que ton officine fait mieux que les autres"
+                rows={5}
+                value={form.positionnement.force_distinctive}
+                onChange={(v) => update((d) => void (d.positionnement.force_distinctive = v))}
+              />
+            </div>
+          </Section>
+
+          {/* BLOC 5 */}
+          <Section
+            numero={5}
+            titre="Équipe"
+            intro="Nom, prénom, rôle et rattachement suffisent. Les objectifs individuels et les résultats se saisiront dans l'agent, à la brique 4."
+            rempli={form.equipe.filter((c) => c.nom && c.prenom && c.role).length}
+            total={Math.max(form.equipe.length, 1)}
+          >
+            <div className="space-y-3">
+              {form.equipe.map((c, i) => (
+                <div key={c.id} className="rounded-lg border border-border p-3">
+                  <Grid>
+                    <Text
+                      label="Prénom"
+                      required
+                      value={c.prenom}
+                      onChange={(v) => update((d) => void (d.equipe[i].prenom = v))}
+                    />
+                    <Text
+                      label="Nom"
+                      required
+                      value={c.nom}
+                      onChange={(v) => update((d) => void (d.equipe[i].nom = v))}
+                    />
+                    <Select
+                      label="Rôle"
+                      required
+                      options={ROLES_EQUIPE}
+                      value={c.role}
+                      onChange={(v) => update((d) => void (d.equipe[i].role = v))}
+                    />
+                    <Select
+                      label="Pôle principal"
+                      options={nomsPoles}
+                      allowFree
+                      value={c.pole}
+                      onChange={(v) => update((d) => void (d.equipe[i].pole = v))}
+                    />
+                    <Select
+                      label="Responsabilité trade"
+                      options={RESPONSABILITES_TRADE}
+                      value={c.responsabilite}
+                      onChange={(v) => update((d) => void (d.equipe[i].responsabilite = v))}
+                    />
+                    <Text
+                      label="Temps hebdomadaire dédié au trade"
+                      suffix="h"
+                      value={c.heures_trade}
+                      onChange={(v) => update((d) => void (d.equipe[i].heures_trade = v))}
+                    />
+                    <Text
+                      label="Date d'entrée dans l'officine"
+                      placeholder="JJ/MM/AAAA"
+                      value={c.date_entree}
+                      onChange={(v) => update((d) => void (d.equipe[i].date_entree = v))}
+                    />
+                  </Grid>
+                  {nomsGammes.length ? (
+                    <div className="mt-3">
+                      <CheckGroup
+                        label="Responsables Marques"
+                        columns={3}
+                        options={nomsGammes}
+                        values={c.sous_poles ? c.sous_poles.split(",").map((x) => x.trim()).filter(Boolean) : []}
+                        onToggle={(v) =>
+                          update((d) => {
+                            const arr = d.equipe[i].sous_poles
+                              ? d.equipe[i].sous_poles.split(",").map((x) => x.trim()).filter(Boolean)
+                              : [];
+                            const k = arr.indexOf(v);
+                            k >= 0 ? arr.splice(k, 1) : arr.push(v);
+                            d.equipe[i].sous_poles = arr.join(", ");
+                          })
+                        }
+                      />
+                    </div>
+                  ) : null}
+                  {nomsGammes.length ? (
+                    <div className="mt-3">
+                      <CheckGroup
+                        label="Gammes référentes"
+                        columns={3}
+                        options={nomsGammes}
+                        values={c.gammes_referentes}
+                        onToggle={(v) =>
+                          update((d) => {
+                            const arr = d.equipe[i].gammes_referentes;
+                            const k = arr.indexOf(v);
+                            k >= 0 ? arr.splice(k, 1) : arr.push(v);
+                          })
+                        }
+                      />
+                    </div>
+                  ) : null}
+                  <div className="mt-3 text-right">
+                    <Button
+                      variant="ghost"
+                      onClick={() => update((d) => void d.equipe.splice(i, 1))}
+                    >
+                      Supprimer
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button
+                onClick={() =>
+                  update((d) =>
+                    void d.equipe.push({
+                      id: uid(),
+                      nom: "",
+                      prenom: "",
+                      role: "",
+                      pole: "",
+                      sous_poles: "",
+                      gammes_referentes: [],
+                      responsabilite: "Aucune",
+                      heures_trade: "",
+                      date_entree: "",
+                    }),
+                  )
+                }
+              >
+                Ajouter un collaborateur
+              </Button>
             </div>
           </Section>
 
