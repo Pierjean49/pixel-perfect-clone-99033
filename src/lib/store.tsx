@@ -1,8 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { emptyForm, type FormState } from "./types";
 
 const KEY = "module-trade-gammes-v1";
 const BACKUP_KEY = "module-trade-gammes-v1-backup";
+const RECOVERY_KEY = "module-trade-gammes-v1-recovery";
 
 type Ctx = {
   form: FormState;
@@ -35,19 +36,68 @@ function merge(base: FormState, saved: Partial<FormState>): FormState {
   return deep(base, saved);
 }
 
+function score(value: unknown): number {
+  if (Array.isArray(value)) return value.reduce((total, item) => total + score(item), value.length);
+  if (value && typeof value === "object") {
+    return Object.values(value as Record<string, unknown>).reduce<number>(
+      (total, item) => total + score(item),
+      0,
+    );
+  }
+  return value === true || (typeof value === "string" && value.trim() !== "") ? 1 : 0;
+}
+
+function readStored(key: string): FormState | null {
+  const raw = window.localStorage.getItem(key);
+  if (!raw) return null;
+  return merge(emptyForm(), JSON.parse(raw) as Partial<FormState>);
+}
+
 export function FormProvider({ children }: { children: ReactNode }) {
   const [form, setForm] = useState<FormState>(() => emptyForm());
   const [hydrated, setHydrated] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [backupAt, setBackupAt] = useState<string | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const persist = useCallback((next: FormState) => {
+    try {
+      const previous = readStored(KEY);
+      // Garde une copie supplémentaire si une écriture contient soudainement moins de données.
+      if (previous && score(previous) > score(next)) {
+        window.localStorage.setItem(RECOVERY_KEY, JSON.stringify(previous));
+      }
+      window.localStorage.setItem(KEY, JSON.stringify(next));
+      setSavedAt(
+        new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h"),
+      );
+    } catch {
+      /* stockage indisponible ou quota dépassé */
+    }
+  }, []);
 
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) setForm((f) => merge(f, JSON.parse(raw)));
+      const current = readStored(KEY);
+      const recovery = readStored(RECOVERY_KEY);
+      const backup = readStored(BACKUP_KEY);
+      const safest = [current, recovery, backup]
+        .filter((candidate): candidate is FormState => candidate !== null)
+        .sort((a, b) => score(b) - score(a))[0];
+      if (safest) {
+        setForm(safest);
+        window.localStorage.setItem(KEY, JSON.stringify(safest));
+        setSavedAt("saisie restaurée");
+      }
     } catch {
-      /* stockage indisponible : on repart d'un formulaire vide */
+      try {
+        const backup = readStored(BACKUP_KEY);
+        if (backup) {
+          setForm(backup);
+          setSavedAt("sauvegarde restaurée");
+        }
+      } catch {
+        /* stockage indisponible : on repart d'un formulaire vide */
+      }
     }
     try {
       const rawBackup = window.localStorage.getItem(BACKUP_KEY);
@@ -58,34 +108,20 @@ export function FormProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      try {
-        window.localStorage.setItem(KEY, JSON.stringify(form));
-        setSavedAt(
-          new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h"),
-        );
-      } catch {
-        /* quota dépassé */
-      }
-    }, 400);
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, [form, hydrated]);
-
   const update = useCallback((fn: (draft: FormState) => void) => {
     setForm((prev) => {
       const draft = structuredClone(prev) as FormState;
       fn(draft);
+      persist(draft);
       return draft;
     });
-  }, []);
+  }, [persist]);
 
-  const replace = useCallback((next: FormState) => setForm(next), []);
-  const reset = useCallback(() => setForm(emptyForm()), []);
+  const replace = useCallback((next: FormState) => {
+    const merged = merge(emptyForm(), next);
+    setForm(merged);
+    persist(merged);
+  }, [persist]);
 
   // Sauvegarde de la saisie réelle avant de charger un exemple / réinitialiser
   const snapshot = useCallback((current: FormState) => {
@@ -101,24 +137,39 @@ export function FormProvider({ children }: { children: ReactNode }) {
     (demo: FormState) => {
       setForm((prev) => {
         snapshot(prev);
+        persist(demo);
         return demo;
       });
     },
-    [snapshot],
+    [persist, snapshot],
   );
 
   const saveBackup = useCallback(() => snapshot(form), [form, snapshot]);
+
+  const reset = useCallback(() => {
+    snapshot(form);
+    const blank = emptyForm();
+    try {
+      window.localStorage.removeItem(RECOVERY_KEY);
+    } catch {
+      /* ignore */
+    }
+    setForm(blank);
+    persist(blank);
+  }, [form, persist, snapshot]);
 
   const restoreBackup = useCallback(() => {
     try {
       const raw = window.localStorage.getItem(BACKUP_KEY);
       if (!raw) return false;
-      setForm(merge(emptyForm(), JSON.parse(raw)));
+      const restored = merge(emptyForm(), JSON.parse(raw));
+      setForm(restored);
+      persist(restored);
       return true;
     } catch {
       return false;
     }
-  }, []);
+  }, [persist]);
 
   return (
     <FormContext.Provider
