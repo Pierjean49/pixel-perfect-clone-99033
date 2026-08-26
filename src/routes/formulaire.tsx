@@ -452,7 +452,10 @@ function Formulaire() {
 
             <div className="mt-4 space-y-3">
               {form.poles.map((p, i) => (
-                <div key={p.nom} className="rounded-lg border border-border p-3">
+                <div
+                  key={p.nom}
+                  className={`rounded-lg border p-3 ${i >= 8 ? "border-accent bg-accent/5" : "border-border"}`}
+                >
                   <div className="mb-3 flex items-center gap-2">
                     <span
                       className="h-4 w-4 rounded-full"
@@ -460,6 +463,11 @@ function Formulaire() {
                       aria-hidden
                     />
                     <strong className="text-sm">{p.nom}</strong>
+                    {i >= 8 ? (
+                      <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-accent">
+                        au-delà de 8 — non recommandé
+                      </span>
+                    ) : null}
                   </div>
                   <Grid>
                     <Text
