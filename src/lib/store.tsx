@@ -39,7 +39,10 @@ function merge(base: FormState, saved: Partial<FormState>): FormState {
 function score(value: unknown): number {
   if (Array.isArray(value)) return value.reduce((total, item) => total + score(item), value.length);
   if (value && typeof value === "object") {
-    return Object.values(value as Record<string, unknown>).reduce((total, item) => total + score(item), 0);
+    return Object.values(value as Record<string, unknown>).reduce<number>(
+      (total, item) => total + score(item),
+      0,
+    );
   }
   return value === true || (typeof value === "string" && value.trim() !== "") ? 1 : 0;
 }
