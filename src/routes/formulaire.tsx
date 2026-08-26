@@ -176,7 +176,7 @@ function Formulaire() {
         intro="Dix blocs. Tout est enregistré en continu dans ce navigateur : rien n'est envoyé à un serveur. Les champs marqués d'un astérisque doré sont indispensables à la génération des prompts."
       />
 
-      <div className="mb-6 flex flex-wrap items-center gap-2 text-sm">
+      <div className="sticky top-[76px] z-40 mb-6 -mx-4 flex flex-wrap items-center gap-2 border-b border-border bg-[var(--color-background)]/95 px-4 py-3 text-sm backdrop-blur sm:-mx-6 sm:px-6 lg:top-[68px]">
         <Badge color="var(--color-success)">
           {savedAt ? `Enregistré à ${savedAt}` : "Enregistrement automatique actif"}
         </Badge>
