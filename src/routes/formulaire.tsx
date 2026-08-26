@@ -393,7 +393,7 @@ function Formulaire() {
             <CheckGroup
               label="Pôles principaux (univers de la page d'accueil)"
               columns={3}
-              options={POLES.map((p) => p.nom)}
+              options={Array.from(new Set([...POLES.map((p) => p.nom), ...nomsPoles]))}
               values={nomsPoles}
               onToggle={(nom) =>
                 update((d) => {
@@ -413,6 +413,23 @@ function Formulaire() {
                 })
               }
             />
+            <AjoutLibre
+              placeholder="Ajouter un pôle principal (ex. : Hygiène, Vétérinaire…)"
+              onAdd={(nom) =>
+                update((d) => {
+                  if (d.poles.some((p) => p.nom.toLowerCase() === nom.toLowerCase())) return;
+                  d.poles.push({
+                    nom,
+                    couleur: couleurPole(nom),
+                    responsable: "",
+                    poids: "",
+                    objectif_progression: "",
+                    priorite: "2",
+                    sous_poles: [],
+                  });
+                })
+              }
+            />
             <p className="mt-2 text-xs text-muted-foreground">
               Le pôle Dermo-cosmétique est le pôle pilote de la construction (brique 1) : il ne peut
               pas être décoché.
@@ -424,6 +441,7 @@ function Formulaire() {
                 sous-pôles (ex. « Maquillage », « Soins », « Capillaire » sous « Cosmétique »).
               </p>
             ) : null}
+
 
 
             <div className="mt-4 space-y-3">
@@ -454,13 +472,23 @@ function Formulaire() {
                         onChange={(e) => update((d) => void (d.poles[i].couleur = e.target.value))}
                       />
                     </label>
-                    <Select
-                      label="Responsable de pôle (rempli depuis le bloc Équipe)"
-                      options={nomsCollaborateurs}
-                      allowFree
-                      value={p.responsable || responsableAuto(p.nom)}
-                      onChange={(v) => update((d) => void (d.poles[i].responsable = v))}
-                    />
+                    <div className="block">
+                      <span className="mb-1 block text-xs font-medium text-muted-foreground">
+                        Responsable de pôle
+                      </span>
+                      <div className="flex h-9 items-center rounded-lg border border-dashed border-input bg-muted/30 px-3 text-sm">
+                        {p.responsable || responsableAuto(p.nom) || (
+                          <span className="text-muted-foreground">
+                            Sera déterminé dans le bloc « Équipe »
+                          </span>
+                        )}
+                      </div>
+                      <span className="mt-1 block text-[11px] text-muted-foreground">
+                        Renseigné automatiquement depuis le bloc « Équipe » (responsabilité
+                        « Responsable de pôle »).
+                      </span>
+                    </div>
+
                     <Text
                       label="Poids actuel dans le CA para"
                       suffix="%"
@@ -1565,6 +1593,41 @@ function Formulaire() {
   );
 }
 
+function AjoutLibre({
+  placeholder,
+  onAdd,
+}: {
+  placeholder: string;
+  onAdd: (v: string) => void;
+}) {
+  const [texte, setTexte] = useState("");
+  const ajouter = () => {
+    const v = texte.trim();
+    if (!v) return;
+    onAdd(v);
+    setTexte("");
+  };
+  return (
+    <div className="mt-3 flex gap-2">
+      <input
+        className="field flex-1"
+        placeholder={placeholder}
+        value={texte}
+        onChange={(e) => setTexte(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            ajouter();
+          }
+        }}
+      />
+      <Button type="button" variant="ghost" onClick={ajouter}>
+        + Ajouter
+      </Button>
+    </div>
+  );
+}
+
 function SousPolesInput({
   pole,
   value,
@@ -1574,21 +1637,43 @@ function SousPolesInput({
   value: string[];
   onChange: (v: string[]) => void;
 }) {
-  const [texte, setTexte] = useState(value.join(", "));
   return (
-    <Text
-      label={`Sous-pôles de « ${pole} » (séparés par une virgule)`}
-      placeholder="Ex. : Maquillage, Soins visage, Capillaire"
-      value={texte}
-      onChange={(v) => {
-        setTexte(v);
-        onChange(
-          v
-            .split(",")
-            .map((x) => x.trim())
-            .filter(Boolean),
-        );
-      }}
-    />
+    <div>
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">
+        Sous-pôles de « {pole} »
+      </span>
+      {value.length ? (
+        <div className="flex flex-wrap gap-2">
+          {value.map((s, k) => (
+            <span
+              key={s + k}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs"
+            >
+              {s}
+              <button
+                type="button"
+                aria-label={`Retirer ${s}`}
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => onChange(value.filter((_, j) => j !== k))}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          Aucun sous-pôle. Ex. : Maquillage, Soins visage, Capillaire.
+        </p>
+      )}
+      <AjoutLibre
+        placeholder="Ajouter un sous-pôle"
+        onAdd={(v) => {
+          if (value.some((x) => x.toLowerCase() === v.toLowerCase())) return;
+          onChange([...value, v]);
+        }}
+      />
+    </div>
   );
 }
+
