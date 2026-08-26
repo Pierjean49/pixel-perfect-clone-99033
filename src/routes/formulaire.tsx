@@ -342,6 +342,15 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.nb_vitrines = v))}
               />
             </Grid>
+            <div className="mt-4">
+              <Area
+                label="Autres informations à ajouter (renseignements libres)"
+                rows={4}
+                placeholder="Tout élément utile : particularités du local, projets en cours, contraintes, patientèle spécifique…"
+                value={form.identite.autres_infos}
+                onChange={(v) => update((d) => void (d.identite.autres_infos = v))}
+              />
+            </div>
             <Encadre type="retenir">
               <p>
                 Le nombre de vitrines saisi ici est la source unique : il est repris en lecture seule
