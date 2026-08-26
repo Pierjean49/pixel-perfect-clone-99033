@@ -86,6 +86,11 @@ function Formulaire() {
     return c ? `${c.prenom} ${c.nom}`.trim() : "";
   };
   const nomsPoles = form.poles.map((p) => p.nom);
+  const sousPolesDuPole = (pole: string) =>
+    (form.poles.find((p) => p.nom === pole)?.sous_poles ?? []).filter(Boolean);
+  const tousSousPoles = Array.from(
+    new Set(form.poles.flatMap((p) => (p.sous_poles ?? []).filter(Boolean))),
+  );
 
   const apercu = useMemo(() => apercuPromptMaitre(form), [form]);
 
@@ -833,6 +838,33 @@ function Formulaire() {
                       onChange={(v) => update((d) => void (d.equipe[i].date_entree = v))}
                     />
                   </Grid>
+                  {(c.pole ? sousPolesDuPole(c.pole) : tousSousPoles).length ? (
+                    <div className="mt-3">
+                      <CheckGroup
+                        label={
+                          c.pole
+                            ? `Sous-pôles gérés (pôle « ${c.pole} »)`
+                            : "Sous-pôles gérés"
+                        }
+                        columns={3}
+                        options={c.pole ? sousPolesDuPole(c.pole) : tousSousPoles}
+                        values={c.sous_poles_geres ?? []}
+                        onToggle={(v) =>
+                          update((d) => {
+                            const arr = d.equipe[i].sous_poles_geres ?? [];
+                            const k = arr.indexOf(v);
+                            k >= 0 ? arr.splice(k, 1) : arr.push(v);
+                            d.equipe[i].sous_poles_geres = arr;
+                          })
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Aucun sous-pôle défini : ajoute-les dans le bloc 2 « Pôles principaux et
+                      sous-pôles » pour pouvoir les attribuer ici.
+                    </p>
+                  )}
                   {nomsGammes.length ? (
                     <div className="mt-3">
                       <CheckGroup
@@ -890,6 +922,7 @@ function Formulaire() {
                       role: "",
                       pole: "",
                       sous_poles: "",
+                      sous_poles_geres: [],
                       gammes_referentes: [],
                       responsabilite: "Aucune",
                       heures_trade: "",

@@ -17,6 +17,7 @@ export type Collaborateur = {
   role: string;
   pole: string;
   sous_poles: string;
+  sous_poles_geres?: string[];
   gammes_referentes: string[];
   responsabilite: string;
   heures_trade: string;
