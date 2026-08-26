@@ -79,6 +79,12 @@ function Formulaire() {
     .map((c) => `${c.prenom} ${c.nom}`.trim())
     .filter((n) => n.length > 1);
   const nomsGammes = form.gammes.map((g) => g.nom).filter(Boolean);
+  const responsableAuto = (pole: string) => {
+    const c =
+      form.equipe.find((e) => e.pole === pole && e.responsabilite === "Responsable de pôle") ??
+      form.equipe.find((e) => e.pole === pole);
+    return c ? `${c.prenom} ${c.nom}`.trim() : "";
+  };
   const nomsPoles = form.poles.map((p) => p.nom);
 
   const apercu = useMemo(() => apercuPromptMaitre(form), [form]);
@@ -440,10 +446,10 @@ function Formulaire() {
                       />
                     </label>
                     <Select
-                      label="Responsable de pôle"
+                      label="Responsable de pôle (rempli depuis le bloc Équipe)"
                       options={nomsCollaborateurs}
                       allowFree
-                      value={p.responsable}
+                      value={p.responsable || responsableAuto(p.nom)}
                       onChange={(v) => update((d) => void (d.poles[i].responsable = v))}
                     />
                     <Text
@@ -762,11 +768,6 @@ function Formulaire() {
                       value={c.pole}
                       onChange={(v) => update((d) => void (d.equipe[i].pole = v))}
                     />
-                    <Text
-                      label="Sous-pôles"
-                      value={c.sous_poles}
-                      onChange={(v) => update((d) => void (d.equipe[i].sous_poles = v))}
-                    />
                     <Select
                       label="Responsabilité trade"
                       options={RESPONSABILITES_TRADE}
@@ -786,6 +787,26 @@ function Formulaire() {
                       onChange={(v) => update((d) => void (d.equipe[i].date_entree = v))}
                     />
                   </Grid>
+                  {nomsGammes.length ? (
+                    <div className="mt-3">
+                      <CheckGroup
+                        label="Responsables Marques"
+                        columns={3}
+                        options={nomsGammes}
+                        values={c.sous_poles ? c.sous_poles.split(",").map((x) => x.trim()).filter(Boolean) : []}
+                        onToggle={(v) =>
+                          update((d) => {
+                            const arr = d.equipe[i].sous_poles
+                              ? d.equipe[i].sous_poles.split(",").map((x) => x.trim()).filter(Boolean)
+                              : [];
+                            const k = arr.indexOf(v);
+                            k >= 0 ? arr.splice(k, 1) : arr.push(v);
+                            d.equipe[i].sous_poles = arr.join(", ");
+                          })
+                        }
+                      />
+                    </div>
+                  ) : null}
                   {nomsGammes.length ? (
                     <div className="mt-3">
                       <CheckGroup
