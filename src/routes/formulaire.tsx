@@ -393,7 +393,7 @@ function Formulaire() {
             <CheckGroup
               label="Pôles principaux (univers de la page d'accueil)"
               columns={3}
-              options={POLES.map((p) => p.nom)}
+              options={Array.from(new Set([...POLES.map((p) => p.nom), ...nomsPoles]))}
               values={nomsPoles}
               onToggle={(nom) =>
                 update((d) => {
@@ -413,6 +413,23 @@ function Formulaire() {
                 })
               }
             />
+            <AjoutLibre
+              placeholder="Ajouter un pôle principal (ex. : Hygiène, Vétérinaire…)"
+              onAdd={(nom) =>
+                update((d) => {
+                  if (d.poles.some((p) => p.nom.toLowerCase() === nom.toLowerCase())) return;
+                  d.poles.push({
+                    nom,
+                    couleur: couleurPole(nom),
+                    responsable: "",
+                    poids: "",
+                    objectif_progression: "",
+                    priorite: "2",
+                    sous_poles: [],
+                  });
+                })
+              }
+            />
             <p className="mt-2 text-xs text-muted-foreground">
               Le pôle Dermo-cosmétique est le pôle pilote de la construction (brique 1) : il ne peut
               pas être décoché.
@@ -424,6 +441,7 @@ function Formulaire() {
                 sous-pôles (ex. « Maquillage », « Soins », « Capillaire » sous « Cosmétique »).
               </p>
             ) : null}
+
 
 
             <div className="mt-4 space-y-3">
