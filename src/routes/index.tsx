@@ -46,7 +46,15 @@ const VISIOS = [
 ];
 
 function Accueil() {
-  const { form, hydrated, backupAt, loadDemo, restoreBackup } = useForm();
+  const {
+    form,
+    hydrated,
+    backupAt,
+    recoveryCount,
+    loadDemo,
+    restoreBackup,
+    restoreLatestRecovery,
+  } = useForm();
 
   const champsCles = [
     form.identite.nom_pharmacie,
@@ -114,6 +122,18 @@ function Accueil() {
                 }}
               >
                 Revenir à ma pharmacie
+              </Button>
+            )}
+            {recoveryCount > 0 && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (window.confirm("Restaurer la dernière saisie valide enregistrée automatiquement ?")) {
+                    restoreLatestRecovery();
+                  }
+                }}
+              >
+                Restaurer une saisie ({recoveryCount})
               </Button>
             )}
           </div>

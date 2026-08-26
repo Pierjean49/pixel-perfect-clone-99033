@@ -4,6 +4,11 @@ import { emptyForm, type FormState } from "./types";
 const KEY = "module-trade-gammes-v1";
 const BACKUP_KEY = "module-trade-gammes-v1-backup";
 const RECOVERY_KEY = "module-trade-gammes-v1-recovery";
+const LAST_GOOD_KEY = "module-trade-gammes-v1-last-good";
+const HISTORY_KEY = "module-trade-gammes-v1-history";
+const MAX_HISTORY = 12;
+
+type Snapshot = { savedAt: string; form: FormState };
 
 type Ctx = {
   form: FormState;
@@ -13,9 +18,11 @@ type Ctx = {
   savedAt: string | null;
   hydrated: boolean;
   backupAt: string | null;
+  recoveryCount: number;
   loadDemo: (demo: FormState) => void;
   saveBackup: () => void;
   restoreBackup: () => boolean;
+  restoreLatestRecovery: () => boolean;
 };
 
 const FormContext = createContext<Ctx | null>(null);
@@ -47,10 +54,60 @@ function score(value: unknown): number {
   return value === true || (typeof value === "string" && value.trim() !== "") ? 1 : 0;
 }
 
+const EMPTY_SCORE = score(emptyForm());
+
+function isMeaningful(value: FormState): boolean {
+  return score(value) > EMPTY_SCORE;
+}
+
 function readStored(key: string): FormState | null {
   const raw = window.localStorage.getItem(key);
   if (!raw) return null;
   return merge(emptyForm(), JSON.parse(raw) as Partial<FormState>);
+}
+
+function readHistory(): Snapshot[] {
+  try {
+    const raw = window.localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (item): item is Snapshot =>
+          Boolean(item) &&
+          typeof item === "object" &&
+          typeof (item as Snapshot).savedAt === "string" &&
+          Boolean((item as Snapshot).form),
+      )
+      .map((item) => ({ ...item, form: merge(emptyForm(), item.form) }))
+      .filter((item) => isMeaningful(item.form));
+  } catch {
+    return [];
+  }
+}
+
+function archive(value: FormState, force = false): number {
+  if (!isMeaningful(value)) return readHistory().length;
+  try {
+    const history = readHistory();
+    const serialized = JSON.stringify(value);
+    const latest = history[0];
+    const sameAsLatest = latest && JSON.stringify(latest.form) === serialized;
+    const latestAge = latest ? Date.now() - Date.parse(latest.savedAt) : Number.POSITIVE_INFINITY;
+
+    if (sameAsLatest) return history.length;
+    if (!force && latest && latestAge < 30_000) {
+      history[0] = { savedAt: new Date().toISOString(), form: value };
+    } else {
+      history.unshift({ savedAt: new Date().toISOString(), form: value });
+    }
+    const trimmed = history.slice(0, MAX_HISTORY);
+    window.localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+    return trimmed.length;
+  } catch {
+    return 0;
+  }
 }
 
 export function FormProvider({ children }: { children: ReactNode }) {
@@ -58,6 +115,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [backupAt, setBackupAt] = useState<string | null>(null);
+  const [recoveryCount, setRecoveryCount] = useState(0);
 
   const persist = useCallback((next: FormState) => {
     try {
@@ -65,6 +123,12 @@ export function FormProvider({ children }: { children: ReactNode }) {
       // Garde une copie supplémentaire si une écriture contient soudainement moins de données.
       if (previous && score(previous) > score(next)) {
         window.localStorage.setItem(RECOVERY_KEY, JSON.stringify(previous));
+        archive(previous, true);
+      }
+      if (isMeaningful(next)) {
+        // Cette copie n'est jamais remplacée par un formulaire vide.
+        window.localStorage.setItem(LAST_GOOD_KEY, JSON.stringify(next));
+        setRecoveryCount(archive(next));
       }
       window.localStorage.setItem(KEY, JSON.stringify(next));
       setSavedAt(
@@ -78,11 +142,19 @@ export function FormProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const current = readStored(KEY);
+      const lastGood = readStored(LAST_GOOD_KEY);
       const recovery = readStored(RECOVERY_KEY);
       const backup = readStored(BACKUP_KEY);
-      const safest = [current, recovery, backup]
-        .filter((candidate): candidate is FormState => candidate !== null)
-        .sort((a, b) => score(b) - score(a))[0];
+      const history = readHistory();
+      setRecoveryCount(history.length);
+      // Toujours reprendre la saisie courante si elle contient des données.
+      // Si elle a été écrasée par un état vide, reprendre la dernière copie valide.
+      const safest =
+        (current && isMeaningful(current) ? current : null) ??
+        (lastGood && isMeaningful(lastGood) ? lastGood : null) ??
+        history[0]?.form ??
+        (recovery && isMeaningful(recovery) ? recovery : null) ??
+        (backup && isMeaningful(backup) ? backup : null);
       if (safest) {
         setForm(safest);
         window.localStorage.setItem(KEY, JSON.stringify(safest));
@@ -127,6 +199,10 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const snapshot = useCallback((current: FormState) => {
     try {
       window.localStorage.setItem(BACKUP_KEY, JSON.stringify(current));
+      if (isMeaningful(current)) {
+        window.localStorage.setItem(LAST_GOOD_KEY, JSON.stringify(current));
+        setRecoveryCount(archive(current, true));
+      }
       setBackupAt(new Date().toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }));
     } catch {
       /* stockage indisponible */
@@ -171,6 +247,20 @@ export function FormProvider({ children }: { children: ReactNode }) {
     }
   }, [persist]);
 
+  const restoreLatestRecovery = useCallback(() => {
+    try {
+      const history = readHistory();
+      const lastGood = readStored(LAST_GOOD_KEY);
+      const restored = history[0]?.form ?? lastGood;
+      if (!restored || !isMeaningful(restored)) return false;
+      setForm(restored);
+      persist(restored);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [persist]);
+
   return (
     <FormContext.Provider
       value={{
@@ -181,9 +271,11 @@ export function FormProvider({ children }: { children: ReactNode }) {
         savedAt,
         hydrated,
         backupAt,
+        recoveryCount,
         loadDemo,
         saveBackup,
         restoreBackup,
+        restoreLatestRecovery,
       }}
     >
       {children}

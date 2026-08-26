@@ -58,8 +58,19 @@ const couleurPole = (nom: string) =>
   COULEURS_RESERVE[Math.abs(nom.length * 7) % COULEURS_RESERVE.length];
 
 function Formulaire() {
-  const { form, update, replace, reset, savedAt, backupAt, loadDemo, saveBackup, restoreBackup } =
-    useForm();
+  const {
+    form,
+    update,
+    replace,
+    reset,
+    savedAt,
+    backupAt,
+    recoveryCount,
+    loadDemo,
+    saveBackup,
+    restoreBackup,
+    restoreLatestRecovery,
+  } = useForm();
   const navigate = useNavigate();
   const [apercuOuvert, setApercuOuvert] = useState(true);
   const [tousSecteurs, setTousSecteurs] = useState(false);
@@ -177,6 +188,18 @@ function Formulaire() {
             }}
           >
             Revenir à ma pharmacie
+          </Button>
+        )}
+        {recoveryCount > 0 && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              if (window.confirm("Restaurer la dernière saisie valide enregistrée automatiquement ?")) {
+                restoreLatestRecovery();
+              }
+            }}
+          >
+            Restaurer une saisie ({recoveryCount})
           </Button>
         )}
         <Button variant="secondary" onClick={exporter}>
