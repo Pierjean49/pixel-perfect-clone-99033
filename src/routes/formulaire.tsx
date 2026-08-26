@@ -480,7 +480,24 @@ function Formulaire() {
                       onChange={(v) => update((d) => void (d.poles[i].priorite = v))}
                     />
                   </Grid>
+                  <div className="mt-3">
+                    <Text
+                      label={`Sous-pôles de « ${p.nom} » (séparés par une virgule)`}
+                      placeholder="Ex. : Maquillage, Soins visage, Capillaire"
+                      value={(p.sous_poles ?? []).join(", ")}
+                      onChange={(v) =>
+                        update(
+                          (d) =>
+                            void (d.poles[i].sous_poles = v
+                              .split(",")
+                              .map((x) => x.trim())
+                              .filter(Boolean)),
+                        )
+                      }
+                    />
+                  </div>
                 </div>
+
               ))}
             </div>
           </Section>
