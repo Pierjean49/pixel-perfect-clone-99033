@@ -137,7 +137,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function Navigation() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-[var(--color-background)]/95 backdrop-blur">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-[var(--color-background)]/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
         <Link to="/" className="flex items-center gap-3">
           <span
