@@ -351,13 +351,6 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.autres_infos = v))}
               />
             </div>
-            <Encadre type="retenir">
-              <p>
-                Le nombre de vitrines saisi ici est la source unique : il est repris en lecture seule
-                au bloc 9. Le logo, lui, ne s'incorpore jamais dans un prompt — un prompt est du
-                texte. Tu le déposeras toi-même dans le chat Lovable à l'étape 7 du guide.
-              </p>
-            </Encadre>
           </Section>
 
           {/* BLOC 2 */}
