@@ -1593,6 +1593,41 @@ function Formulaire() {
   );
 }
 
+function AjoutLibre({
+  placeholder,
+  onAdd,
+}: {
+  placeholder: string;
+  onAdd: (v: string) => void;
+}) {
+  const [texte, setTexte] = useState("");
+  const ajouter = () => {
+    const v = texte.trim();
+    if (!v) return;
+    onAdd(v);
+    setTexte("");
+  };
+  return (
+    <div className="mt-3 flex gap-2">
+      <input
+        className="field flex-1"
+        placeholder={placeholder}
+        value={texte}
+        onChange={(e) => setTexte(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            ajouter();
+          }
+        }}
+      />
+      <Button type="button" variant="ghost" onClick={ajouter}>
+        + Ajouter
+      </Button>
+    </div>
+  );
+}
+
 function SousPolesInput({
   pole,
   value,
@@ -1602,21 +1637,43 @@ function SousPolesInput({
   value: string[];
   onChange: (v: string[]) => void;
 }) {
-  const [texte, setTexte] = useState(value.join(", "));
   return (
-    <Text
-      label={`Sous-pôles de « ${pole} » (séparés par une virgule)`}
-      placeholder="Ex. : Maquillage, Soins visage, Capillaire"
-      value={texte}
-      onChange={(v) => {
-        setTexte(v);
-        onChange(
-          v
-            .split(",")
-            .map((x) => x.trim())
-            .filter(Boolean),
-        );
-      }}
-    />
+    <div>
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">
+        Sous-pôles de « {pole} »
+      </span>
+      {value.length ? (
+        <div className="flex flex-wrap gap-2">
+          {value.map((s, k) => (
+            <span
+              key={s + k}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs"
+            >
+              {s}
+              <button
+                type="button"
+                aria-label={`Retirer ${s}`}
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => onChange(value.filter((_, j) => j !== k))}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          Aucun sous-pôle. Ex. : Maquillage, Soins visage, Capillaire.
+        </p>
+      )}
+      <AjoutLibre
+        placeholder="Ajouter un sous-pôle"
+        onAdd={(v) => {
+          if (value.some((x) => x.toLowerCase() === v.toLowerCase())) return;
+          onChange([...value, v]);
+        }}
+      />
+    </div>
   );
 }
+
