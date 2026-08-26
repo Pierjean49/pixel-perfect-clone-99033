@@ -440,9 +440,10 @@ function Formulaire() {
               pas être décoché.
             </p>
             {form.poles.length > 8 ? (
-              <p className="mt-2 rounded-lg bg-[var(--color-warning-soft,#FDF5E3)] px-3 py-2 text-xs text-muted-foreground">
-                Tu as sélectionné {form.poles.length} pôles principaux. Au-delà de 8, la page
-                d'accueil de l'agent devient illisible : regroupe plutôt certains univers en
+              <p className="mt-2 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-medium text-accent">
+                Tu as {form.poles.length} pôles principaux (les pôles au-delà du 8ᵉ sont signalés en
+                couleur ci-dessous). C'est possible, mais non recommandé : au-delà de 8, la page
+                d'accueil de l'agent devient illisible. Regroupe plutôt certains univers en
                 sous-pôles (ex. « Maquillage », « Soins », « Capillaire » sous « Cosmétique »).
               </p>
             ) : null}
