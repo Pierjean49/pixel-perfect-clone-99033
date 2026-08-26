@@ -391,8 +391,8 @@ function Formulaire() {
           <Section
             numero={2}
             titre="Pôles principaux et sous-pôles"
-            intro="Les pôles principaux sont les univers affichés en page d'accueil de l'agent (8 maximum). Chaque pôle principal peut contenir des sous-pôles."
-            rempli={form.poles.filter((p) => p.responsable && p.poids).length}
+            intro="Les pôles principaux sont les univers affichés en page d'accueil de l'agent. Tu peux en mettre plus de 8, mais ce n'est pas recommandé. Chaque pôle principal peut contenir des sous-pôles."
+            rempli={form.poles.filter((p) => p.nom.trim()).length}
             total={Math.max(form.poles.length, 1)}
           >
             <CheckGroup
