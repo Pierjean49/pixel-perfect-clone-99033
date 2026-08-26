@@ -86,6 +86,11 @@ function Formulaire() {
     return c ? `${c.prenom} ${c.nom}`.trim() : "";
   };
   const nomsPoles = form.poles.map((p) => p.nom);
+  const sousPolesDuPole = (pole: string) =>
+    (form.poles.find((p) => p.nom === pole)?.sous_poles ?? []).filter(Boolean);
+  const tousSousPoles = Array.from(
+    new Set(form.poles.flatMap((p) => (p.sous_poles ?? []).filter(Boolean))),
+  );
 
   const apercu = useMemo(() => apercuPromptMaitre(form), [form]);
 
