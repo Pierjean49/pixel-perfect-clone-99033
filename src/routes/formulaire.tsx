@@ -391,8 +391,8 @@ function Formulaire() {
           <Section
             numero={2}
             titre="Pôles principaux et sous-pôles"
-            intro="Les pôles principaux sont les univers affichés en page d'accueil de l'agent (8 maximum). Chaque pôle principal peut contenir des sous-pôles."
-            rempli={form.poles.filter((p) => p.responsable && p.poids).length}
+            intro="Les pôles principaux sont les univers affichés en page d'accueil de l'agent. Tu peux en mettre plus de 8, mais ce n'est pas recommandé. Chaque pôle principal peut contenir des sous-pôles."
+            rempli={form.poles.filter((p) => p.nom.trim()).length}
             total={Math.max(form.poles.length, 1)}
           >
             <CheckGroup
@@ -440,9 +440,10 @@ function Formulaire() {
               pas être décoché.
             </p>
             {form.poles.length > 8 ? (
-              <p className="mt-2 rounded-lg bg-[var(--color-warning-soft,#FDF5E3)] px-3 py-2 text-xs text-muted-foreground">
-                Tu as sélectionné {form.poles.length} pôles principaux. Au-delà de 8, la page
-                d'accueil de l'agent devient illisible : regroupe plutôt certains univers en
+              <p className="mt-2 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-medium text-accent">
+                Tu as {form.poles.length} pôles principaux (les pôles au-delà du 8ᵉ sont signalés en
+                couleur ci-dessous). C'est possible, mais non recommandé : au-delà de 8, la page
+                d'accueil de l'agent devient illisible. Regroupe plutôt certains univers en
                 sous-pôles (ex. « Maquillage », « Soins », « Capillaire » sous « Cosmétique »).
               </p>
             ) : null}
@@ -451,7 +452,10 @@ function Formulaire() {
 
             <div className="mt-4 space-y-3">
               {form.poles.map((p, i) => (
-                <div key={p.nom} className="rounded-lg border border-border p-3">
+                <div
+                  key={p.nom}
+                  className={`rounded-lg border p-3 ${i >= 8 ? "border-accent bg-accent/5" : "border-border"}`}
+                >
                   <div className="mb-3 flex items-center gap-2">
                     <span
                       className="h-4 w-4 rounded-full"
@@ -459,6 +463,11 @@ function Formulaire() {
                       aria-hidden
                     />
                     <strong className="text-sm">{p.nom}</strong>
+                    {i >= 8 ? (
+                      <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-accent">
+                        au-delà de 8 — non recommandé
+                      </span>
+                    ) : null}
                   </div>
                   <Grid>
                     <Text
