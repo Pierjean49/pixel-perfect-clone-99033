@@ -178,7 +178,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <FormProvider>
-        <div className="min-h-screen">
+        <div className="min-h-screen pt-[76px] lg:pt-[68px]">
           <Navigation />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
