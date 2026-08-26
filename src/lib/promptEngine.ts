@@ -162,6 +162,7 @@ export function buildVariables(f: FormState): Record<string, string> {
       .filter(Boolean)
       .join(", "),
     nb_vitrines: clean(id.nb_vitrines),
+    autres_infos: clean(id.autres_infos),
     couleur_primaire: "#0E7A5F",
     positionnement_prix: clean(f.positionnement.prix),
     services_proposes: joinList(f.positionnement.services),

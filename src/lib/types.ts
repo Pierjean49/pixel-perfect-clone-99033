@@ -90,6 +90,7 @@ export type FormState = {
     nb_ecrans_vente: string;
     nb_ecrans_vitrine: string;
     nb_vitrines: string;
+    autres_infos: string;
   };
   poles: Pole[];
   positionnement: {
@@ -175,6 +176,7 @@ export const emptyForm = (): FormState => ({
     nb_ecrans_vente: "",
     nb_ecrans_vitrine: "",
     nb_vitrines: "",
+    autres_infos: "",
   },
   poles: [
     {

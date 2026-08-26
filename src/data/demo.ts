@@ -77,6 +77,8 @@ export function demoForm(): FormState {
     nb_ecrans_vente: "3",
     nb_ecrans_vitrine: "1",
     nb_vitrines: "3",
+    autres_infos:
+      "Officine de centre-ville avec forte fréquentation le samedi ; projet de rénovation de l'espace dermo-cosmétique prévu au printemps.",
   };
 
   const polesDemo: [string, string, string, string, string][] = [
