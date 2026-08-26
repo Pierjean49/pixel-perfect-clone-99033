@@ -922,6 +922,7 @@ function Formulaire() {
                       role: "",
                       pole: "",
                       sous_poles: "",
+                      sous_poles_geres: [],
                       gammes_referentes: [],
                       responsabilite: "Aucune",
                       heures_trade: "",
