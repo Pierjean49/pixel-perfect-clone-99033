@@ -107,6 +107,9 @@ export function buildVariables(f: FormState): Record<string, string> {
         `- ${clean(c.prenom)} ${clean(c.nom)}`,
         clean(c.role),
         clean(c.pole) && `pôle ${c.pole}`,
+        (c.sous_poles_geres ?? []).filter(Boolean).length
+          ? `sous-pôles : ${(c.sous_poles_geres ?? []).filter(Boolean).join(", ")}`
+          : "",
         c.gammes_referentes.length ? `gammes référentes : ${c.gammes_referentes.join(", ")}` : "",
         clean(c.responsabilite) && c.responsabilite !== "Aucune" ? `responsabilité trade : ${c.responsabilite}` : "",
         clean(c.heures_trade) && `${c.heures_trade} h/semaine dédiées au trade`,
