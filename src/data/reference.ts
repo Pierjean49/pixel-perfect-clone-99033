@@ -59,9 +59,17 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
   ],
 
   "Bébé & maman": [
-    "Mustela", "Gilbert", "Klorane Bébé", "Biolane", "Bepanthen", "Weleda Bébé", "Babybio",
-    "Gallia", "Guigoz", "Novalac", "Picot", "Modilac", "Physiolac", "Nutriben", "Béaba",
-    "Dodie", "MAM", "Avent", "Medela", "Tigex",
+    // Soin bébé
+    "Mustela", "Biolane", "Gilbert", "Klorane Bébé", "Weleda Bébé", "Bepanthen", "Gifrer",
+    "Alphanova Bébé", "Cattier Bébé", "Pranarôm Bébé",
+    // Nutrition infantile
+    "Babybio", "Gallia", "Guigoz", "Novalac", "Picot", "Modilac", "Physiolac", "Nutriben",
+    "Hipp", "Premibio", "Good Goût", "Popote",
+    // Allaitement
+    "Medela", "Lansinoh", "Elvie", "Haakaa",
+    // Biberonnerie & puériculture
+    "Dodie", "MAM Baby", "Philips Avent", "Béaba", "Tigex", "Suavinex", "Nuk", "Luc et Léa",
+    "Tommee Tippee",
   ],
   "Hygiène & soins du corps": [
     "Saforelle", "Rogé Cavaillès", "Cattier", "Dermacide", "Sanex", "Aderma", "Cetaphil",
