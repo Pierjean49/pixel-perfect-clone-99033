@@ -1721,6 +1721,25 @@ function SousPolesInput({
           Aucun sous-pôle. Ex. : Maquillage, Soins visage, Capillaire.
         </p>
       )}
+      {suggestions.length ? (
+        <div className="mt-2">
+          <span className="mb-1 block text-[11px] text-muted-foreground">
+            Sous-pôles suggérés (clique pour ajouter) :
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {suggestions.map((s) => (
+              <button
+                key={s}
+                type="button"
+                className="rounded-full border border-dashed border-input px-3 py-1 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
+                onClick={() => onChange([...value, s])}
+              >
+                + {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
       <AjoutLibre
         placeholder="Ajouter un sous-pôle"
         onAdd={(v) => {
@@ -1728,6 +1747,7 @@ function SousPolesInput({
           onChange([...value, v]);
         }}
       />
+
     </div>
   );
 }
