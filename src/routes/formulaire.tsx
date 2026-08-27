@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Section, Grid } from "@/components/Section";
 import { Area, CheckGroup, Checkbox, Radio, Select, Text } from "@/components/fields";
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
@@ -183,7 +184,10 @@ function Formulaire() {
         <Button variant="secondary" onClick={() => loadDemo(demoForm())}>
           Charger un exemple
         </Button>
-        <Button variant="secondary" onClick={saveBackup}>
+        <Button variant="secondary" onClick={() => {
+            saveBackup();
+            toast.success("La saisie a bien été sauvegardée");
+          }}>
           Sauvegarder ma saisie
         </Button>
         {backupAt && (
