@@ -46,10 +46,18 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
     "Erborian", "René Furterer", "LSL", "Klorane",
   ],
   "Compléments alimentaires": [
-    "Pileje", "Nutergia", "Arkopharma", "Solgar", "Forté Pharma", "Granions", "Oligosol",
-    "Synergia", "Bion 3", "Dayang", "Copmed", "Le Stum", "Effinov", "Vitall+", "Boiron",
-    "Lero", "Densmore", "Laboratoires Yves Ponroy",
+    // Priorité 1 — cœur de marché
+    "Pileje", "Nutergia", "Arkopharma", "Solgar", "Forté Pharma", "Granions", "NHCO Nutrition",
+    "Aragan", "Santé Verte", "Superdiet", "Naturactive", "Nutréov", "Alvityl", "Pédiakid",
+    // Priorité 2 — significatif
+    "Aboca", "Biocodex", "Ineldea", "Les 3 Chênes", "Nat & Form", "Vitavea", "Santarome",
+    "Synergia", "Bion 3", "Juvamine", "Eafit", "Eric Favre", "Herbesan", "Fleurance Nature",
+    // Plus spécialisé
+    "Densmore", "Effinov", "Le Stum", "Dayang", "Vitall+", "Laboratoires Yves Ponroy",
+    "Ysonut", "Bionutrics", "Dynveo", "Fenioux", "SID Nutrition", "Nutri&Co", "Novoma",
+    "Hydratis", "Copmed", "Lero", "Minolvie", "Epycure", "Pharmascience",
   ],
+
   "Bébé & maman": [
     "Mustela", "Gilbert", "Klorane Bébé", "Biolane", "Bepanthen", "Weleda Bébé", "Babybio",
     "Gallia", "Guigoz", "Novalac", "Picot", "Modilac", "Physiolac", "Nutriben", "Béaba",
