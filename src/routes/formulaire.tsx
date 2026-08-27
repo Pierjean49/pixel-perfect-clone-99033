@@ -551,10 +551,6 @@ function Formulaire() {
             <div className="space-y-4">
               {secteursAffiches.map((secteur) => {
                 const selection = form.gammes.filter((g) => g.secteur === secteur);
-                const cumul = selection.reduce(
-                  (t, g) => t + Number(String(g.ca_annuel).replace(/\s/g, "").replace(",", ".") || 0),
-                  0,
-                );
                 return (
                   <div key={secteur} className="rounded-lg border border-border p-3">
                     <div className="mb-2 flex items-center gap-2">
