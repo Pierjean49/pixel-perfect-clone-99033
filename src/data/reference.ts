@@ -40,6 +40,10 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
     "Nuxe", "Caudalie", "Embryolisse", "Sanoflore", "Melvita", "Weleda", "Vichy",
     "Roger & Gallet", "Payot", "Esthederm", "Lierac", "Talika", "Eye Care",
     "Avène Couvrance", "Vichy Dermablend", "Bioderma Photoderm Nude",
+    "Filorga", "Garancia", "La Rosée", "Patyka", "Novexpert", "Darphin", "Florame",
+    "Cattier", "Jonzac", "Phyt's", "Respire", "Krème", "Clémence & Vivien",
+    "Laboratoires de Biarritz", "Endro", "Avril", "Centifolia", "La Canopée", "Oden",
+    "Erborian",
   ],
   "Compléments alimentaires": [
     "Pileje", "Nutergia", "Arkopharma", "Solgar", "Forté Pharma", "Granions", "Oligosol",
