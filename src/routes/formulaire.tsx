@@ -1692,6 +1692,9 @@ function SousPolesInput({
   value: string[];
   onChange: (v: string[]) => void;
 }) {
+  const suggestions = (SOUS_POLES_SUGGERES[pole] ?? []).filter(
+    (s) => !value.some((x) => x.toLowerCase() === s.toLowerCase()),
+  );
   return (
     <div>
       <span className="mb-1 block text-xs font-medium text-muted-foreground">
