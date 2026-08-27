@@ -48,10 +48,10 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
   "Compléments alimentaires": [
     // Priorité 1 — cœur de marché
     "Pileje", "Nutergia", "Arkopharma", "Solgar", "Forté Pharma", "Granions", "NHCO Nutrition",
-    "Aragan", "Santé Verte", "Superdiet", "Naturactive", "Nutréov", "Alvityl", "Pédiakid",
+    "Aragan", "Santé Verte", "Herbesan / Superdiet", "Naturactive", "Nutréov", "Alvityl", "Pédiakid",
     // Priorité 2 — significatif
     "Aboca", "Biocodex", "Ineldea", "Les 3 Chênes", "Nat & Form", "Vitavea", "Santarome",
-    "Synergia", "Bion 3", "Juvamine", "Eafit", "Eric Favre", "Herbesan", "Fleurance Nature",
+    "Synergia", "Bion 3", "Juvamine", "Eafit", "Eric Favre", "Santis", "Fleurance Nature",
     // Plus spécialisé
     "Densmore", "Effinov", "Le Stum", "Dayang", "Vitall+", "Laboratoires Yves Ponroy",
     "Ysonut", "Bionutrics", "Dynveo", "Fenioux", "SID Nutrition", "Nutri&Co", "Novoma",
