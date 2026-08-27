@@ -583,9 +583,9 @@ function Formulaire() {
                       }}
                     />
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {selection.length} marques sélectionnées · CA cumulé renseigné :{" "}
-                      {cumul.toLocaleString("fr-FR")} €
+                      {selection.length} marques sélectionnées
                     </p>
+
 
                   </div>
                 );
