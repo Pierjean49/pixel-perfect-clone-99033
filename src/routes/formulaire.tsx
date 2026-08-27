@@ -566,14 +566,27 @@ function Formulaire() {
                     </div>
                     <CheckGroup
                       columns={3}
-                      options={MARQUES_PAR_SECTEUR[secteur] ?? []}
+                      options={Array.from(
+                        new Set([
+                          ...(MARQUES_PAR_SECTEUR[secteur] ?? []),
+                          ...selection.map((g) => g.nom).filter(Boolean),
+                        ]),
+                      )}
                       values={selection.map((g) => g.nom)}
                       onToggle={(nom) => ajouterGamme(nom, secteur)}
+                    />
+                    <AjoutLibre
+                      placeholder={`Ajouter une marque dans « ${secteur} »`}
+                      onAdd={(nom) => {
+                        if (selection.some((g) => g.nom.toLowerCase() === nom.toLowerCase())) return;
+                        ajouterGamme(nom, secteur);
+                      }}
                     />
                     <p className="mt-2 text-xs text-muted-foreground">
                       {selection.length} marques sélectionnées · CA cumulé renseigné :{" "}
                       {cumul.toLocaleString("fr-FR")} €
                     </p>
+
                   </div>
                 );
               })}
