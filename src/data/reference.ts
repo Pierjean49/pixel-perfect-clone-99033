@@ -21,6 +21,19 @@ export const POLES: PoleRef[] = [
   { nom: "Sexualité & intimité", couleur: "#B0567E" },
 ];
 
+export const SOUS_POLES_SUGGERES: Record<string, string[]> = {
+  "Dermo-cosmétique": [
+    "Peaux sèches & atopiques",
+    "Peaux sensibles/réactives",
+    "Imperfections/acné",
+    "Anti-âge",
+    "Pigmentation/taches",
+    "Cicatrisation/réparation",
+    "Solaire",
+    "Rosacée/rougeurs",
+  ],
+};
+
 export const COULEURS_RESERVE = [
   "#7B9E89",
   "#9C6B4F",
