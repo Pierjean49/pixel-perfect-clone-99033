@@ -33,8 +33,8 @@ export const COULEURS_RESERVE = [
 export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
   "Dermo-cosmétique": [
     "Avène", "La Roche-Posay", "Bioderma", "Uriage", "Ducray", "A-Derma", "SVR", "Noreva",
-    "CeraVe", "Eucerin", "Lierac", "Filorga", "Aderma Exomega", "Dexeryl", "Topicrem",
-    "Cicabio", "Cicaplast",
+    "CeraVe", "Eucerin", "Lierac", "Dexeryl", "Topicrem",
+    "ACM", "Codexial", "Cetaphil", "ISDIN", "SkinCeuticals", "Roger Cavaillès", "Embryolisse", "Même",
   ],
   "Cosmétique & beauté": [
     "Nuxe", "Caudalie", "Embryolisse", "Sanoflore", "Melvita", "Weleda", "Vichy",
