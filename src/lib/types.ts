@@ -76,6 +76,7 @@ export type Gamme = {
   taux_marge: string;
   plan_trade: boolean;
   formation_labo: string;
+  formations_par_an?: string;
   commentaire: string;
   pilote: boolean;
   achat: AchatGamme;

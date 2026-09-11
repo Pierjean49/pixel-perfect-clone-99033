@@ -159,6 +159,7 @@ function Formulaire() {
         taux_marge: "",
         plan_trade: false,
         formation_labo: "",
+        formations_par_an: "",
         commentaire: "",
         pilote: false,
         achat: emptyAchat(),
