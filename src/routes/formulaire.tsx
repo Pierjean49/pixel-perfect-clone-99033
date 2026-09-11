@@ -654,9 +654,9 @@ function Formulaire() {
                           onChange={(v) => update((d) => void (d.gammes[i].lineaire_ml = v))}
                         />
                         <Text
-                          label="Nombre de facings"
-                          value={g.facings}
-                          onChange={(v) => update((d) => void (d.gammes[i].facings = v))}
+                          label="Nombre de descentes"
+                          value={g.descentes}
+                          onChange={(v) => update((d) => void (d.gammes[i].descentes = v))}
                         />
                         <Select
                           label="Emplacement"
@@ -683,22 +683,16 @@ function Formulaire() {
                           value={g.taux_marge}
                           onChange={(v) => update((d) => void (d.gammes[i].taux_marge = v))}
                         />
-                        <Text
-                          label="Références actives"
-                          value={g.nb_references}
-                          onChange={(v) => update((d) => void (d.gammes[i].nb_references = v))}
-                        />
                         <Select
                           label="Formation labo suivie"
                           options={["Oui", "Non", "Partielle"]}
                           value={g.formation_labo}
                           onChange={(v) => update((d) => void (d.gammes[i].formation_labo = v))}
                         />
-                        <Text
-                          label="Stock actuel (valorisé ou en unités)"
-                          value={g.stock}
-                          onChange={(v) => update((d) => void (d.gammes[i].stock = v))}
-                        />
+                      </Grid>
+                      <AchatGammeBloc index={i} achat={g.achat ?? emptyAchat()} update={update} />
+                      <Grid>
+
                       </Grid>
                       <div className="mt-3 space-y-2">
                         <Checkbox
