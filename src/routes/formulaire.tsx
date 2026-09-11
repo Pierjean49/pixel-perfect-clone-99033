@@ -152,18 +152,18 @@ function Formulaire() {
         statut: "",
         positionnement: "",
         lineaire_ml: "",
-        facings: "",
+        descentes: "",
         emplacement: "",
         referent: "",
         ca_annuel: "",
         taux_marge: "",
-        nb_references: "",
         plan_trade: false,
         formation_labo: "",
         commentaire: "",
         pilote: false,
-        stock: "",
+        achat: emptyAchat(),
       };
+
       d.gammes.push(g);
       const dermoPilier = d.gammes.filter((x) => x.pole === "Dermo-cosmétique");
       if (!d.gammes.some((x) => x.pilote) && dermoPilier.length) dermoPilier[0].pilote = true;
