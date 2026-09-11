@@ -24,7 +24,7 @@ export function buildVariables(f: FormState): Record<string, string> {
         clean(g.statut),
         clean(g.emplacement),
         clean(g.lineaire_ml) && `${g.lineaire_ml} ml`,
-        clean(g.facings) && `${g.facings} facings`,
+        clean(g.descentes) && `${g.descentes} descentes`,
         clean(g.referent) && `référent ${g.referent}`,
       ]),
     )

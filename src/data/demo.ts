@@ -1,4 +1,4 @@
-import { emptyForm, uid, type FormState, type Gamme, type Collaborateur } from "@/lib/types";
+import { emptyAchat, emptyForm, uid, type FormState, type Gamme, type Collaborateur } from "@/lib/types";
 import { POLES } from "@/data/reference";
 
 const g = (
@@ -16,17 +16,16 @@ const g = (
   statut,
   positionnement: "Milieu de gamme",
   lineaire_ml: "1,2",
-  facings: "6",
+  descentes: "2",
   emplacement: "Linéaire principal",
   referent: "",
   ca_annuel: "",
   taux_marge: "32",
-  nb_references: "24",
   plan_trade: false,
   formation_labo: "Partielle",
   commentaire: "",
   pilote: false,
-  stock: "",
+  achat: emptyAchat(),
   ...extra,
 });
 
@@ -144,12 +143,11 @@ export function demoForm(): FormState {
       pilote: true,
       plan_trade: true,
       lineaire_ml: "3,5",
-      facings: "18",
+      descentes: "4",
       emplacement: "Linéaire principal",
       referent: "Claire Nogaret",
       ca_annuel: "96 000",
       taux_marge: "34",
-      nb_references: "78",
     }),
     g("La Roche-Posay", "L'Oréal", "Dermo-cosmétique", "Gamme pilier", { plan_trade: true, lineaire_ml: "3", ca_annuel: "84 000" }),
     g("Bioderma", "NAOS", "Dermo-cosmétique", "Gamme pilier", { plan_trade: true, ca_annuel: "61 000" }),
