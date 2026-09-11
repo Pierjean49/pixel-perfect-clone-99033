@@ -87,6 +87,7 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
   "Hygiène & soins du corps": [
     "Saforelle", "Rogé Cavaillès", "Cattier", "Dermacide", "Sanex", "Aderma", "Cetaphil",
     "Neutrogena", "Le Petit Marseillais Pharma", "Puressentiel Hygiène",
+    "Hydralin", "Saugella",
   ],
   Capillaire: [
     "Klorane", "Phyto", "Ducray", "Vichy Dercos", "René Furterer", "Kérastase", "Nioxin",
