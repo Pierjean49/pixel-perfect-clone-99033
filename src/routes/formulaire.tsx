@@ -684,11 +684,19 @@ function Formulaire() {
                           onChange={(v) => update((d) => void (d.gammes[i].taux_marge = v))}
                         />
                         <Select
-                          label="Formation labo suivie"
-                          options={["Oui", "Non", "Partielle"]}
+                          label="Le labo propose des formations"
+                          options={["Oui", "Non"]}
                           value={g.formation_labo}
                           onChange={(v) => update((d) => void (d.gammes[i].formation_labo = v))}
                         />
+                        {g.formation_labo === "Oui" && (
+                          <Text
+                            label="Fréquence des formations (par an)"
+                            suffix="/an"
+                            value={g.formations_par_an ?? ""}
+                            onChange={(v) => update((d) => void (d.gammes[i].formations_par_an = v))}
+                          />
+                        )}
                       </Grid>
                       <AchatGammeBloc index={i} achat={g.achat ?? emptyAchat()} update={update} />
                       <div className="mt-3 space-y-2">
