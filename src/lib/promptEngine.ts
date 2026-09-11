@@ -140,7 +140,7 @@ export function buildVariables(f: FormState): Record<string, string> {
 
   const formationsLaboParGamme = f.gammes
     .filter((g) => clean(g.formation_labo) && g.formation_labo !== "Non")
-    .map((g) => `- ${g.nom} : formation labo ${g.formation_labo.toLowerCase()}`)
+    .map((g) => `- ${g.nom} : formations labo proposées${g.formations_par_an ? ` (${g.formations_par_an} par an)` : ""}`)
     .join("\n");
 
   return {
