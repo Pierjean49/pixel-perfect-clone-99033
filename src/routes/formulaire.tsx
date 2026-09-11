@@ -8,7 +8,7 @@ import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
 import { download } from "@/lib/documents";
-import { emptyForm, uid, type FormState, type Gamme } from "@/lib/types";
+import { emptyAchat, emptyForm, uid, type AchatGamme, type FormState, type Gamme } from "@/lib/types";
 import {
   AXES_DIFFERENCIATION,
   CONTREPARTIES,
