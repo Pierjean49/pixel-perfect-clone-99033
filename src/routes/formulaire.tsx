@@ -544,7 +544,7 @@ function Formulaire() {
           {/* BLOC 3 */}
           <Section
             numero={3}
-            titre="Cartographie des gammes par secteur"
+            titre="Cartographie des gammes par pôles"
             intro="Le bloc le plus important : coche les marques présentes, puis complète les fiches. Toute marque absente s'ajoute librement."
             rempli={form.gammes.filter((g) => g.statut && g.pole).length}
             total={Math.max(form.gammes.length, 1)}
