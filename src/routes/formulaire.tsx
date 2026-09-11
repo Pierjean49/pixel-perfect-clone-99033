@@ -691,9 +691,6 @@ function Formulaire() {
                         />
                       </Grid>
                       <AchatGammeBloc index={i} achat={g.achat ?? emptyAchat()} update={update} />
-                      <Grid>
-
-                      </Grid>
                       <div className="mt-3 space-y-2">
                         <Checkbox
                           checked={g.plan_trade}
