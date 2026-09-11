@@ -8,7 +8,7 @@ import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
 import { download } from "@/lib/documents";
-import { emptyForm, uid, type FormState, type Gamme } from "@/lib/types";
+import { emptyAchat, emptyForm, uid, type AchatGamme, type FormState, type Gamme } from "@/lib/types";
 import {
   AXES_DIFFERENCIATION,
   CONTREPARTIES,
@@ -152,18 +152,18 @@ function Formulaire() {
         statut: "",
         positionnement: "",
         lineaire_ml: "",
-        facings: "",
+        descentes: "",
         emplacement: "",
         referent: "",
         ca_annuel: "",
         taux_marge: "",
-        nb_references: "",
         plan_trade: false,
         formation_labo: "",
         commentaire: "",
         pilote: false,
-        stock: "",
+        achat: emptyAchat(),
       };
+
       d.gammes.push(g);
       const dermoPilier = d.gammes.filter((x) => x.pole === "Dermo-cosmétique");
       if (!d.gammes.some((x) => x.pilote) && dermoPilier.length) dermoPilier[0].pilote = true;
@@ -654,9 +654,9 @@ function Formulaire() {
                           onChange={(v) => update((d) => void (d.gammes[i].lineaire_ml = v))}
                         />
                         <Text
-                          label="Nombre de facings"
-                          value={g.facings}
-                          onChange={(v) => update((d) => void (d.gammes[i].facings = v))}
+                          label="Nombre de descentes"
+                          value={g.descentes}
+                          onChange={(v) => update((d) => void (d.gammes[i].descentes = v))}
                         />
                         <Select
                           label="Emplacement"
@@ -683,23 +683,14 @@ function Formulaire() {
                           value={g.taux_marge}
                           onChange={(v) => update((d) => void (d.gammes[i].taux_marge = v))}
                         />
-                        <Text
-                          label="Références actives"
-                          value={g.nb_references}
-                          onChange={(v) => update((d) => void (d.gammes[i].nb_references = v))}
-                        />
                         <Select
                           label="Formation labo suivie"
                           options={["Oui", "Non", "Partielle"]}
                           value={g.formation_labo}
                           onChange={(v) => update((d) => void (d.gammes[i].formation_labo = v))}
                         />
-                        <Text
-                          label="Stock actuel (valorisé ou en unités)"
-                          value={g.stock}
-                          onChange={(v) => update((d) => void (d.gammes[i].stock = v))}
-                        />
                       </Grid>
+                      <AchatGammeBloc index={i} achat={g.achat ?? emptyAchat()} update={update} />
                       <div className="mt-3 space-y-2">
                         <Checkbox
                           checked={g.plan_trade}
@@ -1756,3 +1747,140 @@ function SousPolesInput({
   );
 }
 
+
+function AchatGammeBloc({
+  index,
+  achat,
+  update,
+}: {
+  index: number;
+  achat: AchatGamme;
+  update: (fn: (draft: FormState) => void) => void;
+}) {
+  const set = (fn: (a: AchatGamme) => void) =>
+    update((d) => {
+      const g = d.gammes[index];
+      if (!g.achat) g.achat = emptyAchat();
+      fn(g.achat);
+    });
+
+  return (
+    <div className="mt-4 rounded-lg border border-border bg-[var(--color-primary-soft)]/30 p-3">
+      <p className="mb-3 text-sm font-semibold">Achat</p>
+      <Grid>
+        <Text
+          label="Prénom du représentant"
+          value={achat.representant_prenom}
+          onChange={(v) => set((a) => void (a.representant_prenom = v))}
+        />
+        <Text
+          label="Nom du représentant"
+          value={achat.representant_nom}
+          onChange={(v) => set((a) => void (a.representant_nom = v))}
+        />
+        <Text
+          label="Téléphone représentant"
+          value={achat.representant_tel}
+          onChange={(v) => set((a) => void (a.representant_tel = v))}
+        />
+        <Text
+          label="Mail représentant"
+          value={achat.representant_mail}
+          onChange={(v) => set((a) => void (a.representant_mail = v))}
+        />
+        <Text
+          label="Téléphone laboratoire"
+          value={achat.labo_tel}
+          onChange={(v) => set((a) => void (a.labo_tel = v))}
+        />
+        <Text
+          label="Mail laboratoire"
+          value={achat.labo_mail}
+          onChange={(v) => set((a) => void (a.labo_mail = v))}
+        />
+        <Text
+          label="Remise(s) accordée(s)"
+          value={achat.remises}
+          onChange={(v) => set((a) => void (a.remises = v))}
+        />
+        <Text
+          label="Franco de port"
+          suffix="€"
+          value={achat.franco}
+          onChange={(v) => set((a) => void (a.franco = v))}
+        />
+        <Text
+          label="Gestion des périmés"
+          value={achat.gestion_perimes}
+          onChange={(v) => set((a) => void (a.gestion_perimes = v))}
+        />
+        <Text
+          label="RFA (remise de fin d'année)"
+          value={achat.rfa}
+          onChange={(v) => set((a) => void (a.rfa = v))}
+        />
+        <Text
+          label="Délai de livraison"
+          value={achat.delai_livraison}
+          onChange={(v) => set((a) => void (a.delai_livraison = v))}
+        />
+        <Text
+          label="Fréquence de commande"
+          value={achat.frequence_commande}
+          onChange={(v) => set((a) => void (a.frequence_commande = v))}
+        />
+      </Grid>
+
+      <div className="mt-4">
+        <p className="mb-2 text-sm font-medium">Commandes passées</p>
+        <div className="space-y-2">
+          {(achat.commandes ?? []).map((cmd, j) => (
+            <div key={cmd.id} className="rounded-md border border-border p-2">
+              <Grid>
+                <Text
+                  label="Date de commande"
+                  type="date"
+                  value={cmd.date}
+                  onChange={(v) => set((a) => void (a.commandes[j].date = v))}
+                />
+                <Text
+                  label="Montant"
+                  suffix="€"
+                  value={cmd.montant}
+                  onChange={(v) => set((a) => void (a.commandes[j].montant = v))}
+                />
+                <Text
+                  label="Descriptif"
+                  value={cmd.descriptif}
+                  onChange={(v) => set((a) => void (a.commandes[j].descriptif = v))}
+                />
+              </Grid>
+              <div className="text-right">
+                <Button variant="ghost" onClick={() => set((a) => void a.commandes.splice(j, 1))}>
+                  Retirer cette commande
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            set((a) => void a.commandes.push({ id: uid(), date: "", montant: "", descriptif: "" }))
+          }
+        >
+          Ajouter une commande
+        </Button>
+      </div>
+
+      <div className="mt-3">
+        <Area
+          label="Commentaire achat"
+          rows={2}
+          value={achat.commentaire}
+          onChange={(v) => set((a) => void (a.commentaire = v))}
+        />
+      </div>
+    </div>
+  );
+}

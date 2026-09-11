@@ -24,6 +24,42 @@ export type Collaborateur = {
   date_entree: string;
 };
 
+export type Commande = { id: string; date: string; montant: string; descriptif: string };
+
+export type AchatGamme = {
+  representant_prenom: string;
+  representant_nom: string;
+  representant_tel: string;
+  representant_mail: string;
+  labo_tel: string;
+  labo_mail: string;
+  remises: string;
+  franco: string;
+  gestion_perimes: string;
+  rfa: string;
+  delai_livraison: string;
+  frequence_commande: string;
+  commentaire: string;
+  commandes: Commande[];
+};
+
+export const emptyAchat = (): AchatGamme => ({
+  representant_prenom: "",
+  representant_nom: "",
+  representant_tel: "",
+  representant_mail: "",
+  labo_tel: "",
+  labo_mail: "",
+  remises: "",
+  franco: "",
+  gestion_perimes: "",
+  rfa: "",
+  delai_livraison: "",
+  frequence_commande: "",
+  commentaire: "",
+  commandes: [],
+});
+
 export type Gamme = {
   id: string;
   nom: string;
@@ -33,18 +69,18 @@ export type Gamme = {
   statut: string;
   positionnement: string;
   lineaire_ml: string;
-  facings: string;
+  descentes: string;
   emplacement: string;
   referent: string;
   ca_annuel: string;
   taux_marge: string;
-  nb_references: string;
   plan_trade: boolean;
   formation_labo: string;
   commentaire: string;
   pilote: boolean;
-  stock: string;
+  achat: AchatGamme;
 };
+
 
 export type Palier = { seuil: string; avantage: string };
 
