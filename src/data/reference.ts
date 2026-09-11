@@ -147,8 +147,17 @@ export const MARQUES_PAR_SECTEUR: Record<string, string[]> = {
     "Arthrodont", "Eludril", "Hextril", "Alodont", "Corega", "Fixodent", "Steradent",
   ],
   "Premiers soins": [
-    "Hansaplast", "Urgo", "Mercurochrome", "Bétadine", "Biseptine", "Dakin", "Steripan",
-    "Compeed", "Nexcare", "Cicatridine", "Cicabio", "Cicalfate",
+    "Urgo (Urgo, Mercurochrome — Juva Santé)",
+    "Beiersdorf (Hansaplast)",
+    "Viatris (Bétadine)",
+    "Bayer (Biseptine)",
+    "Cooper (Dakin Cooper)",
+    "Havea (Steripan)",
+    "Perrigo (Compeed)",
+    "3M (Nexcare)",
+    "Farma-Derma (Cicatridine)",
+    "NAOS (Bioderma — gamme Cicabio)",
+    "Pierre Fabre (Avène — gamme Cicalfate)",
   ],
 };
 
