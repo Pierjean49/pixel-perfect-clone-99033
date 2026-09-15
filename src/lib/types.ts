@@ -27,16 +27,25 @@ export type Collaborateur = {
 export type Commande = { id: string; date: string; montant: string; descriptif: string };
 
 export type AchatGamme = {
+  code_client: string;
   representant_prenom: string;
   representant_nom: string;
   representant_tel: string;
   representant_mail: string;
+  dr_prenom: string;
+  dr_nom: string;
+  dr_tel: string;
+  dr_mail: string;
   labo_tel: string;
   labo_mail: string;
   remises: string;
   franco: string;
   gestion_perimes: string;
+  perimes_modalites: string[];
+  perimes_abattement_pct: string;
+  perimes_montant_attente: string;
   rfa: string;
+  rfa_versee_par: string;
   delai_livraison: string;
   frequence_commande: string;
   commentaire: string;
@@ -44,16 +53,25 @@ export type AchatGamme = {
 };
 
 export const emptyAchat = (): AchatGamme => ({
+  code_client: "",
   representant_prenom: "",
   representant_nom: "",
   representant_tel: "",
   representant_mail: "",
+  dr_prenom: "",
+  dr_nom: "",
+  dr_tel: "",
+  dr_mail: "",
   labo_tel: "",
   labo_mail: "",
   remises: "",
   franco: "",
   gestion_perimes: "",
+  perimes_modalites: [],
+  perimes_abattement_pct: "",
+  perimes_montant_attente: "",
   rfa: "",
+  rfa_versee_par: "",
   delai_livraison: "",
   frequence_commande: "",
   commentaire: "",
