@@ -1778,6 +1778,12 @@ function AchatGammeBloc({
       <p className="mb-3 text-sm font-semibold">Achat</p>
       <Grid>
         <Text
+          label="Code client"
+          value={achat.code_client ?? ""}
+          onChange={(v) => set((a) => void (a.code_client = v))}
+        />
+        <div />
+        <Text
           label="Prénom du représentant"
           value={achat.representant_prenom}
           onChange={(v) => set((a) => void (a.representant_prenom = v))}
@@ -1796,6 +1802,26 @@ function AchatGammeBloc({
           label="Mail représentant"
           value={achat.representant_mail}
           onChange={(v) => set((a) => void (a.representant_mail = v))}
+        />
+        <Text
+          label="Prénom du directeur régional"
+          value={achat.dr_prenom ?? ""}
+          onChange={(v) => set((a) => void (a.dr_prenom = v))}
+        />
+        <Text
+          label="Nom du directeur régional"
+          value={achat.dr_nom ?? ""}
+          onChange={(v) => set((a) => void (a.dr_nom = v))}
+        />
+        <Text
+          label="Téléphone directeur régional"
+          value={achat.dr_tel ?? ""}
+          onChange={(v) => set((a) => void (a.dr_tel = v))}
+        />
+        <Text
+          label="Mail directeur régional"
+          value={achat.dr_mail ?? ""}
+          onChange={(v) => set((a) => void (a.dr_mail = v))}
         />
         <Text
           label="Téléphone laboratoire"
@@ -1819,26 +1845,76 @@ function AchatGammeBloc({
           onChange={(v) => set((a) => void (a.franco = v))}
         />
         <Text
-          label="Gestion des périmés"
-          value={achat.gestion_perimes}
-          onChange={(v) => set((a) => void (a.gestion_perimes = v))}
-        />
-        <Text
           label="RFA (remise de fin d'année)"
           value={achat.rfa}
           onChange={(v) => set((a) => void (a.rfa = v))}
+        />
+        <Select
+          label="RFA payée par"
+          value={achat.rfa_versee_par ?? ""}
+          onChange={(v) => set((a) => void (a.rfa_versee_par = v))}
+          options={["Groupement", "En direct"]}
         />
         <Text
           label="Délai de livraison"
           value={achat.delai_livraison}
           onChange={(v) => set((a) => void (a.delai_livraison = v))}
         />
-        <Text
+        <Select
           label="Fréquence de commande"
           value={achat.frequence_commande}
           onChange={(v) => set((a) => void (a.frequence_commande = v))}
+          options={[
+            "Hebdomadaire",
+            "Bimensuelle",
+            "Mensuelle",
+            "Trimestrielle",
+            "Semestrielle",
+            "Annuelle",
+            "À la demande",
+          ]}
+          allowFree
         />
       </Grid>
+
+      <div className="mt-4">
+        <p className="mb-2 text-sm font-medium">Gestion des périmés</p>
+        <CheckGroup
+          options={[
+            "Avoir",
+            "Abattement",
+            "Avoir en UG",
+            "Avoir sur application",
+            "Pas de reprise",
+          ]}
+          values={achat.perimes_modalites ?? []}
+          onToggle={(v) =>
+            set((a) => {
+              const cur = a.perimes_modalites ?? [];
+              a.perimes_modalites = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
+            })
+          }
+          columns={3}
+        />
+        <div className="mt-3">
+          <Grid>
+            {(achat.perimes_modalites ?? []).includes("Abattement") ? (
+              <Text
+                label="Abattement appliqué"
+                suffix="%"
+                value={achat.perimes_abattement_pct ?? ""}
+                onChange={(v) => set((a) => void (a.perimes_abattement_pct = v))}
+              />
+            ) : null}
+            <Text
+              label="Montant en attente de paiement (périmés)"
+              suffix="€"
+              value={achat.perimes_montant_attente ?? ""}
+              onChange={(v) => set((a) => void (a.perimes_montant_attente = v))}
+            />
+          </Grid>
+        </div>
+      </div>
 
       <div className="mt-4">
         <p className="mb-2 text-sm font-medium">Commandes passées</p>
