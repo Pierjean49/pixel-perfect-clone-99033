@@ -41,6 +41,8 @@ export type AchatGamme = {
   labo_tel: string;
   labo_mail: string;
   remises: string;
+  remise_base: string;
+  remises_marches: RemiseMarche[];
   franco: string;
   gestion_perimes: string;
   perimes_modalites: string[];
