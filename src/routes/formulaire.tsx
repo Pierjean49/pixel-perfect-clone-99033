@@ -1834,9 +1834,10 @@ function AchatGammeBloc({
           onChange={(v) => set((a) => void (a.labo_mail = v))}
         />
         <Text
-          label="Remise(s) accordée(s)"
-          value={achat.remises}
-          onChange={(v) => set((a) => void (a.remises = v))}
+          label="Remise de base (toute la marque)"
+          suffix="%"
+          value={achat.remise_base ?? ""}
+          onChange={(v) => set((a) => void (a.remise_base = v))}
         />
         <Text
           label="Franco de port"
