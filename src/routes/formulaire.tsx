@@ -1879,6 +1879,57 @@ function AchatGammeBloc({
       </Grid>
 
       <div className="mt-4">
+        <p className="mb-1 text-sm font-medium">Remises additionnelles par marché / gamme</p>
+        <p className="mb-2 text-xs text-muted-foreground">
+          Exemple : remise de base 25 % sur la marque, puis « Solaire » à 35 % si le marché est
+          ouvert.
+        </p>
+        <div className="space-y-2">
+          {(achat.remises_marches ?? []).map((r, j) => (
+            <div key={r.id} className="rounded-md border border-border p-2">
+              <Grid>
+                <Text
+                  label="Marché / gamme concernée"
+                  value={r.marche}
+                  onChange={(v) => set((a) => void (a.remises_marches[j].marche = v))}
+                />
+                <Text
+                  label="Remise"
+                  suffix="%"
+                  value={r.taux}
+                  onChange={(v) => set((a) => void (a.remises_marches[j].taux = v))}
+                />
+                <Text
+                  label="Condition (engagement, période…)"
+                  value={r.condition}
+                  onChange={(v) => set((a) => void (a.remises_marches[j].condition = v))}
+                />
+              </Grid>
+              <div className="text-right">
+                <Button
+                  variant="ghost"
+                  onClick={() => set((a) => void a.remises_marches.splice(j, 1))}
+                >
+                  Retirer cette remise
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            set((a) => {
+              if (!a.remises_marches) a.remises_marches = [];
+              a.remises_marches.push({ id: uid(), marche: "", taux: "", condition: "" });
+            })
+          }
+        >
+          Ajouter une remise par marché
+        </Button>
+      </div>
+
+      <div className="mt-4">
         <p className="mb-2 text-sm font-medium">Gestion des périmés</p>
         <CheckGroup
           options={[
