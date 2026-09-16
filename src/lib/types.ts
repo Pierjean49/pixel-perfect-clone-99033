@@ -26,6 +26,8 @@ export type Collaborateur = {
 
 export type Commande = { id: string; date: string; montant: string; descriptif: string };
 
+export type RemiseMarche = { id: string; marche: string; taux: string; condition: string };
+
 export type AchatGamme = {
   code_client: string;
   representant_prenom: string;
@@ -39,6 +41,8 @@ export type AchatGamme = {
   labo_tel: string;
   labo_mail: string;
   remises: string;
+  remise_base: string;
+  remises_marches: RemiseMarche[];
   franco: string;
   gestion_perimes: string;
   perimes_modalites: string[];
@@ -65,6 +69,8 @@ export const emptyAchat = (): AchatGamme => ({
   labo_tel: "",
   labo_mail: "",
   remises: "",
+  remise_base: "",
+  remises_marches: [],
   franco: "",
   gestion_perimes: "",
   perimes_modalites: [],
