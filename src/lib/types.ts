@@ -69,6 +69,8 @@ export const emptyAchat = (): AchatGamme => ({
   labo_tel: "",
   labo_mail: "",
   remises: "",
+  remise_base: "",
+  remises_marches: [],
   franco: "",
   gestion_perimes: "",
   perimes_modalites: [],
