@@ -26,6 +26,8 @@ export type Collaborateur = {
 
 export type Commande = { id: string; date: string; montant: string; descriptif: string };
 
+export type RemiseMarche = { id: string; marche: string; taux: string; condition: string };
+
 export type AchatGamme = {
   code_client: string;
   representant_prenom: string;
