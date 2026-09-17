@@ -788,12 +788,25 @@ function Formulaire() {
                 value={form.positionnement.prix}
                 onChange={(v) => update((d) => void (d.positionnement.prix = v))}
               />
-              <Area
+              <CheckGroup
                 label="Typologie de clientèle"
-                rows={3}
-                placeholder="Centre-ville, quartier, rural, centre commercial, médicalisée, passage, touristique…"
-                value={form.positionnement.typologie_clientele}
-                onChange={(v) => update((d) => void (d.positionnement.typologie_clientele = v))}
+                columns={2}
+                options={TYPOLOGIES_CLIENTELE}
+                values={form.positionnement.typologie_clientele
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)}
+                onToggle={(v) =>
+                  update((d) => {
+                    const list = d.positionnement.typologie_clientele
+                      .split(",")
+                      .map((s) => s.trim())
+                      .filter(Boolean);
+                    const i = list.indexOf(v);
+                    i >= 0 ? list.splice(i, 1) : list.push(v);
+                    d.positionnement.typologie_clientele = list.join(", ");
+                  })
+                }
               />
               <Area
                 label="Ce que ton officine fait mieux que les autres"
