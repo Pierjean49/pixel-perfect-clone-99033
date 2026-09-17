@@ -209,7 +209,7 @@ export const EMPLACEMENTS = [
 
 export const TYPES_ACCORD = [
   "Contrat annuel", "Accord trimestriel", "Opération ponctuelle", "Accord groupement",
-  "Accord grossiste", "Référencement centrale",
+  "Contrat groupement pharmacie", "Accord grossiste", "Référencement centrale", "Aucun",
 ];
 
 export const CONTREPARTIES = [
