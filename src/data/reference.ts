@@ -196,6 +196,13 @@ export const SERVICES_PROPOSES = [
   "livraison à domicile", "borne de commande", "carte de fidélité", "bilans de micronutrition",
 ];
 
+export const TYPOLOGIES_CLIENTELE = [
+  "centre-ville", "quartier résidentiel", "rural", "centre commercial",
+  "galerie marchande", "zone de passage / gare", "touristique / saisonnière",
+  "médicalisée (proche maison de santé)", "proche hôpital / clinique",
+  "clientèle familiale", "clientèle senior", "clientèle active / jeune",
+];
+
 export const STATUTS_GAMME = [
   "Gamme pilier", "Gamme de complément", "Gamme en test", "Gamme à arbitrer", "Gamme sortante",
 ];
