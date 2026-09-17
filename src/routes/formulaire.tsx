@@ -1856,11 +1856,6 @@ function AchatGammeBloc({
           onChange={(v) => set((a) => void (a.rfa_versee_par = v))}
           options={["Groupement", "En direct"]}
         />
-        <Text
-          label="Délai de livraison"
-          value={achat.delai_livraison}
-          onChange={(v) => set((a) => void (a.delai_livraison = v))}
-        />
         <Select
           label="Fréquence de commande"
           value={achat.frequence_commande}
