@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Section, Grid } from "@/components/Section";
-import { Area, CheckGroup, Checkbox, Radio, Select, Text } from "@/components/fields";
+import { Area, CheckGroup, Checkbox, Label, Radio, Select, Text } from "@/components/fields";
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
 import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
