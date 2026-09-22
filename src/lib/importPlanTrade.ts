@@ -1,4 +1,4 @@
-import { uid, type PlanTrade } from "./types";
+import { uid, type ImportPlan, type PlanTrade } from "./types";
 
 export const PORTEES_IMPORT = [
   "Plan trade annuel d'un laboratoire",
@@ -7,16 +7,7 @@ export const PORTEES_IMPORT = [
   "Autre document",
 ] as const;
 
-export type ImportPlan = {
-  id: string;
-  nom_fichier: string;
-  format: string;
-  portee: string;
-  importe_le: string;
-  texte: string;
-  lignes: string[][];
-  commentaire: string;
-};
+export type { ImportPlan };
 
 const MAX_TEXTE = 60000;
 const MAX_LIGNES = 400;
