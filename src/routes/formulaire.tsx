@@ -966,6 +966,8 @@ function Formulaire() {
                       />
                     </div>
                   ) : null}
+                  </>
+                  )}
                   <div className="mt-3 text-right">
                     <Button
                       variant="ghost"
@@ -975,7 +977,8 @@ function Formulaire() {
                     </Button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
               <Button
                 onClick={() =>
                   update((d) =>
