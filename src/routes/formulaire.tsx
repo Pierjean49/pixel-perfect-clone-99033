@@ -1029,6 +1029,8 @@ function Formulaire() {
               </p>
             </Encadre>
 
+            <ImportsPlanTrade />
+
             <div className="space-y-3">
               {form.plans.map((p, i) => (
                 <div key={p.id} className="rounded-lg border border-border p-3">
