@@ -256,6 +256,7 @@ export const emptyForm = (): FormState => ({
   equipe: [],
   gammes: [],
   plans: [],
+  imports_plans: [],
   objectifs: {
     objectif_ca_annuel: "",
     objectif_marge_global: "",
