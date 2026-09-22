@@ -101,6 +101,31 @@ export function buildVariables(f: FormState): Record<string, string> {
     })
     .join("\n");
 
+  const documentsImportes = (f.imports_plans ?? [])
+    .map((doc) =>
+      [
+        `- ${doc.nom_fichier} (${doc.format}${doc.portee ? ` — ${doc.portee}` : ""})`,
+        clean(doc.commentaire) && `  ${doc.commentaire}`,
+        doc.texte.trim() &&
+          `  Contenu :\n${doc.texte
+            .trim()
+            .slice(0, 8000)
+            .split("\n")
+            .map((l) => `  ${l}`)
+            .join("\n")}`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    )
+    .join("\n");
+
+  const blocPlansTrade = [
+    listePlansTrade,
+    documentsImportes && `Documents de plan trade importés :\n${documentsImportes}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
   const listeEquipe = f.equipe
     .map((c) =>
       joinList([
