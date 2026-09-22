@@ -130,6 +130,17 @@ export type PlanTrade = {
   commentaire: string;
 };
 
+export type ImportPlan = {
+  id: string;
+  nom_fichier: string;
+  format: string;
+  portee: string;
+  importe_le: string;
+  texte: string;
+  lignes: string[][];
+  commentaire: string;
+};
+
 export type FormState = {
   identite: {
     nom_pharmacie: string;
