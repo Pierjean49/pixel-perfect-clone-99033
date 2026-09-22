@@ -896,26 +896,40 @@ function Formulaire() {
                       sous-pôles » pour pouvoir les attribuer ici.
                     </p>
                   )}
-                  {nomsGammes.length ? (
-                    <div className="mt-3">
-                      <CheckGroup
-                        label="Responsables Marques"
-                        columns={3}
-                        options={nomsGammes}
-                        values={c.sous_poles ? c.sous_poles.split(",").map((x) => x.trim()).filter(Boolean) : []}
-                        onToggle={(v) =>
-                          update((d) => {
-                            const arr = d.equipe[i].sous_poles
-                              ? d.equipe[i].sous_poles.split(",").map((x) => x.trim()).filter(Boolean)
-                              : [];
-                            const k = arr.indexOf(v);
-                            k >= 0 ? arr.splice(k, 1) : arr.push(v);
-                            d.equipe[i].sous_poles = arr.join(", ");
-                          })
-                        }
-                      />
-                    </div>
-                  ) : null}
+                  {(() => {
+                    const sel = c.sous_poles
+                      ? c.sous_poles.split(",").map((x) => x.trim()).filter(Boolean)
+                      : [];
+                    const opts = [...nomsGammes, ...sel.filter((v) => !nomsGammes.includes(v))];
+                    const setSel = (arr: string[]) =>
+                      update((d) => {
+                        d.equipe[i].sous_poles = arr.join(", ");
+                      });
+                    return (
+                      <div className="mt-3">
+                        {opts.length ? (
+                          <CheckGroup
+                            label="Responsables Marques"
+                            columns={3}
+                            options={opts}
+                            values={sel}
+                            onToggle={(v) =>
+                              setSel(sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v])
+                            }
+                          />
+                        ) : (
+                          <Label>Responsables Marques</Label>
+                        )}
+                        <AjoutLibre
+                          placeholder="Ajouter une marque (saisie libre)"
+                          onAdd={(v) => {
+                            if (!sel.includes(v)) setSel([...sel, v]);
+                          }}
+                        />
+                      </div>
+                    );
+                  })()}
+
                   {nomsGammes.length ? (
                     <div className="mt-3">
                       <CheckGroup
