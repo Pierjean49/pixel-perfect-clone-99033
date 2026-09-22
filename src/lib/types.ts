@@ -166,6 +166,7 @@ export type FormState = {
   equipe: Collaborateur[];
   gammes: Gamme[];
   plans: PlanTrade[];
+  imports_plans: ImportPlan[];
   objectifs: {
     objectif_ca_annuel: string;
     objectif_marge_global: string;
