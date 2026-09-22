@@ -130,6 +130,17 @@ export type PlanTrade = {
   commentaire: string;
 };
 
+export type ImportPlan = {
+  id: string;
+  nom_fichier: string;
+  format: string;
+  portee: string;
+  importe_le: string;
+  texte: string;
+  lignes: string[][];
+  commentaire: string;
+};
+
 export type FormState = {
   identite: {
     nom_pharmacie: string;
@@ -166,6 +177,7 @@ export type FormState = {
   equipe: Collaborateur[];
   gammes: Gamme[];
   plans: PlanTrade[];
+  imports_plans: ImportPlan[];
   objectifs: {
     objectif_ca_annuel: string;
     objectif_marge_global: string;
@@ -255,6 +267,7 @@ export const emptyForm = (): FormState => ({
   equipe: [],
   gammes: [],
   plans: [],
+  imports_plans: [],
   objectifs: {
     objectif_ca_annuel: "",
     objectif_marge_global: "",
