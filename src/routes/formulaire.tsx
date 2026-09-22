@@ -869,7 +869,7 @@ function Formulaire() {
                     <Select
                       label="Pôle principal"
                       options={Array.from(
-                        new Set([...nomsPoles, "Espace parapharmacie (transversal)", "Administratif"]),
+                        new Set([...nomsPoles, "Espace parapharmacie (transversal)", "Comptoir", "Administratif"]),
                       )}
                       allowFree
                       value={c.pole}
