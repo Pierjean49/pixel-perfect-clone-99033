@@ -851,7 +851,9 @@ function Formulaire() {
                     />
                     <Select
                       label="Pôle principal"
-                      options={Array.from(new Set([...nomsPoles, "Administratif"]))}
+                      options={Array.from(
+                        new Set([...nomsPoles, "Espace parapharmacie (transversal)", "Administratif"]),
+                      )}
                       allowFree
                       value={c.pole}
                       onChange={(v) => update((d) => void (d.equipe[i].pole = v))}
