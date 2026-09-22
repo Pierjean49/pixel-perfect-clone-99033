@@ -214,7 +214,7 @@ export function buildVariables(f: FormState): Record<string, string> {
     liste_gammes_dermo: listeGammesDermo,
     liste_poles_avec_parametres: listePolesAvecParametres,
     liste_gammes_par_pole: listeGammesParPole,
-    liste_plans_trade: listePlansTrade,
+    liste_plans_trade: blocPlansTrade,
     liste_equipe: listeEquipe,
     dispositif_prime: clean(f.primes.dispositif),
     assiette_prime: clean(f.primes.assiette),
