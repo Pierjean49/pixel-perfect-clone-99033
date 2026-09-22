@@ -77,6 +77,7 @@ function Formulaire() {
   const navigate = useNavigate();
   const [apercuOuvert, setApercuOuvert] = useState(true);
   const [tousSecteurs, setTousSecteurs] = useState(false);
+  const [equipeFermee, setEquipeFermee] = useState<Record<string, boolean>>({});
 
   const nomsCollaborateurs = form.equipe
     .map((c) => `${c.prenom} ${c.nom}`.trim())
