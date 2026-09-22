@@ -828,7 +828,9 @@ function Formulaire() {
             total={Math.max(form.equipe.length, 1)}
           >
             <div className="space-y-3">
-              {form.equipe.map((c, i) => (
+              {form.equipe.map((c, i) => {
+                const ferme = equipeFermee[c.id] ?? false;
+                return (
                 <div key={c.id} className="rounded-lg border border-border p-3">
                   <Grid>
                     <Text
@@ -843,6 +845,20 @@ function Formulaire() {
                       value={c.nom}
                       onChange={(v) => update((d) => void (d.equipe[i].nom = v))}
                     />
+                  </Grid>
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        setEquipeFermee((s) => ({ ...s, [c.id]: !ferme }))
+                      }
+                    >
+                      {ferme ? "▾ Ouvrir la fiche" : "▴ Fermer la fiche"}
+                    </Button>
+                  </div>
+                  {ferme ? null : (
+                  <>
+                  <Grid>
                     <Select
                       label="Rôle"
                       required
