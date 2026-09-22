@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Section, Grid } from "@/components/Section";
 import { Area, CheckGroup, Checkbox, Label, Radio, Select, Text } from "@/components/fields";
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
+import { ImportsPlanTrade } from "@/components/ImportsPlanTrade";
 import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
