@@ -851,7 +851,7 @@ function Formulaire() {
                     />
                     <Select
                       label="Pôle principal"
-                      options={nomsPoles}
+                      options={Array.from(new Set([...nomsPoles, "Administratif"]))}
                       allowFree
                       value={c.pole}
                       onChange={(v) => update((d) => void (d.equipe[i].pole = v))}
@@ -867,12 +867,6 @@ function Formulaire() {
                       suffix="h"
                       value={c.heures_trade}
                       onChange={(v) => update((d) => void (d.equipe[i].heures_trade = v))}
-                    />
-                    <Text
-                      label="Date d'entrée dans l'officine"
-                      placeholder="JJ/MM/AAAA"
-                      value={c.date_entree}
-                      onChange={(v) => update((d) => void (d.equipe[i].date_entree = v))}
                     />
                   </Grid>
                   {(c.pole ? sousPolesDuPole(c.pole) : tousSousPoles).length ? (
