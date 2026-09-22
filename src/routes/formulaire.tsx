@@ -77,6 +77,7 @@ function Formulaire() {
   const navigate = useNavigate();
   const [apercuOuvert, setApercuOuvert] = useState(true);
   const [tousSecteurs, setTousSecteurs] = useState(false);
+  const [equipeFermee, setEquipeFermee] = useState<Record<string, boolean>>({});
 
   const nomsCollaborateurs = form.equipe
     .map((c) => `${c.prenom} ${c.nom}`.trim())
@@ -827,7 +828,9 @@ function Formulaire() {
             total={Math.max(form.equipe.length, 1)}
           >
             <div className="space-y-3">
-              {form.equipe.map((c, i) => (
+              {form.equipe.map((c, i) => {
+                const ferme = equipeFermee[c.id] ?? false;
+                return (
                 <div key={c.id} className="rounded-lg border border-border p-3">
                   <Grid>
                     <Text
@@ -842,6 +845,20 @@ function Formulaire() {
                       value={c.nom}
                       onChange={(v) => update((d) => void (d.equipe[i].nom = v))}
                     />
+                  </Grid>
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        setEquipeFermee((s) => ({ ...s, [c.id]: !ferme }))
+                      }
+                    >
+                      {ferme ? "▾ Ouvrir la fiche" : "▴ Fermer la fiche"}
+                    </Button>
+                  </div>
+                  {ferme ? null : (
+                  <>
+                  <Grid>
                     <Select
                       label="Rôle"
                       required
@@ -949,6 +966,8 @@ function Formulaire() {
                       />
                     </div>
                   ) : null}
+                  </>
+                  )}
                   <div className="mt-3 text-right">
                     <Button
                       variant="ghost"
@@ -958,7 +977,8 @@ function Formulaire() {
                     </Button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
               <Button
                 onClick={() =>
                   update((d) =>
