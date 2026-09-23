@@ -1,84 +1,92 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui-kit";
 import { useForm } from "@/lib/store";
-import { lireFichier, plansDepuisLignes, PORTEES_IMPORT } from "@/lib/importPlanTrade";
+import { lireFichier } from "@/lib/importPlanTrade";
 import type { ImportPlan } from "@/lib/types";
-import { useServerFn } from "@tanstack/react-start";
 import { extraireDocument } from "@/lib/extraction.functions";
-import { plansDepuisExtraction, texteDocuments } from "@/lib/remplissage";
+import { completerPlan, texteDocuments } from "@/lib/remplissage";
+import { memeLabo, nouveauPlan } from "@/components/BlocTrade";
 
 const FORMATS = ".csv,.tsv,.txt,.md,.xlsx,.xls,.xlsm,.pdf,.docx,.doc";
 
-export function ImportsPlanTrade() {
+const correspond = (extrait: string, labo: string) => {
+  const a = extrait.trim().toLowerCase();
+  const b = labo.trim().toLowerCase();
+  return !!a && (a === b || a.includes(b) || b.includes(a));
+};
+
+/** Document regroupant plusieurs laboratoires : ne remplit que les laboratoires cochés. */
+export function ImportsPlanTrade({ labos }: { labos: string[] }) {
   const { form, update } = useForm();
   const input = useRef<HTMLInputElement>(null);
-  const [chargement, setChargement] = useState(false);
+  const [lecture, setLecture] = useState(false);
+  const [analyse, setAnalyse] = useState(false);
+  const [choix, setChoix] = useState<string[]>([]);
+  const extraire = useServerFn(extraireDocument);
   const docs: ImportPlan[] = form.imports_plans ?? [];
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
-    setChargement(true);
+    setLecture(true);
     const lus: ImportPlan[] = [];
-    for (const file of Array.from(files)) {
+    for (const f of Array.from(files)) {
       try {
-        lus.push(await lireFichier(file));
+        lus.push(await lireFichier(f));
       } catch {
-        toast.error(`Impossible de lire ${file.name}`);
+        toast.error(`Impossible de lire ${f.name}`);
       }
     }
-    if (lus.length) {
-      update((d) => void ((d.imports_plans ??= []).push(...lus)));
-      toast.success(
-        lus.length === 1 ? "Fichier importé." : `${lus.length} fichiers importés.`,
-      );
-    }
-    setChargement(false);
+    if (lus.length) update((d) => void (d.imports_plans ??= []).push(...lus));
+    setLecture(false);
     if (input.current) input.current.value = "";
   }
 
-  const extraire = useServerFn(extraireDocument);
-  const [analyse, setAnalyse] = useState<string | null>(null);
-
-  async function remplirIA(doc: ImportPlan) {
-    setAnalyse(doc.id);
+  async function remplir() {
+    setAnalyse(true);
     try {
-      const x = await extraire({ data: { texte: texteDocuments([doc]), marque: "", mode: "trade" } });
-      const plans = plansDepuisExtraction(x);
-      if (!plans.length) toast.error("Aucun plan trade trouvé dans ce document.");
-      else {
-        update((d) => void d.plans.push(...plans));
-        toast.success(`${plans.length} plan(s) trade pré-rempli(s) depuis ${doc.nom_fichier}. À vérifier.`);
-      }
+      const x = await extraire({
+        data: {
+          texte: texteDocuments(docs),
+          marque: `Laboratoires à extraire uniquement : ${choix.join(", ")}`,
+          mode: "trade",
+        },
+      });
+      const remplis: string[] = [];
+      let total = 0;
+      update((d) => {
+        for (const labo of choix) {
+          const sources = x.plans.filter((p) => correspond(p.laboratoire, labo));
+          if (!sources.length) continue;
+          let plan = d.plans.find((p) => memeLabo(p.laboratoire, labo));
+          if (!plan) {
+            plan = nouveauPlan(labo);
+            d.plans.push(plan);
+          }
+          for (const s of sources) total += completerPlan(plan, { ...s, laboratoire: labo });
+          remplis.push(labo);
+        }
+      });
+      const absents = choix.filter((l) => !remplis.includes(l));
+      if (remplis.length)
+        toast.success(`Rempli : ${remplis.join(", ")} (${total} information(s)).`);
+      if (absents.length) toast.error(`Non trouvé dans le document : ${absents.join(", ")}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "La lecture automatique a échoué.");
     } finally {
-      setAnalyse(null);
+      setAnalyse(false);
     }
-  }
-
-  function creerPlans(doc: ImportPlan) {
-    const nouveaux = plansDepuisLignes(doc.lignes);
-    if (!nouveaux.length) {
-      toast.error("Aucun tableau exploitable détecté dans ce fichier.");
-      return;
-    }
-    update((d) => void d.plans.push(...nouveaux));
-    toast.success(
-      `${nouveaux.length} plan(s) trade créé(s) depuis ${doc.nom_fichier}. À vérifier et compléter.`,
-    );
   }
 
   return (
-    <div className="mb-4 rounded-lg border border-dashed border-border bg-muted/30 p-3">
-      <p className="text-sm font-medium">Document regroupant plusieurs laboratoires</p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Pour un plan annuel ou mensuel de tous vos laboratoires (CSV, Excel, PDF, Word) : un plan
-        est créé par laboratoire trouvé. Pour un seul laboratoire, utilisez plutôt « Charger un
-        document » dans son plan ci-dessus.
+    <div className="mt-2 rounded-lg border border-dashed border-border bg-muted/30 p-3">
+      <p className="text-xs text-muted-foreground">
+        Chargez votre trade mensuel ou annuel de plusieurs laboratoires, cochez ceux à remplir,
+        puis cliquez sur « Remplir ». Les autres laboratoires du document sont ignorés.
       </p>
 
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <input
           ref={input}
           type="file"
@@ -87,95 +95,53 @@ export function ImportsPlanTrade() {
           className="hidden"
           onChange={(e) => void onFiles(e.target.files)}
         />
-        <Button variant="secondary" onClick={() => input.current?.click()} disabled={chargement}>
-          {chargement ? "Lecture en cours…" : "Choisir un ou plusieurs fichiers"}
+        <Button variant="secondary" onClick={() => input.current?.click()} disabled={lecture}>
+          {lecture ? "Lecture en cours…" : "Charger le document global"}
         </Button>
       </div>
 
+      {docs.map((doc, k) => (
+        <div key={doc.id} className="mt-2 flex items-center justify-between gap-2 text-sm">
+          <span>
+            {doc.nom_fichier}{" "}
+            <span className="text-xs text-muted-foreground">{doc.format}</span>
+          </span>
+          <Button variant="ghost" onClick={() => update((d) => void d.imports_plans.splice(k, 1))}>
+            Supprimer
+          </Button>
+        </div>
+      ))}
+
       {docs.length > 0 && (
-        <div className="mt-3 space-y-2">
-          {docs.map((doc, i) => {
-            const detectes = doc.lignes.length ? plansDepuisLignes(doc.lignes).length : 0;
-            return (
-              <div key={doc.id} className="rounded-md border border-border bg-background p-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-medium">
-                    {doc.nom_fichier}{" "}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      {doc.format} ·{" "}
-                      {doc.lignes.length
-                        ? `${doc.lignes.length} lignes lues`
-                        : `${doc.texte.length} caractères lus`}
-                    </span>
-                  </p>
-                  <Button
-                    variant="ghost"
-                    onClick={() => update((d) => void d.imports_plans.splice(i, 1))}
-                  >
-                    Supprimer
-                  </Button>
-                </div>
-
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                  <label className="text-xs text-muted-foreground">
-                    Portée du document
-                    <select
-                      className="field mt-1"
-                      value={doc.portee}
-                      onChange={(e) =>
-                        update((d) => void (d.imports_plans[i].portee = e.target.value))
-                      }
-                    >
-                      <option value="">À préciser</option>
-                      {PORTEES_IMPORT.map((p) => (
-                        <option key={p} value={p}>
-                          {p}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="text-xs text-muted-foreground">
-                    Commentaire (contexte pour l'agent)
-                    <input
-                      className="field mt-1"
-                      value={doc.commentaire}
-                      onChange={(e) =>
-                        update((d) => void (d.imports_plans[i].commentaire = e.target.value))
-                      }
-                    />
-                  </label>
-                </div>
-
-                {doc.lignes.length > 0 ? (
-                  <div className="mt-2">
-                    <p className="text-xs text-muted-foreground">
-                      {detectes > 0
-                        ? `${detectes} laboratoire(s) détecté(s) dans le tableau.`
-                        : "Aucune colonne « laboratoire » reconnue : le document reste utilisable comme référence."}
-                    </p>
-                    {detectes > 0 && (
-                      <Button className="mt-2" variant="secondary" onClick={() => creerPlans(doc)}>
-                        Pré-remplir les plans trade
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Texte extrait et transmis à l'agent comme document de référence.
-                  </p>
-                )}
-                <Button
-                  className="mt-2"
-                  onClick={() => void remplirIA(doc)}
-                  disabled={analyse === doc.id}
-                >
-                  {analyse === doc.id
-                    ? "Analyse du document… (jusqu'à 1 min)"
-                    : "Remplir les plans trade depuis le document"}
-                </Button>
-              </div>
-            );
-          })}
+        <div className="mt-3">
+          <p className="mb-1 text-sm font-medium">Laboratoires à remplir</p>
+          {labos.length ? (
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {labos.map((l) => (
+                <label key={l} className="flex items-center gap-1 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={choix.includes(l)}
+                    onChange={() =>
+                      setChoix((c) => (c.includes(l) ? c.filter((x) => x !== l) : [...c, l]))
+                    }
+                  />
+                  {l}
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Renseignez d'abord les laboratoires dans la cartographie des gammes.
+            </p>
+          )}
+          <Button
+            className="mt-3"
+            onClick={() => void remplir()}
+            disabled={analyse || !choix.length}
+          >
+            {analyse ? "Analyse du document… (jusqu'à 1 min)" : `Remplir (${choix.length})`}
+          </Button>
         </div>
       )}
     </div>
