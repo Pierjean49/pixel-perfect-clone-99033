@@ -114,6 +114,7 @@ export type Palier = { seuil: string; avantage: string };
 export type OperationTrade = {
   id: string;
   mois: string;
+  produits?: string;
   operation: string;
   fonctionnement: string;
   contrepartie: string;

@@ -29,6 +29,7 @@ const Plan = z.object({
     .array(
       z.object({
         mois: S.describe("Mois ou période (ex. Mars 2026, Janv.–Août)"),
+        produits: S.describe("Produits / gammes concernés"),
         operation: S.describe("Nom de l'opération / promotion / animation"),
         fonctionnement: S.describe("Mécanique : remise, produits, conditions, volumes"),
         contrepartie: S.describe("Engagement de la pharmacie : TG, vitrine, écran, IC…"),
