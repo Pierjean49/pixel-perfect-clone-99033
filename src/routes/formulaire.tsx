@@ -1159,7 +1159,7 @@ function Formulaire() {
 
                   <div className="mt-3 space-y-3">
                     <CheckGroup
-                      label="Gammes concernées""
+                      label="Gammes concernées"
                       columns={3}
                       options={nomsGammes}
                       values={p.gammes}
