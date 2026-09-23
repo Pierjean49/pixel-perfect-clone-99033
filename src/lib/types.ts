@@ -54,6 +54,7 @@ export type AchatGamme = {
   frequence_commande: string;
   commentaire: string;
   commandes: Commande[];
+  documents?: ImportPlan[];
 };
 
 export const emptyAchat = (): AchatGamme => ({
@@ -82,6 +83,7 @@ export const emptyAchat = (): AchatGamme => ({
   frequence_commande: "",
   commentaire: "",
   commandes: [],
+  documents: [],
 });
 
 export type Gamme = {
