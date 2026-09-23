@@ -90,6 +90,14 @@ export function buildVariables(f: FormState): Record<string, string> {
           clean(p.budget_formation) && `budget formation ${p.budget_formation}`,
         ]),
         p.contreparties.length ? `  Contreparties : ${p.contreparties.join(" · ")}` : "",
+        (p.operations ?? []).length
+          ? `  Opérations :\n${(p.operations ?? [])
+              .map((o) => `    - ${o.mois} · ${o.operation} — ${o.fonctionnement}${o.contrepartie ? ` (contrepartie : ${o.contrepartie})` : ""}`)
+              .join("\n")}`
+          : "",
+        (p.documents ?? []).length
+          ? `  Document trade du labo :\n${(p.documents ?? []).map((d) => `    [${d.nom_fichier}]\n${d.texte.slice(0, 8000)}`).join("\n")}`
+          : "",
         joinList([
           clean(p.date_revue) && `  Revue le ${p.date_revue}`,
           clean(p.convention) && `convention déclarée à l'Ordre : ${p.convention}`,

@@ -6,6 +6,7 @@ import { Area, CheckGroup, Checkbox, Label, Radio, Select, Text } from "@/compon
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
 import { ImportsPlanTrade } from "@/components/ImportsPlanTrade";
 import { ImportsAccordGamme } from "@/components/ImportsAccordGamme";
+import { PlanTradeLabo } from "@/components/PlanTradeLabo";
 import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
@@ -1061,15 +1062,21 @@ function Formulaire() {
               </p>
             </Encadre>
 
-            <ImportsPlanTrade />
-
+            <p className="mb-2 text-sm text-muted-foreground">
+              Un plan par laboratoire : choisissez le laboratoire, puis remplissez à la main ou
+              chargez son document trade.
+            </p>
             <div className="space-y-3">
               {form.plans.map((p, i) => (
                 <div key={p.id} className="rounded-lg border border-border p-3">
                   <Grid>
-                    <Text
+                    <Select
                       label="Laboratoire"
                       required
+                      allowFree
+                      options={Array.from(
+                        new Set(form.gammes.map((g) => g.laboratoire.trim()).filter(Boolean)),
+                      ).sort()}
                       value={p.laboratoire}
                       onChange={(v) => update((d) => void (d.plans[i].laboratoire = v))}
                     />
@@ -1144,6 +1151,11 @@ function Formulaire() {
                       onChange={(v) => update((d) => void (d.plans[i].convention = v))}
                     />
                   </Grid>
+
+                  <PlanTradeLabo
+                    plan={p}
+                    set={(fn) => update((d) => fn(d.plans[i]))}
+                  />
 
                   <div className="mt-3 space-y-3">
                     <CheckGroup
@@ -1251,8 +1263,12 @@ function Formulaire() {
                   )
                 }
               >
-                Ajouter un plan trade
+                Ajouter un laboratoire
               </Button>
+            </div>
+
+            <div className="mt-6">
+              <ImportsPlanTrade />
             </div>
           </Section>
 

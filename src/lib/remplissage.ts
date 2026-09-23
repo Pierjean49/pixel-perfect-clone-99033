@@ -48,10 +48,38 @@ export function remplirAchat(a: AchatGamme, x: Extraction["achat"]): number {
   return n;
 }
 
+/** Complète un plan existant : champs vides seulement, opérations ajoutées. */
+export function completerPlan(p: PlanTrade, x: Extraction["plans"][number]): number {
+  let n = 0;
+  const champs = [
+    "type_accord", "debut", "fin", "interlocuteur", "objectif_achat", "remise_facture",
+    "rfa", "ug", "budget_plv", "budget_formation",
+  ] as const;
+  for (const c of champs) {
+    const v = (x[c] ?? "").trim();
+    if (v && !(p[c] ?? "").trim()) {
+      p[c] = v;
+      n++;
+    }
+  }
+  for (const c of x.contreparties) if (!p.contreparties.includes(c)) (p.contreparties.push(c), n++);
+  const palVides = p.paliers.every((q) => !q.seuil && !q.avantage);
+  if (palVides && x.paliers.length) (p.paliers = x.paliers, n++);
+  p.operations ??= [];
+  for (const o of x.operations) {
+    if (p.operations.some((q) => q.mois === o.mois && q.operation === o.operation)) continue;
+    p.operations.push({ id: uid(), ...o });
+    n++;
+  }
+  if (x.commentaire.trim() && !p.commentaire.trim()) (p.commentaire = x.commentaire.trim(), n++);
+  return n;
+}
+
 export function plansDepuisExtraction(x: Extraction, marque?: string): PlanTrade[] {
   return x.plans.map((p) => ({
     ...p,
     id: uid(),
+    operations: p.operations.map((o) => ({ id: uid(), ...o })),
     gammes: p.gammes.length ? p.gammes : marque ? [marque] : [],
     date_revue: "",
     convention: "",

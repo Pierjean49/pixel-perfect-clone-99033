@@ -25,7 +25,17 @@ const Plan = z.object({
   budget_plv: S,
   budget_formation: S,
   contreparties: z.array(S),
-  commentaire: S.describe("Détail des opérations / promotions / calendrier mensuel"),
+  operations: z
+    .array(
+      z.object({
+        mois: S.describe("Mois ou période (ex. Mars 2026, Janv.–Août)"),
+        operation: S.describe("Nom de l'opération / promotion / animation"),
+        fonctionnement: S.describe("Mécanique : remise, produits, conditions, volumes"),
+        contrepartie: S.describe("Engagement de la pharmacie : TG, vitrine, écran, IC…"),
+      }),
+    )
+    .describe("Calendrier des opérations trade, une ligne par opération et par mois"),
+  commentaire: S.describe("Autres informations utiles non couvertes ailleurs"),
 });
 
 const Schema = z.object({
