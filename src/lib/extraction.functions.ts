@@ -29,6 +29,7 @@ const Plan = z.object({
     .array(
       z.object({
         mois: S.describe("Mois ou période (ex. Mars 2026, Janv.–Août)"),
+        produits: S.describe("Produits / gammes concernés"),
         operation: S.describe("Nom de l'opération / promotion / animation"),
         fonctionnement: S.describe("Mécanique : remise, produits, conditions, volumes"),
         contrepartie: S.describe("Engagement de la pharmacie : TG, vitrine, écran, IC…"),
@@ -82,7 +83,7 @@ export const extraireDocument = createServerFn({ method: "POST" })
     const consigne =
       data.mode === "achat"
         ? `Extrais les conditions commerciales de la marque « ${data.marque || "inconnue"} » (achat) ET le plan trade (opérations, paliers, contreparties).`
-        : "Extrais tous les plans trade du document : un plan par laboratoire (ou par accord distinct). Laisse l'objet achat avec des chaînes vides.";
+        : "Extrais tous les plans trade du document : un plan par laboratoire (ou par accord distinct). Laisse l'objet achat avec des chaînes vides." + (data.marque ? ` ${data.marque}.` : "");
     try {
       const result = streamText({
         model: lovable.responses("openai/gpt-6-astra"),

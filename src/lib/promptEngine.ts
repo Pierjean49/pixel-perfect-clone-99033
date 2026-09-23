@@ -92,7 +92,7 @@ export function buildVariables(f: FormState): Record<string, string> {
         p.contreparties.length ? `  Contreparties : ${p.contreparties.join(" · ")}` : "",
         (p.operations ?? []).length
           ? `  Opérations :\n${(p.operations ?? [])
-              .map((o) => `    - ${o.mois} · ${o.operation} — ${o.fonctionnement}${o.contrepartie ? ` (contrepartie : ${o.contrepartie})` : ""}`)
+              .map((o) => `    - ${o.mois}${o.produits ? ` · ${o.produits}` : ""} · ${o.operation} — ${o.fonctionnement}${o.contrepartie ? ` (contrepartie : ${o.contrepartie})` : ""}`)
               .join("\n")}`
           : "",
         (p.documents ?? []).length

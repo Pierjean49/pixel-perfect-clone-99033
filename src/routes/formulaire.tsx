@@ -4,9 +4,8 @@ import { toast } from "sonner";
 import { Section, Grid } from "@/components/Section";
 import { Area, CheckGroup, Checkbox, Label, Radio, Select, Text } from "@/components/fields";
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
-import { ImportsPlanTrade } from "@/components/ImportsPlanTrade";
+import { BlocTrade } from "@/components/BlocTrade";
 import { ImportsAccordGamme } from "@/components/ImportsAccordGamme";
-import { PlanTradeLabo } from "@/components/PlanTradeLabo";
 import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
@@ -1040,8 +1039,8 @@ function Formulaire() {
           <Section
             numero={6}
             titre="Plans trade et accords laboratoires"
-            intro="Un accord par ligne : paliers, avantages, contreparties engagées et date de revue."
-            rempli={form.plans.filter((p) => p.laboratoire && p.objectif_achat).length}
+            intro="Les opérations commerciales de l'année, laboratoire par laboratoire."
+            rempli={form.plans.filter((p) => p.laboratoire && (p.operations ?? []).length).length}
             total={Math.max(form.plans.length, 1)}
           >
             <Encadre type="vigilance">
@@ -1062,158 +1061,7 @@ function Formulaire() {
               </p>
             </Encadre>
 
-            <p className="mb-2 text-sm text-muted-foreground">
-              Un plan par laboratoire : choisissez le laboratoire, puis remplissez à la main ou
-              chargez son document trade.
-            </p>
-            <div className="space-y-3">
-              {form.plans.map((p, i) => (
-                <div key={p.id} className="rounded-lg border border-border p-3">
-                  <Grid>
-                    <Select
-                      label="Laboratoire"
-                      required
-                      allowFree
-                      options={Array.from(
-                        new Set(form.gammes.map((g) => g.laboratoire.trim()).filter(Boolean)),
-                      ).sort()}
-                      value={p.laboratoire}
-                      onChange={(v) => update((d) => void (d.plans[i].laboratoire = v))}
-                    />
-                    <div />
-                    <Text
-                      label="Début"
-                      placeholder="JJ/MM/AAAA"
-                      value={p.debut}
-                      onChange={(v) => update((d) => void (d.plans[i].debut = v))}
-                    />
-                    <Text
-                      label="Fin"
-                      placeholder="JJ/MM/AAAA"
-                      value={p.fin}
-                      onChange={(v) => update((d) => void (d.plans[i].fin = v))}
-                    />
-
-                  </Grid>
-
-                  <PlanTradeLabo
-                    plan={p}
-                    set={(fn) => update((d) => fn(d.plans[i]))}
-                  />
-
-                  <div className="mt-3 space-y-3">
-                    <CheckGroup
-                      label="Gammes concernées"
-                      columns={3}
-                      options={nomsGammes}
-                      values={p.gammes}
-                      onToggle={(v) =>
-                        update((d) => {
-                          const arr = d.plans[i].gammes;
-                          const k = arr.indexOf(v);
-                          k >= 0 ? arr.splice(k, 1) : arr.push(v);
-                        })
-                      }
-                    />
-                    <CheckGroup
-                      label="Contreparties engagées par l'officine"
-                      columns={2}
-                      options={CONTREPARTIES}
-                      values={p.contreparties}
-                      onToggle={(v) =>
-                        update((d) => {
-                          const arr = d.plans[i].contreparties;
-                          const k = arr.indexOf(v);
-                          k >= 0 ? arr.splice(k, 1) : arr.push(v);
-                        })
-                      }
-                    />
-                    <div>
-                      <p className="mb-1 text-xs font-medium text-muted-foreground">
-                        Structure des paliers
-                      </p>
-                      {p.paliers.map((pal, j) => (
-                        <div key={j} className="mb-2 flex gap-2">
-                          <input
-                            className="field"
-                            placeholder="Seuil (€)"
-                            value={pal.seuil}
-                            onChange={(e) =>
-                              update((d) => void (d.plans[i].paliers[j].seuil = e.target.value))
-                            }
-                          />
-                          <input
-                            className="field"
-                            placeholder="Avantage obtenu"
-                            value={pal.avantage}
-                            onChange={(e) =>
-                              update((d) => void (d.plans[i].paliers[j].avantage = e.target.value))
-                            }
-                          />
-                          <Button
-                            variant="ghost"
-                            onClick={() => update((d) => void d.plans[i].paliers.splice(j, 1))}
-                          >
-                            ✕
-                          </Button>
-                        </div>
-                      ))}
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
-                          update((d) => void d.plans[i].paliers.push({ seuil: "", avantage: "" }))
-                        }
-                      >
-                        Ajouter un palier
-                      </Button>
-                    </div>
-                    <Area
-                      label="Commentaire"
-                      rows={2}
-                      value={p.commentaire}
-                      onChange={(v) => update((d) => void (d.plans[i].commentaire = v))}
-                    />
-                    <div className="text-right">
-                      <Button variant="ghost" onClick={() => update((d) => void d.plans.splice(i, 1))}>
-                        Supprimer ce plan
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <Button
-                onClick={() =>
-                  update((d) =>
-                    void d.plans.push({
-                      id: uid(),
-                      laboratoire: "",
-                      gammes: [],
-                      type_accord: "",
-                      debut: "",
-                      fin: "",
-                      interlocuteur: "",
-                      objectif_achat: "",
-                      paliers: [{ seuil: "", avantage: "" }],
-                      remise_facture: "",
-                      rfa: "",
-                      ug: "",
-                      budget_plv: "",
-                      budget_formation: "",
-                      contreparties: [],
-                      date_revue: "",
-                      convention: "",
-                      commentaire: "",
-                    }),
-                  )
-                }
-              >
-                Ajouter un laboratoire
-              </Button>
-            </div>
-
-            <div className="mt-6">
-              <ImportsPlanTrade />
-            </div>
+            <BlocTrade />
           </Section>
 
           {/* BLOC 7 */}
