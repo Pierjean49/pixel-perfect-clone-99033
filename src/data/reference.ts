@@ -226,7 +226,8 @@ export const CONTREPARTIES = [
 ];
 
 export const INDICATEURS = [
-  "CA par gamme", "marge par gamme", "rotation / couverture de stock", "panier moyen para",
+  "CA par gamme", "marge par gamme", "valeur du stock par gamme (€)", "valeur du stock par laboratoire (€)",
+  "surstock / stock dormant (€)", "rotation / couverture de stock", "panier moyen para",
   "nombre d'unités par vente", "taux de vente associée",
   "taux de vente complémentaire au comptoir", "CA par collaborateur", "CA au mètre linéaire",
   "taux de rupture", "démarque", "part des gammes piliers dans le CA", "progression vs N-1",

@@ -1068,38 +1068,27 @@ function Formulaire() {
           <Section
             numero={7}
             titre="Objectifs et indicateurs"
-            intro="Ce que l'agent doit calculer, à quelle fréquence, et la saisonnalité qui rythmera le plan d'animation."
+            intro="Ce que l'agent doit calculer. La marge se fixe par marque, dans la cartographie des gammes."
             rempli={rempli(
-              form.objectifs.objectif_ca_annuel,
-              form.objectifs.objectif_marge_global,
               form.objectifs.indicateurs.length >= 4 ? "ok" : "",
               form.objectifs.periodicite,
             )}
-            total={4}
+            total={2}
           >
-            <Grid>
-              <Text
-                label="Objectif de CA para + OTC sur 12 mois"
-                suffix="€"
-                value={form.objectifs.objectif_ca_annuel}
-                onChange={(v) => update((d) => void (d.objectifs.objectif_ca_annuel = v))}
-              />
-              <Text
-                label="Objectif de taux de marge global"
-                suffix="%"
-                value={form.objectifs.objectif_marge_global}
-                onChange={(v) => update((d) => void (d.objectifs.objectif_marge_global = v))}
-              />
-            </Grid>
-
-            <div className="mt-4">
-              <p className="mb-1 text-xs font-medium text-muted-foreground">Objectifs par pôle (%)</p>
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Objectif de progression du CA par pôle vs l'année précédente (%) — facultatif
+              </p>
+              <p className="mb-2 text-xs text-muted-foreground">
+                Exemple : 5 = viser +5 % de CA sur ce pôle. Laissez vide si vous ne savez pas.
+              </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {form.poles.map((p) => (
                   <label key={p.nom} className="flex items-center gap-2 text-sm">
                     <span className="w-48 shrink-0 truncate">{p.nom}</span>
                     <input
                       className="field"
+                      placeholder="+ %"
                       value={form.objectifs.objectifs_poles[p.nom] ?? ""}
                       onChange={(e) =>
                         update((d) => void (d.objectifs.objectifs_poles[p.nom] = e.target.value))
@@ -1128,31 +1117,11 @@ function Formulaire() {
 
             <div className="mt-4">
               <Radio
-                label="Périodicité de pilotage"
+                label="Périodicité de pilotage (de départ — modifiable à tout moment dans l'agent)"
                 options={["hebdomadaire", "mensuelle", "trimestrielle"]}
                 value={form.objectifs.periodicite}
                 onChange={(v) => update((d) => void (d.objectifs.periodicite = v))}
               />
-            </div>
-
-            <div className="mt-4">
-              <p className="mb-1 text-xs font-medium text-muted-foreground">
-                Saisonnalité (pré-remplie, modifiable)
-              </p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {form.objectifs.saisonnalite.map((m, i) => (
-                  <label key={m.mois} className="flex items-center gap-2 text-sm">
-                    <span className="w-24 shrink-0">{m.mois}</span>
-                    <input
-                      className="field"
-                      value={m.poles}
-                      onChange={(e) =>
-                        update((d) => void (d.objectifs.saisonnalite[i].poles = e.target.value))
-                      }
-                    />
-                  </label>
-                ))}
-              </div>
             </div>
           </Section>
 
