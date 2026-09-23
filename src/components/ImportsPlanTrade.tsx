@@ -164,6 +164,15 @@ export function ImportsPlanTrade() {
                     Texte extrait et transmis à l'agent comme document de référence.
                   </p>
                 )}
+                <Button
+                  className="mt-2"
+                  onClick={() => void remplirIA(doc)}
+                  disabled={analyse === doc.id}
+                >
+                  {analyse === doc.id
+                    ? "Analyse du document… (jusqu'à 1 min)"
+                    : "Remplir les plans trade depuis le document"}
+                </Button>
               </div>
             );
           })}
