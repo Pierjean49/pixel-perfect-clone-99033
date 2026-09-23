@@ -769,7 +769,8 @@ function Formulaire() {
                       </div>
                     </div>
                   </details>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </Section>
