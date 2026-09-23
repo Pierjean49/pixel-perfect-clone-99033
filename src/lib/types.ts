@@ -83,6 +83,7 @@ export const emptyAchat = (): AchatGamme => ({
   frequence_commande: "",
   commentaire: "",
   commandes: [],
+  documents: [],
 });
 
 export type Gamme = {
