@@ -71,11 +71,11 @@ export function ImportsPlanTrade() {
 
   return (
     <div className="mb-4 rounded-lg border border-dashed border-border bg-muted/30 p-3">
-      <p className="text-sm font-medium">Importer un plan trade</p>
+      <p className="text-sm font-medium">Document regroupant plusieurs laboratoires</p>
       <p className="mt-1 text-xs text-muted-foreground">
-        CSV, Excel, PDF ou Word : plan annuel d'un laboratoire, plan annuel de tous les
-        laboratoires, ou plan mensuel. Les tableaux (CSV / Excel) peuvent pré-remplir les plans
-        ci-dessous ; les PDF et Word sont conservés comme document de référence transmis à l'agent.
+        Pour un plan annuel ou mensuel de tous vos laboratoires (CSV, Excel, PDF, Word) : un plan
+        est créé par laboratoire trouvé. Pour un seul laboratoire, utilisez plutôt « Charger un
+        document » dans son plan ci-dessus.
       </p>
 
       <div className="mt-3 flex items-center gap-2">
