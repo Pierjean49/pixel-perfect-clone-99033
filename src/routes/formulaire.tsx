@@ -4,9 +4,8 @@ import { toast } from "sonner";
 import { Section, Grid } from "@/components/Section";
 import { Area, CheckGroup, Checkbox, Label, Radio, Select, Text } from "@/components/fields";
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
-import { ImportsPlanTrade } from "@/components/ImportsPlanTrade";
+import { BlocTrade } from "@/components/BlocTrade";
 import { ImportsAccordGamme } from "@/components/ImportsAccordGamme";
-import { PlanTradeLabo } from "@/components/PlanTradeLabo";
 import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
@@ -1040,8 +1039,8 @@ function Formulaire() {
           <Section
             numero={6}
             titre="Plans trade et accords laboratoires"
-            intro="Un accord par ligne : paliers, avantages, contreparties engagées et date de revue."
-            rempli={form.plans.filter((p) => p.laboratoire && p.objectif_achat).length}
+            intro="Les opérations commerciales de l'année, laboratoire par laboratoire."
+            rempli={form.plans.filter((p) => p.laboratoire && (p.operations ?? []).length).length}
             total={Math.max(form.plans.length, 1)}
           >
             <Encadre type="vigilance">

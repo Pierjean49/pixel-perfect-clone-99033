@@ -107,8 +107,9 @@ export function PlanTradeLabo({
       <div>
         <p className="mb-1 text-sm font-medium">Calendrier des opérations</p>
         {ops.length > 0 && (
-          <div className="mb-1 hidden grid-cols-[8rem_1fr_1.5fr_1fr_2rem] gap-2 text-xs text-muted-foreground md:grid">
+          <div className="mb-1 hidden grid-cols-[7rem_1fr_1fr_1.5fr_1fr_2rem] gap-2 text-xs text-muted-foreground md:grid">
             <span>Mois</span>
+            <span>Produits</span>
             <span>Opération</span>
             <span>Fonctionnement</span>
             <span>Contrepartie</span>
@@ -116,15 +117,15 @@ export function PlanTradeLabo({
           </div>
         )}
         {ops.map((o, j) => (
-          <div key={o.id} className="mb-2 grid gap-2 md:grid-cols-[8rem_1fr_1.5fr_1fr_2rem]">
-            {(["mois", "operation", "fonctionnement", "contrepartie"] as const).map((c) => (
+          <div key={o.id} className="mb-2 grid gap-2 md:grid-cols-[7rem_1fr_1fr_1.5fr_1fr_2rem]">
+            {(["mois", "produits", "operation", "fonctionnement", "contrepartie"] as const).map((c) => (
               <input
                 key={c}
                 className="field"
                 placeholder={
-                  { mois: "Mois", operation: "Opération", fonctionnement: "Fonctionnement", contrepartie: "Contrepartie" }[c]
+                  { mois: "Mois", produits: "Produits", operation: "Opération", fonctionnement: "Fonctionnement", contrepartie: "Contrepartie" }[c]
                 }
-                value={o[c]}
+                value={o[c] ?? ""}
                 onChange={(e) => set((p) => void ((p.operations ?? [])[j][c] = e.target.value))}
               />
             ))}
@@ -140,6 +141,7 @@ export function PlanTradeLabo({
               void (p.operations ??= []).push({
                 id: uid(),
                 mois: "",
+                produits: "",
                 operation: "",
                 fonctionnement: "",
                 contrepartie: "",
