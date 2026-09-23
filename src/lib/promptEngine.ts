@@ -119,9 +119,30 @@ export function buildVariables(f: FormState): Record<string, string> {
     )
     .join("\n");
 
+  const accordsGammes = f.gammes
+    .flatMap((g) =>
+      (g.achat?.documents ?? []).map((doc) =>
+        [
+          `- ${clean(g.nom)}${clean(g.laboratoire) ? ` (${g.laboratoire})` : ""} — ${doc.nom_fichier} (${doc.format})`,
+          clean(doc.commentaire) && `  ${doc.commentaire}`,
+          doc.texte.trim() &&
+            `  Contenu :\n${doc.texte
+              .trim()
+              .slice(0, 8000)
+              .split("\n")
+              .map((l) => `  ${l}`)
+              .join("\n")}`,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      ),
+    )
+    .join("\n");
+
   const blocPlansTrade = [
     listePlansTrade,
     documentsImportes && `Documents de plan trade importés :\n${documentsImportes}`,
+    accordsGammes && `Accords commerciaux importés par gamme :\n${accordsGammes}`,
   ]
     .filter(Boolean)
     .join("\n\n");
