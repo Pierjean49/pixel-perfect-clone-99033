@@ -3,6 +3,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui-kit";
 import { lireFichier } from "@/lib/importPlanTrade";
 import type { AchatGamme, ImportPlan } from "@/lib/types";
+import { useServerFn } from "@tanstack/react-start";
+import { useForm } from "@/lib/store";
+import { extraireDocument } from "@/lib/extraction.functions";
+import { plansDepuisExtraction, remplirAchat, texteDocuments } from "@/lib/remplissage";
 
 const FORMATS = ".pdf,.docx,.doc,.csv,.tsv,.txt,.md,.xlsx,.xls,.xlsm";
 
@@ -18,6 +22,29 @@ export function ImportsAccordGamme({
   const input = useRef<HTMLInputElement>(null);
   const [chargement, setChargement] = useState(false);
   const docs: ImportPlan[] = achat.documents ?? [];
+  const { update } = useForm();
+  const extraire = useServerFn(extraireDocument);
+  const [analyse, setAnalyse] = useState(false);
+
+  async function remplir() {
+    setAnalyse(true);
+    try {
+      const x = await extraire({
+        data: { texte: texteDocuments(docs), marque: nomGamme, mode: "achat" },
+      });
+      let n = 0;
+      set((a) => void (n = remplirAchat(a, x.achat)));
+      const plans = plansDepuisExtraction(x, nomGamme);
+      if (plans.length) update((d) => void d.plans.push(...plans));
+      toast.success(
+        `${n} champ(s) Achat pré-rempli(s)${plans.length ? ` et ${plans.length} plan(s) trade ajouté(s) au bloc 6` : ""}. Vos saisies existantes n'ont pas été modifiées.`,
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "La lecture automatique a échoué.");
+    } finally {
+      setAnalyse(false);
+    }
+  }
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
@@ -63,6 +90,11 @@ export function ImportsAccordGamme({
         <Button variant="secondary" onClick={() => input.current?.click()} disabled={chargement}>
           {chargement ? "Lecture en cours…" : "Charger un document"}
         </Button>
+        {docs.length > 0 && (
+          <Button onClick={() => void remplir()} disabled={analyse} className="ml-2">
+            {analyse ? "Analyse du document… (jusqu'à 1 min)" : "Remplir depuis le document"}
+          </Button>
+        )}
       </div>
 
       {docs.length > 0 && (
