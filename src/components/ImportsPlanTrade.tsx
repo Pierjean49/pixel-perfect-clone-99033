@@ -114,7 +114,7 @@ export function ImportsPlanTrade({ labos }: { labos: string[] }) {
 
       {docs.length > 0 && (
         <div className="mt-3">
-          <p className="mb-1 text-sm font-medium">Laboratoires à remplir</p>
+          <p className="mb-1 text-sm font-medium">Gammes à remplir</p>
           {labos.length ? (
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               {labos.map((l) => (
@@ -132,7 +132,7 @@ export function ImportsPlanTrade({ labos }: { labos: string[] }) {
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Renseignez d'abord les laboratoires dans la cartographie des gammes.
+              Sélectionnez d'abord des gammes dans la cartographie des gammes.
             </p>
           )}
           <Button
