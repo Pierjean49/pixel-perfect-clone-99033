@@ -35,7 +35,7 @@ export function useLabos(): string[] {
   const { form } = useForm();
   return Array.from(
     new Set(
-      [...form.gammes.map((g) => g.laboratoire), ...form.plans.map((p) => p.laboratoire)]
+      [...form.gammes.map((g) => g.nom), ...form.plans.map((p) => p.laboratoire)]
         .map((l) => l.trim())
         .filter(Boolean),
     ),
@@ -68,7 +68,7 @@ export function BlocTrade() {
       <section>
         <h3 className="text-base font-semibold">2. Plan trade par laboratoire</h3>
         <p className="mb-2 text-xs text-muted-foreground">
-          Cliquez sur un laboratoire (liste issue du bloc « Cartographie des gammes ») pour ouvrir
+          Cliquez sur une gamme sélectionnée dans le bloc « Cartographie des gammes » pour ouvrir
           son plan : remplissez-le à la main ou chargez son document trade.
         </p>
         <div className="flex flex-wrap gap-2">
@@ -97,7 +97,7 @@ export function BlocTrade() {
           <span className="flex gap-1">
             <input
               className="field h-8 w-44"
-              placeholder="Autre laboratoire…"
+              placeholder="Autre gamme / labo…"
               value={libre}
               onChange={(e) => setLibre(e.target.value)}
             />
@@ -115,7 +115,7 @@ export function BlocTrade() {
         </div>
         {!labos.length && (
           <p className="mt-2 text-xs text-muted-foreground">
-            Aucun laboratoire renseigné pour l'instant dans vos gammes.
+            Aucune gamme sélectionnée pour l'instant dans la cartographie.
           </p>
         )}
 
