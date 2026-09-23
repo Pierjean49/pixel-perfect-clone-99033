@@ -609,8 +609,30 @@ function Formulaire() {
               </div>
 
               <div className="space-y-3">
-                {form.gammes.map((g, i) => (
-                  <details key={g.id} className="rounded-lg border border-border p-3">
+                {form.gammes.map((g, i) => {
+                  const a = g.achat;
+                  const criteres = [
+                    g.laboratoire,
+                    g.statut,
+                    g.positionnement,
+                    g.ca_annuel,
+                    g.taux_marge,
+                    a?.remise_base || a?.remises,
+                    a?.representant_nom || a?.labo_tel || a?.labo_mail,
+                  ];
+                  const faits = criteres.filter((v) => (v ?? "").toString().trim()).length;
+                  const etat = faits === criteres.length ? "complete" : faits > 0 ? "partielle" : "vide";
+                  return (
+                  <details
+                    key={g.id}
+                    className={`rounded-lg border p-3 ${
+                      etat === "complete"
+                        ? "border-[var(--color-success)] bg-[var(--color-success-soft)]"
+                        : etat === "partielle"
+                          ? "border-[var(--color-warning)] bg-[var(--color-warning-soft)]"
+                          : "border-border"
+                    }`}
+                  >
                     <summary className="cursor-pointer text-sm font-medium">
                       {g.nom}
                       {g.pilote ? (
@@ -619,6 +641,13 @@ function Formulaire() {
                         </span>
                       ) : null}
                       <span className="ml-2 text-xs text-muted-foreground">{g.pole}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {etat === "complete"
+                          ? "✓ remplie"
+                          : etat === "partielle"
+                            ? `en cours (${faits}/${criteres.length})`
+                            : "à remplir"}
+                      </span>
                     </summary>
                     <div className="mt-3">
                       <Grid>
@@ -740,7 +769,8 @@ function Formulaire() {
                       </div>
                     </div>
                   </details>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </Section>
