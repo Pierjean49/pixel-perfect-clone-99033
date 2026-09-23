@@ -4,6 +4,9 @@ import { Button } from "@/components/ui-kit";
 import { useForm } from "@/lib/store";
 import { lireFichier, plansDepuisLignes, PORTEES_IMPORT } from "@/lib/importPlanTrade";
 import type { ImportPlan } from "@/lib/types";
+import { useServerFn } from "@tanstack/react-start";
+import { extraireDocument } from "@/lib/extraction.functions";
+import { plansDepuisExtraction, texteDocuments } from "@/lib/remplissage";
 
 const FORMATS = ".csv,.tsv,.txt,.md,.xlsx,.xls,.xlsm,.pdf,.docx,.doc";
 
@@ -32,6 +35,26 @@ export function ImportsPlanTrade() {
     }
     setChargement(false);
     if (input.current) input.current.value = "";
+  }
+
+  const extraire = useServerFn(extraireDocument);
+  const [analyse, setAnalyse] = useState<string | null>(null);
+
+  async function remplirIA(doc: ImportPlan) {
+    setAnalyse(doc.id);
+    try {
+      const x = await extraire({ data: { texte: texteDocuments([doc]), marque: "", mode: "trade" } });
+      const plans = plansDepuisExtraction(x);
+      if (!plans.length) toast.error("Aucun plan trade trouvé dans ce document.");
+      else {
+        update((d) => void d.plans.push(...plans));
+        toast.success(`${plans.length} plan(s) trade pré-rempli(s) depuis ${doc.nom_fichier}. À vérifier.`);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "La lecture automatique a échoué.");
+    } finally {
+      setAnalyse(null);
+    }
   }
 
   function creerPlans(doc: ImportPlan) {
@@ -141,6 +164,15 @@ export function ImportsPlanTrade() {
                     Texte extrait et transmis à l'agent comme document de référence.
                   </p>
                 )}
+                <Button
+                  className="mt-2"
+                  onClick={() => void remplirIA(doc)}
+                  disabled={analyse === doc.id}
+                >
+                  {analyse === doc.id
+                    ? "Analyse du document… (jusqu'à 1 min)"
+                    : "Remplir les plans trade depuis le document"}
+                </Button>
               </div>
             );
           })}
