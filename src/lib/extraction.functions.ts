@@ -46,11 +46,11 @@ const Schema = z.object({
     remises_marches: z.array(z.object({ marche: S, taux: S, condition: S })),
     franco: S.describe("montant en euros, chiffre seul"),
     perimes_modalites: z.array(
-      z.enum(["Avoir", "Abattement", "Avoir UG", "Avoir sur application", "Pas de reprise"]),
+      z.enum(["Avoir", "Abattement", "Avoir en UG", "Avoir sur application", "Pas de reprise"]),
     ),
     perimes_abattement_pct: S,
     rfa: S.describe("pourcentage, chiffre seul"),
-    rfa_versee_par: z.enum(["", "Groupement", "Direct"]),
+    rfa_versee_par: z.enum(["", "Groupement", "En direct"]),
     frequence_commande: S,
     commentaire: S.describe("Autres conditions utiles (délais de paiement, paliers…)"),
   }),

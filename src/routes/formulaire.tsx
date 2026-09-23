@@ -703,7 +703,7 @@ function Formulaire() {
                           />
                         )}
                       </Grid>
-                      <AchatGammeBloc index={i} achat={g.achat ?? emptyAchat()} update={update} />
+                      <AchatGammeBloc index={i} nomGamme={g.nom} achat={g.achat ?? emptyAchat()} update={update} />
                       <div className="mt-3 space-y-2">
                         <Checkbox
                           checked={g.plan_trade}
@@ -1807,10 +1807,12 @@ function SousPolesInput({
 
 function AchatGammeBloc({
   index,
+  nomGamme,
   achat,
   update,
 }: {
   index: number;
+  nomGamme: string;
   achat: AchatGamme;
   update: (fn: (draft: FormState) => void) => void;
 }) {
@@ -1824,7 +1826,7 @@ function AchatGammeBloc({
   return (
     <div className="mt-4 rounded-lg border border-border bg-[var(--color-primary-soft)]/30 p-3">
       <p className="mb-3 text-sm font-semibold">Achat</p>
-      <ImportsAccordGamme achat={achat} set={set} nomGamme="" />
+      <ImportsAccordGamme achat={achat} set={set} nomGamme={nomGamme} />
       <Grid>
         <Text
           label="Code client"
