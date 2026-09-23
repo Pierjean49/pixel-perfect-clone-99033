@@ -111,8 +111,18 @@ export type Gamme = {
 
 export type Palier = { seuil: string; avantage: string };
 
+export type OperationTrade = {
+  id: string;
+  mois: string;
+  operation: string;
+  fonctionnement: string;
+  contrepartie: string;
+};
+
 export type PlanTrade = {
   id: string;
+  operations?: OperationTrade[];
+  documents?: ImportPlan[];
   laboratoire: string;
   gammes: string[];
   type_accord: string;
