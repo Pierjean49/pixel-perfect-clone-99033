@@ -34,7 +34,7 @@ export function remplirAchat(a: AchatGamme, x: Extraction["achat"]): number {
   a.remises_marches ??= [];
   for (const r of x.remises_marches) {
     if (!r.marche.trim()) continue;
-    if (a.remises_marches.some((m) => m.marche.toLowerCase() === r.marche.toLowerCase())) continue;
+    if (a.remises_marches.some((m) => m.marche.toLowerCase() === r.marche.toLowerCase() && m.taux === r.taux)) continue;
     a.remises_marches.push({ id: uid(), ...r });
     n++;
   }
