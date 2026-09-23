@@ -1080,12 +1080,7 @@ function Formulaire() {
                       value={p.laboratoire}
                       onChange={(v) => update((d) => void (d.plans[i].laboratoire = v))}
                     />
-                    <Select
-                      label="Type d'accord"
-                      options={TYPES_ACCORD}
-                      value={p.type_accord}
-                      onChange={(v) => update((d) => void (d.plans[i].type_accord = v))}
-                    />
+                    <div />
                     <Text
                       label="Début"
                       placeholder="JJ/MM/AAAA"
@@ -1098,58 +1093,7 @@ function Formulaire() {
                       value={p.fin}
                       onChange={(v) => update((d) => void (d.plans[i].fin = v))}
                     />
-                    <Text
-                      label="Interlocuteur"
-                      value={p.interlocuteur}
-                      onChange={(v) => update((d) => void (d.plans[i].interlocuteur = v))}
-                    />
-                    <Text
-                      label="Objectif d'achat ou de sell-out"
-                      suffix="€"
-                      value={p.objectif_achat}
-                      onChange={(v) => update((d) => void (d.plans[i].objectif_achat = v))}
-                    />
-                    <Text
-                      label="Remise sur facture"
-                      suffix="%"
-                      value={p.remise_facture}
-                      onChange={(v) => update((d) => void (d.plans[i].remise_facture = v))}
-                    />
-                    <Text
-                      label="Remise différée (RFA)"
-                      suffix="%"
-                      value={p.rfa}
-                      onChange={(v) => update((d) => void (d.plans[i].rfa = v))}
-                    />
-                    <Text
-                      label="Unités gratuites (UG)"
-                      placeholder="12+2"
-                      value={p.ug}
-                      onChange={(v) => update((d) => void (d.plans[i].ug = v))}
-                    />
-                    <Text
-                      label="Budget PLV / animation"
-                      suffix="€"
-                      value={p.budget_plv}
-                      onChange={(v) => update((d) => void (d.plans[i].budget_plv = v))}
-                    />
-                    <Text
-                      label="Budget formation"
-                      value={p.budget_formation}
-                      onChange={(v) => update((d) => void (d.plans[i].budget_formation = v))}
-                    />
-                    <Text
-                      label="Date de revue"
-                      placeholder="JJ/MM/AAAA"
-                      value={p.date_revue}
-                      onChange={(v) => update((d) => void (d.plans[i].date_revue = v))}
-                    />
-                    <Select
-                      label="Convention déclarée à l'Ordre"
-                      options={["Oui", "Non", "Sans objet"]}
-                      value={p.convention}
-                      onChange={(v) => update((d) => void (d.plans[i].convention = v))}
-                    />
+
                   </Grid>
 
                   <PlanTradeLabo
