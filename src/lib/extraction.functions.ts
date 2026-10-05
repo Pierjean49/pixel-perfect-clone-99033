@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, Output } from "ai";
 import { z } from "zod";
+import { verifierQuotaIA } from "./garde-ia";
 
 const Input = z.object({
   texte: z.string().min(1).max(120000),
@@ -75,6 +76,7 @@ export const extraireDocument = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Configuration IA manquante.");
+    verifierQuotaIA();
     const lovable = createOpenAI({
       baseURL: "https://ai.gateway.lovable.dev/v1",
       apiKey: key,
@@ -105,7 +107,7 @@ export const extraireDocument = createServerFn({ method: "POST" })
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (msg.includes("402")) throw new Error("Crédits IA épuisés.");
-      if (msg.includes("429")) throw new Error("Trop de demandes, réessayez dans une minute.");
+      if (msg.includes("429")) throw new Error("Trop de demandes, réessaie dans une minute.");
       throw new Error("La lecture automatique a échoué.");
     }
   });

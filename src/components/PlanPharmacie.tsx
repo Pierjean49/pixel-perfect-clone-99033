@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { Button } from "@/components/ui-kit";
+import { AvisIA, Button } from "@/components/ui-kit";
 import { useForm } from "@/lib/store";
 import { uid } from "@/lib/types";
 import { lirePlan } from "@/lib/plan.functions";
@@ -49,7 +49,7 @@ export function PlanPharmacie() {
     if (!f) return;
     try {
       if (f.type === "application/pdf") {
-        if (f.size > 3_000_000) return void toast.error("PDF trop lourd (3 Mo max). Exportez-le en image.");
+        if (f.size > 2_000_000) return void toast.error("PDF trop lourd (2 Mo max). Exporte-le en image.");
         const data = await lireDataUrl(f);
         update((d) => void (d.merch.plan = { nom: f.name, type: f.type, data }));
       } else if (f.type.startsWith("image/")) {
@@ -94,10 +94,11 @@ export function PlanPharmacie() {
     <div className="rounded-lg border border-dashed border-border bg-muted/30 p-3">
       <p className="text-sm font-medium">Plan de la pharmacie</p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Chargez le plan (photo, image ou PDF) avec les TG numérotées et le nom des gammes sur les
-        descentes. Cliquez sur « Lire le plan » : les emplacements sont listés et classés en zones
+        Charge le plan (photo, image ou PDF) avec les TG numérotées et le nom des gammes sur les
+        descentes. Clique sur « Lire le plan » : les emplacements sont listés et classés en zones
         chaudes, tièdes ou froides. Tout reste modifiable.
       </p>
+      <AvisIA quoi="le plan" />
       <div className="mt-2 flex flex-wrap gap-2">
         <input
           ref={input}

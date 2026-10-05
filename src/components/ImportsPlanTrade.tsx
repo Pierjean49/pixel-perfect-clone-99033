@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { Button } from "@/components/ui-kit";
+import { AvisIA, Button } from "@/components/ui-kit";
 import { useForm } from "@/lib/store";
 import { lireFichier } from "@/lib/importPlanTrade";
 import type { ImportPlan } from "@/lib/types";
@@ -82,9 +82,10 @@ export function ImportsPlanTrade({ labos }: { labos: string[] }) {
   return (
     <div className="mt-2 rounded-lg border border-dashed border-border bg-muted/30 p-3">
       <p className="text-xs text-muted-foreground">
-        Chargez votre trade mensuel ou annuel de plusieurs laboratoires, cochez ceux à remplir,
-        puis cliquez sur « Remplir ». Les autres laboratoires du document sont ignorés.
+        Charge ton plan trade mensuel ou annuel regroupant plusieurs laboratoires, coche ceux à
+        remplir, puis clique sur « Remplir ». Les autres laboratoires du document sont ignorés.
       </p>
+      <AvisIA />
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <input

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { Button } from "@/components/ui-kit";
+import { AvisIA, Button } from "@/components/ui-kit";
 import { lireFichier } from "@/lib/importPlanTrade";
 import { extraireDocument } from "@/lib/extraction.functions";
 import { completerPlan, texteDocuments } from "@/lib/remplissage";
@@ -67,10 +67,11 @@ export function PlanTradeLabo({
       <div className="rounded-md border border-dashed border-border bg-background/60 p-3">
         <p className="text-sm font-medium">Document trade de ce laboratoire</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Chargez le plan trade du labo (PDF, Word, Excel) puis cliquez sur « Remplir depuis le
-          document » : les champs vides et le calendrier des opérations se remplissent. Ou
-          saisissez tout à la main ci-dessous.
+          Charge le plan trade du labo (PDF, Word, Excel) puis clique sur « Remplir depuis le
+          document » : les champs vides et le calendrier des opérations se remplissent. Ou saisis
+          tout à la main ci-dessous.
         </p>
+        <AvisIA />
         <div className="mt-2 flex flex-wrap gap-2">
           <input
             ref={input}

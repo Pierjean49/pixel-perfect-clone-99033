@@ -9,6 +9,12 @@ export function Label({ children, required }: { children: ReactNode; required?: 
   );
 }
 
+export function Aide({ children }: { children?: ReactNode }) {
+  return children ? (
+    <span className="mb-1.5 block text-xs leading-snug text-muted-foreground/80">{children}</span>
+  ) : null;
+}
+
 export function Text({
   label,
   value,
@@ -17,6 +23,7 @@ export function Text({
   placeholder,
   type = "text",
   suffix,
+  aide,
 }: {
   label: string;
   value: string;
@@ -25,10 +32,12 @@ export function Text({
   placeholder?: string;
   type?: string;
   suffix?: string;
+  aide?: string;
 }) {
   return (
     <label className="block">
       <Label required={required}>{label}</Label>
+      <Aide>{aide}</Aide>
       <span className="flex items-center gap-2">
         <input
           className="field"
@@ -49,16 +58,19 @@ export function Area({
   onChange,
   rows = 3,
   placeholder,
+  aide,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   rows?: number;
   placeholder?: string;
+  aide?: string;
 }) {
   return (
     <label className="block">
       <Label>{label}</Label>
+      <Aide>{aide}</Aide>
       <textarea
         className="field"
         rows={rows}
@@ -77,6 +89,7 @@ export function Select({
   options,
   required,
   allowFree,
+  aide,
 }: {
   label: string;
   value: string;
@@ -84,11 +97,13 @@ export function Select({
   options: string[];
   required?: boolean;
   allowFree?: boolean;
+  aide?: string;
 }) {
   const known = options.includes(value) || value === "";
   return (
     <label className="block">
       <Label required={required}>{label}</Label>
+      <Aide>{aide}</Aide>
       <select
         className="field"
         value={known ? value : "__libre"}
@@ -120,16 +135,19 @@ export function CheckGroup({
   values,
   onToggle,
   columns = 2,
+  aide,
 }: {
   label?: string;
   options: string[];
   values: string[];
   onToggle: (v: string) => void;
   columns?: number;
+  aide?: string;
 }) {
   return (
     <div>
       {label ? <Label>{label}</Label> : null}
+      <Aide>{aide}</Aide>
       <div
         className="grid gap-1.5"
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
@@ -161,15 +179,18 @@ export function Radio({
   options,
   value,
   onChange,
+  aide,
 }: {
   label: string;
   options: string[];
   value: string;
   onChange: (v: string) => void;
+  aide?: string;
 }) {
   return (
     <div>
       <Label>{label}</Label>
+      <Aide>{aide}</Aide>
       <div className="flex flex-wrap gap-1.5">
         {options.map((o) => (
           <button

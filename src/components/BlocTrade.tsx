@@ -68,8 +68,8 @@ export function BlocTrade() {
       <section>
         <h3 className="text-base font-semibold">2. Plan trade par laboratoire</h3>
         <p className="mb-2 text-xs text-muted-foreground">
-          Cliquez sur une gamme sélectionnée dans le bloc « Cartographie des gammes » pour ouvrir
-          son plan : remplissez-le à la main ou chargez son document trade.
+          Clique sur une gamme sélectionnée dans le bloc « Cartographie des gammes » pour ouvrir
+          son plan : remplis-le à la main ou charge son document trade.
         </p>
         <div className="flex flex-wrap gap-2">
           {labos.map((l) => {

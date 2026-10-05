@@ -116,3 +116,14 @@ export function PageHeader({
     </header>
   );
 }
+
+/** Prévient, juste avant un bouton de lecture automatique, que le document quitte le navigateur. */
+export function AvisIA({ quoi = "le document" }: { quoi?: string }) {
+  return (
+    <p className="mt-2 rounded-md bg-[var(--color-warning-soft)] px-2.5 py-1.5 text-xs text-foreground">
+      La lecture automatique envoie {quoi} à un service d'IA externe pour l'analyser. Ne charge
+      aucun document contenant des données de patients ; pour un accord confidentiel, préfère la
+      saisie à la main.
+    </p>
+  );
+}

@@ -12,10 +12,10 @@ export function downloadMarkdown(nom: string, texte: string) {
   download(`${nom}.md`, texte, "text/markdown;charset=utf-8");
 }
 
+const echapper = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 export function downloadDoc(nom: string, titre: string, texte: string) {
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${titre}</title></head><body><h1>${titre}</h1><pre style="font-family:Calibri,sans-serif;white-space:pre-wrap;font-size:11pt;">${texte
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")}</pre></body></html>`;
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${echapper(titre)}</title></head><body><h1>${echapper(titre)}</h1><pre style="font-family:Calibri,sans-serif;white-space:pre-wrap;font-size:11pt;">${echapper(texte)}</pre></body></html>`;
   download(`${nom}.doc`, html, "application/msword");
 }
 
@@ -39,13 +39,13 @@ L'accès est restreint par rôle. Le titulaire et les personnes habilitées à l
 Les données de suivi commercial sont conservées trois ans à compter de leur enregistrement, sauf obligation légale plus longue.
 
 5. Hébergement
-Les données sont hébergées au sein de l'Union européenne.
+Les données sont hébergées au sein de l'Union européenne. [À VÉRIFIER avant diffusion : région d'hébergement de la base de données et, si l'agent utilise un assistant d'IA, pays du fournisseur.]
 
 6. Vos droits
 Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et d'opposition sur les données vous concernant. Ces droits s'exercent auprès de ${titulaire || "la direction de l'officine"}.
 
 7. Information et consultation
-Le traitement est inscrit au registre prévu par l'article 30 du RGPD. Dès onze salariés, le comité social et économique est consulté préalablement à la mise en service (art. L.2312-38 du Code du travail).
+Le traitement est inscrit au registre prévu par l'article 30 du RGPD. La présente note vaut information préalable de chaque salarié (art. L.1222-4 du Code du travail). Dans les entreprises d'au moins cinquante salariés, le comité social et économique est en outre informé et consulté avant la mise en service (art. L.2312-38 du Code du travail).
 
 Fait à ______________, le ____/____/________
 
@@ -77,13 +77,19 @@ Aucune donnée de santé, aucune donnée patient.
 
 Destinataires : titulaire(s), personnes habilitées à la direction, responsables de pôle pour leur périmètre, chaque salarié pour ses propres données. Gestionnaire de paie pour les seuls éléments de rémunération.
 
-Sous-traitants / hébergeur : hébergement de la base de données et de l'application au sein de l'Union européenne.
+Sous-traitants / hébergeur : [À COMPLÉTER : nom de l'hébergeur de la base de données et de l'application, région d'hébergement ; nom du fournisseur d'IA si l'agent en utilise un].
 
 Durée de conservation : 3 ans, sauf obligation légale plus longue.
 
-Mesures de sécurité : authentification individuelle, restriction des accès par rôle (RLS), double authentification pour les rôles administrateur et manager, filtrage du trafic, chiffrement des échanges (TLS), journalisation des modifications.
+Mesures de sécurité (ne conserver que celles réellement en place à la date de la fiche) :
+[ ] authentification individuelle
+[ ] restriction des accès par rôle (RLS)
+[ ] double authentification pour les rôles administrateur et manager
+[ ] filtrage du trafic
+[ ] chiffrement des échanges (TLS)
+[ ] journalisation des modifications
 
-Transferts hors UE : aucun.
+Transferts hors UE : [À VÉRIFIER : « aucun » seulement si l'hébergeur et l'éventuel fournisseur d'IA traitent les données dans l'Union européenne ; sinon, indiquer le pays et la garantie applicable].
 
-Information des personnes : note d'information remise à chaque salarié ; consultation du comité social et économique dès onze salariés.`;
+Information des personnes : note d'information remise à chaque salarié avant la mise en service (art. L.1222-4 du Code du travail) ; information et consultation du comité social et économique dans les entreprises d'au moins cinquante salariés (art. L.2312-38 du Code du travail).`;
 }

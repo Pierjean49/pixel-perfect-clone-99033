@@ -2,12 +2,21 @@ import { createServerFn } from "@tanstack/react-start";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, Output } from "ai";
 import { z } from "zod";
+import { verifierQuotaIA } from "./garde-ia";
 
-const Input = z.object({
-  type: z.string().max(100),
-  data: z.string().min(10).max(12_000_000),
-  gammes: z.array(z.string().max(200)).max(500),
-});
+// Seuls un PDF ou une image encodés dans la requête sont acceptés : jamais une adresse web,
+// que le serveur ou le fournisseur d'IA irait chercher à la place de l'appelant.
+const DATA_URL = /^data:(application\/pdf|image\/(jpeg|png|webp));base64,[A-Za-z0-9+/=\s]+$/;
+
+const Input = z
+  .object({
+    type: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]),
+    data: z.string().min(40).max(3_000_000).regex(DATA_URL),
+    gammes: z.array(z.string().max(200)).max(500),
+  })
+  .refine((d) => d.data.startsWith(`data:${d.type};base64,`), {
+    message: "Le type annoncé ne correspond pas au fichier.",
+  });
 
 const Schema = z.object({
   emplacements: z.array(
@@ -28,6 +37,7 @@ export const lirePlan = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Configuration IA manquante.");
+    verifierQuotaIA();
     const lovable = createOpenAI({
       baseURL: "https://ai.gateway.lovable.dev/v1",
       apiKey: key,
@@ -69,7 +79,7 @@ export const lirePlan = createServerFn({ method: "POST" })
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (msg.includes("402")) throw new Error("Crédits IA épuisés.");
-      if (msg.includes("429")) throw new Error("Trop de demandes, réessayez dans une minute.");
+      if (msg.includes("429")) throw new Error("Trop de demandes, réessaie dans une minute.");
       throw new Error("La lecture du plan a échoué.");
     }
   });

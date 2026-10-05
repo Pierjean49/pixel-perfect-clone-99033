@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui-kit";
+import { AvisIA, Button } from "@/components/ui-kit";
 import { lireFichier } from "@/lib/importPlanTrade";
 import type { AchatGamme, ImportPlan } from "@/lib/types";
 import { useServerFn } from "@tanstack/react-start";
@@ -37,7 +37,7 @@ export function ImportsAccordGamme({
       const plans = plansDepuisExtraction(x, nomGamme);
       if (plans.length) update((d) => void d.plans.push(...plans));
       toast.success(
-        `${n} champ(s) Achat pré-rempli(s)${plans.length ? ` et ${plans.length} plan(s) trade ajouté(s) au bloc 6` : ""}. Vos saisies existantes n'ont pas été modifiées.`,
+        `${n} champ(s) Achat pré-rempli(s)${plans.length ? ` et ${plans.length} plan(s) trade ajouté(s) au bloc 6` : ""}. Tes saisies existantes n'ont pas été modifiées.`,
       );
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "La lecture automatique a échoué.");
@@ -73,10 +73,11 @@ export function ImportsAccordGamme({
     <div className="mb-3 rounded-md border border-dashed border-border bg-background/60 p-3">
       <p className="text-sm font-medium">Accord commercial du laboratoire</p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Déposez ici le document de conditions commerciales / plan trade de la marque (PDF, Word,
-        Excel). Le texte est transmis à l'agent : il en déduit remises, franco, RFA, périmés,
-        contacts et calendrier trade, que vous pourrez corriger.
+        Dépose ici le document de conditions commerciales ou le plan trade de la marque (PDF, Word,
+        Excel). Son texte est analysé pour en déduire remises, franco, RFA, périmés, contacts et
+        calendrier trade. Tu pourras tout corriger.
       </p>
+      <AvisIA />
 
       <div className="mt-2">
         <input
