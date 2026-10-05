@@ -50,8 +50,10 @@ function PromptCard({
   const bloque = verrouille && !force;
 
   const couleur =
-    p.kind === "audit"
-      ? "var(--color-warning)"
+    p.kind === "regles"
+      ? "var(--color-success)"
+      : p.kind === "audit"
+        ? "var(--color-warning)"
       : p.kind === "extension"
         ? "var(--color-info)"
         : p.kind === "securisation"
@@ -102,8 +104,9 @@ function PromptCard({
       ) : ouvert ? (
         <div className="border-t border-border px-4 py-4 sm:px-5">
           <p className="mb-3 text-xs font-medium text-warning" style={{ color: "var(--color-warning)" }}>
-            Copie ce prompt tel quel. Ne lui ajoute rien : c'est la première cause d'écart entre
-            participants.
+            {p.kind === "regles"
+              ? "Ce n'est pas un prompt à envoyer dans le chat. Dans Lovable, ouvre Settings → Knowledge et colle ces règles : elles s'appliqueront à toutes tes demandes. À faire juste après la création du projet, avant le Prompt maître."
+              : "Copie ce prompt tel quel. Ne lui ajoute rien : c'est la première cause d'écart entre participants."}
           </p>
           <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap rounded-lg bg-muted p-4 text-xs leading-relaxed">
             {p.text}
@@ -181,7 +184,9 @@ function Prompts() {
     );
   }
 
-  const construction = prompts.filter((p) => p.kind === "brique" || p.kind === "audit");
+  const construction = prompts.filter(
+    (p) => p.kind === "regles" || p.kind === "brique" || p.kind === "audit",
+  );
   const extensions = prompts.filter((p) => p.kind === "extension");
   const securisation = prompts.filter((p) => p.kind === "securisation");
 
