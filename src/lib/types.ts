@@ -143,6 +143,14 @@ export type PlanTrade = {
   commentaire: string;
 };
 
+export type Emplacement = {
+  id: string;
+  type: string;
+  numero: string;
+  gammes: string;
+  zone: string;
+};
+
 export type ImportPlan = {
   id: string;
   nom_fichier: string;
@@ -225,6 +233,8 @@ export type FormState = {
     plv: string[];
     poseur: string;
     archivage_photos: string;
+    plan?: { nom: string; type: string; data: string } | null;
+    emplacements?: Emplacement[];
   };
   options: {
     extensions: string[];

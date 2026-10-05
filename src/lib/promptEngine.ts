@@ -260,7 +260,15 @@ export function buildVariables(f: FormState): Record<string, string> {
     emplacement_vitrines: joinList(f.merch.emplacement_vitrines),
     frequence_vitrine: clean(f.merch.frequence_vitrine),
     nb_tg: clean(f.merch.nb_tg),
-    zones_chaudes: clean(f.merch.zones_chaudes),
+    zones_chaudes: [
+      clean(f.merch.zones_chaudes),
+      (f.merch.emplacements ?? []).length
+        ? "Plan de l'officine (emplacements) :\n" +
+          (f.merch.emplacements ?? [])
+            .map((e) => `- ${e.type} ${e.numero}${e.gammes ? ` : ${e.gammes}` : ""}${e.zone ? ` (zone ${e.zone})` : ""}`)
+            .join("\n")
+        : "",
+    ].filter(Boolean).join("\n"),
     types_animation: joinList(f.merch.types_animation),
     plv_disponibles: joinList(f.merch.plv),
     responsable_merch: clean(f.merch.poseur),
