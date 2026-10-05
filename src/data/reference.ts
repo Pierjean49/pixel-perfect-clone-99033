@@ -277,7 +277,7 @@ export const EXTENSIONS: ExtensionRef[] = [
     cle: "ia_trade",
     titre: "E1 — IA Trade (assistant conversationnel)",
     texte:
-      "Ajoute à l'agent de la {{nom_pharmacie}} un assistant accessible depuis toutes les pages. Il répond en français, à partir des seules données de l'agent, à des questions comme « quelles gammes sont en décrochage ce trimestre », « où en suis-je sur le plan {{labo}} », « quelle gamme mettre en vitrine en mars ». Il cite toujours les chiffres sur lesquels il s'appuie et la période concernée. Il refuse explicitement toute question médicale, de posologie ou de conseil patient, et renvoie vers le pharmacien. Il propose des argumentaires de vente et des textes de PLV, jamais des allégations santé non autorisées.",
+      "Ajoute à l'agent de la {{nom_pharmacie}} un assistant accessible depuis toutes les pages. Il répond en français, à partir des seules données de l'agent, à des questions comme « quelles gammes sont en décrochage ce trimestre », « où en suis-je sur le plan de tel laboratoire », « quelle gamme mettre en vitrine en mars ». Il interroge la base à chaque question : aucun chiffre n'est écrit dans ses instructions. Il cite toujours les chiffres sur lesquels il s'appuie et la période concernée. Il refuse explicitement toute question médicale, de posologie ou de conseil patient, et renvoie vers le pharmacien. Il propose des argumentaires de vente et des textes de PLV, jamais des allégations santé non autorisées.",
   },
   {
     id: "E2",
@@ -347,7 +347,7 @@ export type EtapeGuide = {
 
 export const ETAPES_GUIDE: EtapeGuide[] = [
   { n: 1, titre: "Générer ton prompt de démarrage", duree: "20 min", note: "Vérifie d'abord tes prérequis budgétaires : plan Lovable payant, crédits suffisants, domaine OVH (10 à 15 € / an), Cloudflare gratuit." },
-  { n: 2, titre: "Créer un nouveau projet Lovable et le nommer", duree: "15 min" },
+  { n: 2, titre: "Créer un nouveau projet Lovable et le nommer", duree: "15 min", note: "Colle aussitôt les Règles permanentes (première carte de l'onglet Prompts) dans Settings → Knowledge du projet : elles s'appliqueront à toutes les briques." },
   { n: 3, titre: "Activer Lovable Cloud (base de données + authentification, région Europe)", duree: "10 min" },
   { n: 4, titre: "Créer ton compte administrateur et te connecter", duree: "15 min" },
   { n: 5, titre: "Fenêtre « Set up emails » — fermer pour l'instant", duree: "5 min" },
