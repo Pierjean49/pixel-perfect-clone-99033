@@ -104,7 +104,9 @@ function PromptCard({
       ) : ouvert ? (
         <div className="border-t border-border px-4 py-4 sm:px-5">
           <p className="mb-3 text-xs font-medium text-warning" style={{ color: "var(--color-warning)" }}>
-            {p.kind === "regles"
+            {p.id === "C0"
+              ? "À coller dans Lovable pour créer le projet. Sans cette consigne, Lovable se lance tout seul dans la construction d'un agent à sa façon. Attends sa réponse « le projet est prêt » avant de continuer."
+              : p.kind === "regles"
               ? "Ce n'est pas un prompt à envoyer dans le chat. Dans Lovable, ouvre Settings → Knowledge et colle ces règles : elles s'appliqueront à toutes tes demandes. À faire juste après la création du projet, avant le Prompt maître."
               : "Copie ce prompt tel quel. Ne lui ajoute rien : c'est la première cause d'écart entre participants."}
           </p>

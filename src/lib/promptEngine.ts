@@ -344,7 +344,8 @@ export type GeneratedPrompt = {
 };
 
 const UNLOCK: Record<string, { by: string | null; label: string }> = {
-  R0: { by: null, label: "À coller en premier, dans Settings → Knowledge du projet Lovable." },
+  C0: { by: null, label: "" },
+  R0: { by: null, label: "À coller dans Settings → Knowledge, juste après la création du projet." },
   P1: { by: null, label: "" },
   V1: { by: "P1", label: "À utiliser après avoir collé le Prompt maître." },
   P2: { by: "V1", label: "À utiliser après validation de l'audit V1 (étape 12 du guide)." },
@@ -397,7 +398,7 @@ export function generatePrompts(f: FormState): GeneratedPrompt[] {
     };
   });
 
-  const order = ["R0", "P1", "V1", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
+  const order = ["C0", "R0", "P1", "V1", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
   const construction = order.map((k) => base.find((b) => b.id === k)!).filter(Boolean);
   const securisation = base.filter((b) => b.kind === "securisation");
   return [...construction, ...extensions, ...securisation];
