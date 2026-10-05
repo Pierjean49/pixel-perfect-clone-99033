@@ -187,8 +187,9 @@ function RootComponent() {
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
           <footer className="mt-16 border-t border-border py-8 text-center text-xs text-muted-foreground">
-            Module Formation — Agent Trade &amp; Gammes · MaFormationOfficinale.com · Aucune donnée
-            n'est envoyée à un serveur : tout reste dans ce navigateur.
+            Module Formation — Agent Trade &amp; Gammes · MaFormationOfficinale.com · Ta saisie
+            reste dans ce navigateur. Seuls les documents que tu soumets à la lecture automatique
+            sont envoyés à un service d'IA pour analyse.
           </footer>
         </div>
       </FormProvider>

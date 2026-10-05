@@ -3,6 +3,7 @@ import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
 import { ETAPES_GUIDE } from "@/data/reference";
+import { Invitation } from "@/components/Invitation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -72,7 +73,7 @@ function Accueil() {
       <PageHeader
         surtitre="Module de formation · pharmaciens titulaires"
         titre="Écris le cahier des charges de ton Agent Trade & Gammes"
-        intro="Ce module ne construit pas l'agent : il écrit, à partir de tes réponses, la série de prompts qui le construira brique par brique dans Lovable. Aucune donnée de vente réelle, aucune donnée patient, aucune donnée de santé."
+        intro="Ce module ne construit pas l'agent : il écrit, à partir de tes réponses, la série de prompts qui le construira brique par brique dans Lovable. Aucune donnée patient, aucune donnée de santé : tu n'y décris que ton officine, ton équipe et tes accords laboratoires."
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -139,6 +140,8 @@ function Accueil() {
           </div>
         </div>
       </Card>
+
+      <Invitation />
 
       <Encadre type="retenir">
         <p>

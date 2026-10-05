@@ -167,8 +167,10 @@ function Securisation() {
         <p>
           L'hébergement en Europe est nécessaire, il n'est pas suffisant : finalité limitée, accès
           restreint par rôle, durée de conservation définie, inscription au registre de l'article 30
-          du RGPD, information individuelle des salariés et, dès onze salariés, consultation
-          préalable du comité social et économique (art. L.2312-38 du Code du travail).
+          du RGPD et information individuelle préalable de chaque salarié (art. L.1222-4 du Code du
+          travail), quel que soit l'effectif. À partir de cinquante salariés, le comité social et
+          économique doit en plus être informé et consulté avant la mise en service (art. L.2312-38
+          du Code du travail). Fais relire ces documents par ton conseil avant diffusion.
         </p>
       </Encadre>
     </main>

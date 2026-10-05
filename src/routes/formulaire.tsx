@@ -7,11 +7,11 @@ import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components
 import { BlocTrade } from "@/components/BlocTrade";
 import { PlanPharmacie } from "@/components/PlanPharmacie";
 import { ImportsAccordGamme } from "@/components/ImportsAccordGamme";
-import { useForm } from "@/lib/store";
+import { estSauvegardeValide, useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
 import { download } from "@/lib/documents";
-import { emptyAchat, emptyForm, uid, type AchatGamme, type FormState, type Gamme } from "@/lib/types";
+import { emptyAchat, uid, type AchatGamme, type FormState, type Gamme } from "@/lib/types";
 import {
   AXES_DIFFERENCIATION,
   CONTREPARTIES,
@@ -70,6 +70,7 @@ function Formulaire() {
     replace,
     reset,
     savedAt,
+    saveError,
     backupAt,
     recoveryCount,
     loadDemo,
@@ -129,8 +130,16 @@ function Formulaire() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const data = JSON.parse(String(reader.result)) as FormState;
-        replace({ ...emptyForm(), ...data });
+        const data = JSON.parse(String(reader.result)) as unknown;
+        if (!estSauvegardeValide(data)) throw new Error("format");
+        if (
+          form.identite.nom_pharmacie.trim() &&
+          !window.confirm("Remplacer la saisie actuelle par le contenu de ce fichier ?")
+        )
+          return;
+        saveBackup();
+        replace(data as FormState);
+        toast.success("Formulaire repris depuis le fichier.");
       } catch {
         window.alert("Ce fichier n'est pas une sauvegarde valide du formulaire.");
       }
@@ -181,12 +190,16 @@ function Formulaire() {
       <PageHeader
         surtitre="Onglet Formulaire"
         titre="Décris ton officine"
-        intro="Dix blocs. Tout est enregistré en continu dans ce navigateur : rien n'est envoyé à un serveur. Les champs marqués d'un astérisque doré sont indispensables à la génération des prompts."
+        intro="Dix blocs, à remplir dans l'ordre que tu veux. Ta saisie est enregistrée en continu dans ce navigateur, sans compte ni base de données. Seule exception : les boutons de lecture automatique envoient le document choisi à un service d'IA pour l'analyser. Les champs marqués d'un astérisque doré sont indispensables à la génération des prompts."
       />
 
       <div className="sticky top-[76px] z-40 mb-6 -mx-4 flex flex-wrap items-center gap-2 border-b border-border bg-[var(--color-background)]/95 px-4 py-3 text-sm backdrop-blur sm:-mx-6 sm:px-6 lg:top-[68px]">
-        <Badge color="var(--color-success)">
-          {savedAt ? `Enregistré à ${savedAt}` : "Enregistrement automatique actif"}
+        <Badge color={saveError ? "var(--color-warning)" : "var(--color-success)"}>
+          {saveError
+            ? "Non enregistré : stockage plein"
+            : savedAt
+              ? `Enregistré à ${savedAt}`
+              : "Enregistrement automatique actif"}
         </Badge>
         <Button variant="secondary" onClick={() => loadDemo(demoForm())}>
           Charger un exemple
@@ -260,12 +273,15 @@ function Formulaire() {
             <Grid>
               <Text
                 label="Nom commercial de la pharmacie"
+                aide="Le nom affiché sur ta façade : il sert de titre à ton agent et apparaît dans tous tes prompts."
+                placeholder="Ex. : Pharmacie du Marché"
                 required
                 value={form.identite.nom_pharmacie}
                 onChange={(v) => update((d) => void (d.identite.nom_pharmacie = v))}
               />
               <Text
-                label="Ville / département"
+                label="Ville et département"
+                placeholder="Ex. : Cholet (49)"
                 value={form.identite.ville}
                 onChange={(v) => update((d) => void (d.identite.ville = v))}
               />
@@ -277,25 +293,30 @@ function Formulaire() {
               />
               <Text
                 label="Nom du titulaire"
+                aide="Le titulaire sera l'administrateur de l'agent."
                 required
                 value={form.identite.nom_titulaire}
                 onChange={(v) => update((d) => void (d.identite.nom_titulaire = v))}
               />
               <Text
-                label="Nombre de titulaires / associés"
+                label="Nombre de titulaires ou associés"
+                aide="Toi compris. Mets 1 si tu exerces seul."
                 type="number"
                 value={form.identite.nb_titulaires}
                 onChange={(v) => update((d) => void (d.identite.nb_titulaires = v))}
               />
               {Number(form.identite.nb_titulaires || "1") > 1 && (
                 <Text
-                  label="Autres titulaires (nom et prénom, séparés par une virgule)"
+                  label="Autres titulaires"
+                  aide="Prénom et nom, séparés par une virgule."
+                  placeholder="Ex. : Claire Martin, Paul Durand"
                   value={form.identite.cotitulaires}
                   onChange={(v) => update((d) => void (d.identite.cotitulaires = v))}
                 />
               )}
               <Select
                 label="Groupement ou enseigne"
+                aide="Sert à distinguer les accords négociés par le groupement de ceux que tu signes en direct. Absent de la liste ? Choisis « Saisie libre »."
                 options={GROUPEMENTS}
                 allowFree
                 value={form.identite.groupement}
@@ -303,6 +324,7 @@ function Formulaire() {
               />
               <Select
                 label="Logiciel de gestion d'officine (LGO)"
+                aide="L'agent adaptera l'import des ventes au format d'export de ce logiciel."
                 options={LGOS}
                 allowFree
                 value={form.identite.lgo}
@@ -310,78 +332,92 @@ function Formulaire() {
               />
               <Text
                 label="Chiffre d'affaires annuel TTC"
+                aide="Dernier exercice clos, toutes activités confondues. Un ordre de grandeur suffit."
+                placeholder="Ex. : 2 400 000"
                 suffix="€"
                 value={form.identite.ca_annuel}
                 onChange={(v) => update((d) => void (d.identite.ca_annuel = v))}
               />
               <Text
-                label="Part du CA non remboursé (para + OTC)"
+                label="Part du CA hors remboursé (parapharmacie + médication familiale)"
+                aide="En % du CA total, d'après les statistiques de ton LGO ou ton bilan. 20 est proposé par défaut : corrige si tu connais ton chiffre."
                 suffix="%"
                 value={form.identite.part_ca_para}
                 onChange={(v) => update((d) => void (d.identite.part_ca_para = v))}
               />
               <Text
                 label="Surface de vente"
+                aide="L'espace accessible aux clients, sans le back-office ni les réserves."
                 suffix="m²"
                 value={form.identite.surface}
                 onChange={(v) => update((d) => void (d.identite.surface = v))}
               />
               <Text
                 label="Nombre de descentes murales"
+                aide="Une descente = un élément vertical de rayonnage contre un mur."
                 type="number"
                 value={form.identite.nb_descentes}
                 onChange={(v) => update((d) => void (d.identite.nb_descentes = v))}
               />
               <Text
                 label="Nombre de gondoles"
+                aide="Les meubles bas posés au centre de la surface de vente."
                 type="number"
                 value={form.identite.nb_gondoles}
                 onChange={(v) => update((d) => void (d.identite.nb_gondoles = v))}
               />
               <Text
                 label="Nombre de têtes de gondole (TG)"
+                aide="Les extrémités de gondole, face aux allées : tes emplacements les plus vendeurs."
                 type="number"
                 value={form.identite.nb_tg}
                 onChange={(v) => update((d) => void (d.identite.nb_tg = v))}
               />
               <Text
                 label="Nombre de comptoirs ordonnance"
+                aide="Les postes où l'on délivre les ordonnances."
                 type="number"
                 value={form.identite.nb_comptoirs_ordonnance}
                 onChange={(v) => update((d) => void (d.identite.nb_comptoirs_ordonnance = v))}
               />
               <Text
                 label="Nombre de comptoirs para"
+                aide="Les postes ou caisses dédiés à la parapharmacie. Mets 0 s'il n'y en a pas."
                 type="number"
                 value={form.identite.nb_comptoirs_para}
                 onChange={(v) => update((d) => void (d.identite.nb_comptoirs_para = v))}
               />
               <Select
                 label="Comptoir d'accueil"
+                aide="Un poste d'orientation à l'entrée, distinct des comptoirs de délivrance."
                 options={["Oui", "Non"]}
                 value={form.identite.comptoir_accueil}
                 onChange={(v) => update((d) => void (d.identite.comptoir_accueil = v))}
               />
               <Text
-                label="Salles de confidentialité (vaccination, tests, contention, soins)"
+                label="Nombre de salles de confidentialité"
+                aide="Vaccination, tests, contention, soins, entretiens."
                 type="number"
                 value={form.identite.nb_salles_confidentialite}
                 onChange={(v) => update((d) => void (d.identite.nb_salles_confidentialite = v))}
               />
               <Text
                 label="Écrans en surface de vente"
+                aide="Écrans d'affichage visibles des clients, hors postes de travail."
                 type="number"
                 value={form.identite.nb_ecrans_vente}
                 onChange={(v) => update((d) => void (d.identite.nb_ecrans_vente = v))}
               />
               <Text
                 label="Écrans en vitrine"
+                aide="Écrans tournés vers la rue."
                 type="number"
                 value={form.identite.nb_ecrans_vitrine}
                 onChange={(v) => update((d) => void (d.identite.nb_ecrans_vitrine = v))}
               />
               <Text
                 label="Nombre de vitrines"
+                aide="Compte chaque vitrine que tu peux habiller séparément."
                 type="number"
                 value={form.identite.nb_vitrines}
                 onChange={(v) => update((d) => void (d.identite.nb_vitrines = v))}
@@ -389,7 +425,8 @@ function Formulaire() {
             </Grid>
             <div className="mt-4">
               <Area
-                label="Autres informations à ajouter (renseignements libres)"
+                label="Autres informations utiles"
+                aide="Facultatif. Ce qu'un consultant devrait savoir avant de travailler sur ton officine."
                 rows={4}
                 placeholder="Tout élément utile : particularités du local, projets en cours, contraintes, patientèle spécifique…"
                 value={form.identite.autres_infos}
@@ -408,6 +445,7 @@ function Formulaire() {
           >
             <CheckGroup
               label="Pôles principaux (univers de la page d'accueil)"
+              aide="Coche les univers que tu veux piloter. Vise 4 à 8 pôles : au-delà, la page d'accueil de l'agent devient illisible."
               columns={3}
               options={Array.from(new Set([...POLES.map((p) => p.nom), ...nomsPoles]))}
               values={nomsPoles}
@@ -516,18 +554,21 @@ function Formulaire() {
 
                     <Text
                       label="Poids actuel dans le CA para"
+                      aide="Part de ce pôle dans ton CA parapharmacie. Le total de tes pôles doit approcher 100 %."
                       suffix="%"
                       value={p.poids}
                       onChange={(v) => update((d) => void (d.poles[i].poids = v))}
                     />
                     <Text
                       label="Objectif de progression sur 12 mois"
+                      aide="Ex. : 5 pour viser +5 % de CA. Laisse vide si tu n'as pas d'objectif chiffré."
                       suffix="%"
                       value={p.objectif_progression}
                       onChange={(v) => update((d) => void (d.poles[i].objectif_progression = v))}
                     />
                     <Select
                       label="Priorité stratégique"
+                      aide="1 = pôle à développer en priorité, 3 = pôle à maintenir."
                       options={["1", "2", "3"]}
                       value={p.priorite}
                       onChange={(v) => update((d) => void (d.poles[i].priorite = v))}
@@ -660,36 +701,43 @@ function Formulaire() {
                         />
                         <Text
                           label="Laboratoire / fournisseur"
+                          aide="La société qui te facture."
+                          placeholder="Ex. : Pierre Fabre pour Avène"
                           value={g.laboratoire}
                           onChange={(v) => update((d) => void (d.gammes[i].laboratoire = v))}
                         />
                         <Select
                           label="Pôle de rattachement"
+                          aide="Le pôle sous lequel la gamme apparaîtra dans l'agent."
                           required
                           options={nomsPoles}
                           value={g.pole}
                           onChange={(v) => update((d) => void (d.gammes[i].pole = v))}
                         />
                         <Select
-                          label="Statut"
+                          label="Statut de la gamme"
+                          aide="Son rôle dans ton assortiment. « À arbitrer » = tu hésites à la garder."
                           options={STATUTS_GAMME}
                           value={g.statut}
                           onChange={(v) => update((d) => void (d.gammes[i].statut = v))}
                         />
                         <Select
-                          label="Positionnement prix"
+                          label="Niveau de prix de la marque"
+                          aide="Par rapport aux autres marques du même pôle."
                           options={POSITIONNEMENTS_GAMME}
                           value={g.positionnement}
                           onChange={(v) => update((d) => void (d.gammes[i].positionnement = v))}
                         />
                         <Text
                           label="Linéaire occupé"
+                          aide="Longueur totale de tablettes. Ex. : 4 tablettes de 1 m = 4 ml."
                           suffix="ml"
                           value={g.lineaire_ml}
                           onChange={(v) => update((d) => void (d.gammes[i].lineaire_ml = v))}
                         />
                         <Text
-                          label="Nombre de descentes"
+                          label="Nombre de descentes occupées"
+                          aide="Mets 0,5 si la gamme partage une descente avec une autre."
                           value={g.descentes}
                           onChange={(v) => update((d) => void (d.gammes[i].descentes = v))}
                         />
@@ -701,6 +749,7 @@ function Formulaire() {
                         />
                         <Select
                           label="Référent gamme"
+                          aide="Le collaborateur qui suit cette gamme. La liste vient du bloc Équipe : remplis-le d'abord."
                           options={nomsCollaborateurs}
                           allowFree
                           value={g.referent}
@@ -708,12 +757,14 @@ function Formulaire() {
                         />
                         <Text
                           label="CA annuel estimé"
+                          aide="Ventes de la gamme sur 12 mois. Un ordre de grandeur issu de ton LGO suffit."
                           suffix="€"
                           value={g.ca_annuel}
                           onChange={(v) => update((d) => void (d.gammes[i].ca_annuel = v))}
                         />
                         <Text
                           label="Taux de marge moyen"
+                          aide="Tel que ton LGO l'affiche pour cette marque. Ex. : 32."
                           suffix="%"
                           value={g.taux_marge}
                           onChange={(v) => update((d) => void (d.gammes[i].taux_marge = v))}
@@ -726,7 +777,8 @@ function Formulaire() {
                         />
                         {g.formation_labo === "Oui" && (
                           <Text
-                            label="Fréquence des formations (par an)"
+                            label="Nombre de formations par an"
+                            aide="Sessions proposées à ton équipe par le laboratoire."
                             suffix="/an"
                             value={g.formations_par_an ?? ""}
                             onChange={(v) => update((d) => void (d.gammes[i].formations_par_an = v))}
@@ -755,6 +807,7 @@ function Formulaire() {
                         </Checkbox>
                         <Area
                           label="Commentaire"
+                          placeholder="Ex. : gamme en perte de vitesse, ruptures fréquentes, à déplacer en zone chaude…"
                           rows={2}
                           value={g.commentaire}
                           onChange={(v) => update((d) => void (d.gammes[i].commentaire = v))}
@@ -793,6 +846,7 @@ function Formulaire() {
             <div className="space-y-5">
               <CheckGroup
                 label="Axes de différenciation"
+                aide="Ce pour quoi les clients viennent chez toi plutôt qu'ailleurs. Choisis-en 2 ou 3 : un positionnement se resserre."
                 columns={2}
                 options={AXES_DIFFERENCIATION}
                 values={form.positionnement.axes}
@@ -805,6 +859,7 @@ function Formulaire() {
               />
               <CheckGroup
                 label="Services proposés"
+                aide="Uniquement ceux réellement en place aujourd'hui."
                 columns={2}
                 options={SERVICES_PROPOSES}
                 values={form.positionnement.services}
@@ -818,13 +873,15 @@ function Formulaire() {
                 }
               />
               <Radio
-                label="Positionnement prix"
+                label="Positionnement prix de l'officine"
+                aide="Ta politique de prix en parapharmacie, telle que tes clients la perçoivent."
                 options={["premium", "équilibré", "accessible", "discount"]}
                 value={form.positionnement.prix}
                 onChange={(v) => update((d) => void (d.positionnement.prix = v))}
               />
               <CheckGroup
-                label="Typologie de clientèle"
+                label="Emplacement et clientèle"
+                aide="Coche ta zone d'implantation et les profils qui pèsent le plus dans ta fréquentation."
                 columns={2}
                 options={TYPOLOGIES_CLIENTELE}
                 values={form.positionnement.typologie_clientele
@@ -845,6 +902,8 @@ function Formulaire() {
               />
               <Area
                 label="Ce que ton officine fait mieux que les autres"
+                aide="Deux ou trois phrases, avec tes mots. L'agent s'en servira pour orienter ses recommandations."
+                placeholder="Ex. : conseil dermo par une équipe formée, large choix bébé, prix serrés sur les marques d'appel."
                 rows={5}
                 value={form.positionnement.force_distinctive}
                 onChange={(v) => update((d) => void (d.positionnement.force_distinctive = v))}
@@ -901,6 +960,7 @@ function Formulaire() {
                     />
                     <Select
                       label="Pôle principal"
+                      aide="Celui sur lequel ce collaborateur passe le plus de temps."
                       options={Array.from(
                         new Set([...nomsPoles, "Espace parapharmacie (transversal)", "Comptoir", "Administratif"]),
                       )}
@@ -910,12 +970,14 @@ function Formulaire() {
                     />
                     <Select
                       label="Responsabilité trade"
+                      aide="Son rôle dans le suivi des accords laboratoires."
                       options={RESPONSABILITES_TRADE}
                       value={c.responsabilite}
                       onChange={(v) => update((d) => void (d.equipe[i].responsabilite = v))}
                     />
                     <Text
                       label="Temps hebdomadaire dédié au trade"
+                      aide="Heures par semaine réellement consacrées aux commandes, implantations et rendez-vous labos. 0 est une réponse valable."
                       suffix="h"
                       value={c.heures_trade}
                       onChange={(v) => update((d) => void (d.equipe[i].heures_trade = v))}
@@ -961,7 +1023,7 @@ function Formulaire() {
                       <div className="mt-3">
                         {opts.length ? (
                           <CheckGroup
-                            label="Responsables Marques"
+                            label="Marques dont il ou elle est responsable"
                             columns={3}
                             options={opts}
                             values={sel}
@@ -985,7 +1047,7 @@ function Formulaire() {
                   {nomsGammes.length ? (
                     <div className="mt-3">
                       <CheckGroup
-                        label="Gammes référentes"
+                        label="Gammes dont il ou elle est référent(e)"
                         columns={3}
                         options={nomsGammes}
                         values={c.gammes_referentes}
@@ -1081,7 +1143,7 @@ function Formulaire() {
                 Objectif de progression du CA par pôle vs l'année précédente (%) — facultatif
               </p>
               <p className="mb-2 text-xs text-muted-foreground">
-                Exemple : 5 = viser +5 % de CA sur ce pôle. Laissez vide si vous ne savez pas.
+                Exemple : 5 = viser +5 % de CA sur ce pôle. Laisse vide si tu ne sais pas.
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {form.poles.map((p) => (
@@ -1103,6 +1165,7 @@ function Formulaire() {
             <div className="mt-4">
               <CheckGroup
                 label="Indicateurs à suivre (au moins 4)"
+                aide="Ils s'afficheront en haut du tableau de bord. Mieux vaut 4 à 6 indicateurs suivis que 15 ignorés."
                 columns={2}
                 options={INDICATEURS}
                 values={form.objectifs.indicateurs}
@@ -1118,7 +1181,8 @@ function Formulaire() {
 
             <div className="mt-4">
               <Radio
-                label="Périodicité de pilotage (de départ — modifiable à tout moment dans l'agent)"
+                label="Périodicité de pilotage"
+                aide="Le rythme auquel tu regarderas tes chiffres. Choix de départ, modifiable à tout moment dans l'agent."
                 options={["hebdomadaire", "mensuelle", "trimestrielle"]}
                 value={form.objectifs.periodicite}
                 onChange={(v) => update((d) => void (d.objectifs.periodicite = v))}
@@ -1144,6 +1208,7 @@ function Formulaire() {
             <div className="space-y-4">
               <Radio
                 label="Un dispositif de primes existe-t-il ?"
+                aide="Réponds « En projet » si tu veux que l'agent t'aide à en simuler un."
                 options={["Oui", "Non", "En projet"]}
                 value={form.primes.dispositif}
                 onChange={(v) => update((d) => void (d.primes.dispositif = v))}
@@ -1151,12 +1216,14 @@ function Formulaire() {
               <Grid>
                 <Select
                   label="Assiette de calcul"
+                  aide="Ce sur quoi la prime est calculée."
                   options={["CA HT", "CA TTC", "marge brute", "nombre d'unités", "mix"]}
                   value={form.primes.assiette}
                   onChange={(v) => update((d) => void (d.primes.assiette = v))}
                 />
                 <Select
                   label="Périmètre"
+                  aide="Qui est récompensé : chaque collaborateur, son pôle ou toute l'équipe."
                   options={["individuel", "par pôle", "collectif officine", "mixte"]}
                   value={form.primes.perimetre}
                   onChange={(v) => update((d) => void (d.primes.perimetre = v))}
@@ -1169,12 +1236,14 @@ function Formulaire() {
                 />
                 <Text
                   label="Plafond de prime par période"
+                  aide="Maximum par collaborateur et par période. Laisse vide s'il n'y a pas de plafond."
                   suffix="€"
                   value={form.primes.plafond}
                   onChange={(v) => update((d) => void (d.primes.plafond = v))}
                 />
                 <Text
                   label="Part collective"
+                  aide="Part de la prime répartie entre toute l'équipe ; le reste est individuel."
                   suffix="%"
                   value={form.primes.part_collective}
                   onChange={(v) => update((d) => void (d.primes.part_collective = v))}
@@ -1222,6 +1291,7 @@ function Formulaire() {
 
               <Radio
                 label="Challenges internes"
+                aide="Concours ponctuels entre collaborateurs ou entre pôles."
                 options={["Oui", "Non"]}
                 value={form.primes.challenges}
                 onChange={(v) => update((d) => void (d.primes.challenges = v))}
@@ -1230,12 +1300,14 @@ function Formulaire() {
                 <>
                   <Grid>
                     <Text
-                      label="Thème"
+                      label="Thème du challenge"
+                      placeholder="Ex. : solaires, conseil associé"
                       value={form.primes.challenge_theme}
                       onChange={(v) => update((d) => void (d.primes.challenge_theme = v))}
                     />
                     <Text
-                      label="Durée"
+                      label="Durée du challenge"
+                      placeholder="Ex. : 4 semaines"
                       value={form.primes.challenge_duree}
                       onChange={(v) => update((d) => void (d.primes.challenge_duree = v))}
                     />
@@ -1258,6 +1330,7 @@ function Formulaire() {
 
               <CheckGroup
                 label="Critères qualitatifs pris en compte"
+                aide="Ce qui compte en plus des chiffres."
                 columns={2}
                 options={CRITERES_QUALITATIFS}
                 values={form.primes.criteres}
@@ -1271,6 +1344,7 @@ function Formulaire() {
               />
               <Area
                 label="Commentaire libre sur les règles internes"
+                placeholder="Ex. : prime au prorata du temps de présence, exclue pendant la période d'essai…"
                 value={form.primes.commentaire}
                 onChange={(v) => update((d) => void (d.primes.commentaire = v))}
               />
@@ -1333,18 +1407,21 @@ function Formulaire() {
                   onChange={(v) => update((d) => void (d.merch.frequence_vitrine = v))}
                 />
                 <Text
-                  label="Nombre de têtes de gondole"
+                  label="Têtes de gondole disponibles pour les animations"
+                  aide="Celles que tu peux réellement attribuer à une marque."
                   value={form.merch.nb_tg}
                   onChange={(v) => update((d) => void (d.merch.nb_tg = v))}
                 />
                 <Select
                   label="Plan d'animation annuel existant"
+                  aide="Un calendrier qui fixe à l'avance quelle marque occupe quelle vitrine ou tête de gondole, mois par mois."
                   options={["Oui", "Non"]}
                   value={form.merch.plan_annuel}
                   onChange={(v) => update((d) => void (d.merch.plan_annuel = v))}
                 />
                 <Select
                   label="Qui pose les vitrines et les implantations"
+                  aide="La liste vient du bloc Équipe."
                   options={nomsCollaborateurs}
                   allowFree
                   value={form.merch.poseur}
@@ -1352,6 +1429,7 @@ function Formulaire() {
                 />
                 <Select
                   label="Photos d'implantation à archiver"
+                  aide="Photos avant/après des vitrines et têtes de gondole, gardées comme preuves des contreparties dues aux laboratoires."
                   options={["Oui", "Non"]}
                   value={form.merch.archivage_photos}
                   onChange={(v) => update((d) => void (d.merch.archivage_photos = v))}
@@ -1359,7 +1437,8 @@ function Formulaire() {
               </Grid>
               <PlanPharmacie />
               <Area
-                label="Zones chaudes et froides identifiées (commentaire libre)"
+                label="Zones chaudes et froides identifiées"
+                placeholder="Ex. : zone chaude entre l'entrée et les comptoirs ; fond gauche peu fréquenté."
                 value={form.merch.zones_chaudes}
                 onChange={(v) => update((d) => void (d.merch.zones_chaudes = v))}
               />
@@ -1418,12 +1497,14 @@ function Formulaire() {
               />
               <Radio
                 label="Import des ventes"
+                aide="Comment les ventes entreront dans l'agent. « Les deux » est le choix le plus souple."
                 options={["fichier CSV/Excel exporté du LGO", "saisie manuelle mensuelle", "les deux"]}
                 value={form.options.mode_import}
                 onChange={(v) => update((d) => void (d.options.mode_import = v))}
               />
               <Radio
                 label="Nombre de mois d'historique à gérer"
+                aide="24 mois permettent de comparer chaque mois à celui de l'année précédente."
                 options={["12", "24", "36"]}
                 value={form.options.nb_mois_historique}
                 onChange={(v) => update((d) => void (d.options.nb_mois_historique = v))}
@@ -1639,6 +1720,7 @@ function AchatGammeBloc({
       <Grid>
         <Text
           label="Code client"
+          aide="Ton numéro de compte chez le laboratoire, visible sur les factures."
           value={achat.code_client ?? ""}
           onChange={(v) => set((a) => void (a.code_client = v))}
         />
@@ -1695,18 +1777,22 @@ function AchatGammeBloc({
         />
         <Text
           label="Remise de base (toute la marque)"
+          aide="Remise sur facture appliquée à toute commande, hors promotions."
           suffix="%"
           value={achat.remise_base ?? ""}
           onChange={(v) => set((a) => void (a.remise_base = v))}
         />
         <Text
           label="Franco de port"
+          aide="Montant minimum de commande pour être livré sans frais."
           suffix="€"
           value={achat.franco}
           onChange={(v) => set((a) => void (a.franco = v))}
         />
         <Text
           label="RFA (remise de fin d'année)"
+          aide="Pourcentage ou paliers, versés après coup."
+          placeholder="Ex. : 3 % dès 8 000 € d'achats"
           value={achat.rfa}
           onChange={(v) => set((a) => void (a.rfa = v))}
         />
@@ -1745,6 +1831,7 @@ function AchatGammeBloc({
               <Grid>
                 <Text
                   label="Marché / gamme concernée"
+                  placeholder="Ex. : solaires, gamme bébé"
                   value={r.marche}
                   onChange={(v) => set((a) => void (a.remises_marches[j].marche = v))}
                 />
@@ -1755,7 +1842,8 @@ function AchatGammeBloc({
                   onChange={(v) => set((a) => void (a.remises_marches[j].taux = v))}
                 />
                 <Text
-                  label="Condition (engagement, période…)"
+                  label="Condition"
+                  placeholder="Ex. : 24 unités minimum, de mars à juin"
                   value={r.condition}
                   onChange={(v) => set((a) => void (a.remises_marches[j].condition = v))}
                 />
@@ -1808,6 +1896,7 @@ function AchatGammeBloc({
             {(achat.perimes_modalites ?? []).includes("Abattement") ? (
               <Text
                 label="Abattement appliqué"
+                aide="Part déduite de la valeur des périmés repris."
                 suffix="%"
                 value={achat.perimes_abattement_pct ?? ""}
                 onChange={(v) => set((a) => void (a.perimes_abattement_pct = v))}
@@ -1868,6 +1957,7 @@ function AchatGammeBloc({
       <div className="mt-3">
         <Area
           label="Commentaire achat"
+          placeholder="Ex. : paiement à 60 jours, commande minimum, interlocuteur à privilégier…"
           rows={2}
           value={achat.commentaire}
           onChange={(v) => set((a) => void (a.commentaire = v))}
