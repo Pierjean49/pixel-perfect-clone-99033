@@ -4,6 +4,12 @@ export type PromptTemplate = { id: string; title: string; kind: PromptKind; temp
 
 export const promptTemplates: PromptTemplate[] = [
   {
+    "id": "C0",
+    "title": "Création du projet — à coller en tout premier",
+    "kind": "regles",
+    "template": "Agent de pilotage de gammes & trade · {{nom_pharmacie}}\n\nNe construis rien pour l'instant. Crée seulement un projet vide, sans page, sans base de données et sans exemple, puis attends mes instructions. Réponds-moi simplement que le projet est prêt."
+  },
+  {
     "id": "R0",
     "title": "Règles permanentes — à coller dans Knowledge",
     "kind": "regles",

@@ -347,7 +347,7 @@ export type EtapeGuide = {
 
 export const ETAPES_GUIDE: EtapeGuide[] = [
   { n: 1, titre: "Générer ton prompt de démarrage", duree: "20 min", note: "Vérifie d'abord tes prérequis budgétaires : plan Lovable payant, crédits suffisants, domaine OVH (10 à 15 € / an), Cloudflare gratuit." },
-  { n: 2, titre: "Créer un nouveau projet Lovable et le nommer", duree: "15 min", note: "Colle aussitôt les Règles permanentes (première carte de l'onglet Prompts) dans Settings → Knowledge du projet : elles s'appliqueront à toutes les briques." },
+  { n: 2, titre: "Créer un nouveau projet Lovable et le nommer", duree: "15 min", note: "Crée le projet avec la carte « Création du projet » de l'onglet Prompts : elle demande à Lovable d'attendre tes instructions au lieu de construire à sa façon. Colle ensuite les Règles permanentes dans Settings → Knowledge : elles s'appliqueront à toutes les briques." },
   { n: 3, titre: "Activer Lovable Cloud (base de données + authentification, région Europe)", duree: "10 min" },
   { n: 4, titre: "Créer ton compte administrateur et te connecter", duree: "15 min" },
   { n: 5, titre: "Fenêtre « Set up emails » — fermer pour l'instant", duree: "5 min" },
