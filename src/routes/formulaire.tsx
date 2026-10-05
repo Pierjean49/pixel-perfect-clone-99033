@@ -5,6 +5,7 @@ import { Section, Grid } from "@/components/Section";
 import { Area, CheckGroup, Checkbox, Label, Radio, Select, Text } from "@/components/fields";
 import { Badge, Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
 import { BlocTrade } from "@/components/BlocTrade";
+import { PlanPharmacie } from "@/components/PlanPharmacie";
 import { ImportsAccordGamme } from "@/components/ImportsAccordGamme";
 import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
@@ -1356,8 +1357,9 @@ function Formulaire() {
                   onChange={(v) => update((d) => void (d.merch.archivage_photos = v))}
                 />
               </Grid>
+              <PlanPharmacie />
               <Area
-                label="Zones chaudes identifiées"
+                label="Zones chaudes et froides identifiées (commentaire libre)"
                 value={form.merch.zones_chaudes}
                 onChange={(v) => update((d) => void (d.merch.zones_chaudes = v))}
               />
