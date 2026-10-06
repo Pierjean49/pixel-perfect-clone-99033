@@ -190,7 +190,7 @@ function Formulaire() {
       <PageHeader
         surtitre="Onglet Formulaire"
         titre="Décris ton officine"
-        intro="Dix blocs, à remplir dans l'ordre que tu veux. Ta saisie est enregistrée en continu dans ce navigateur, sans compte ni base de données. Seule exception : les boutons de lecture automatique envoient le document choisi à un service d'IA pour l'analyser. Les champs marqués d'un astérisque doré sont indispensables à la génération des prompts."
+        intro="Dix blocs, à remplir dans l'ordre que tu veux. Ta saisie est enregistrée en continu dans ce navigateur : ton compte sert seulement à ouvrir le module, rien de ta saisie n'est enregistré en base. Seule exception : les boutons de lecture automatique envoient le document choisi à un service d'IA pour l'analyser. Les champs marqués d'un astérisque doré sont indispensables à la génération des prompts."
       />
 
       <div className="sticky top-[76px] z-40 mb-6 -mx-4 flex flex-wrap items-center gap-2 border-b border-border bg-[var(--color-background)]/95 px-4 py-3 text-sm backdrop-blur sm:-mx-6 sm:px-6 lg:top-[68px]">

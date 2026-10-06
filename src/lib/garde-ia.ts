@@ -1,7 +1,7 @@
 import { getRequestHeader, getRequestIP } from "@tanstack/react-start/server";
 
 /**
- * Frein d'usage des fonctions IA, sans compte utilisateur.
+ * Frein d'usage des fonctions IA, en complément du contrôle d'accès par compte.
  *
  * Limite : la mémoire d'un serveur « serverless » n'est ni partagée entre instances
  * ni conservée longtemps. Ce frein arrête un abus simple (boucle, double-clic, script

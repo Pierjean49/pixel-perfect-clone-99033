@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button, Card } from "@/components/ui-kit";
-import { changerAcces, inviter, listerAcces } from "@/lib/admin.functions";
+import { changerAcces, envoyerReinitialisation, inviter, listerAcces } from "@/lib/admin.functions";
 import { useSessionModule } from "@/components/GardeAcces";
 
 export const Route = createFileRoute("/admin")({
@@ -29,6 +29,7 @@ function Admin() {
   const lister = useServerFn(listerAcces);
   const inv = useServerFn(inviter);
   const changer = useServerFn(changerAcces);
+  const reinit = useServerFn(envoyerReinitialisation);
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [envoi, setEnvoi] = useState(false);
@@ -41,8 +42,12 @@ function Admin() {
     e.preventDefault();
     setEnvoi(true);
     try {
-      await inv({ data: { email, nom, origine: window.location.origin } });
-      toast.success(`Invitation envoyée à ${email}.`);
+      const r = await inv({ data: { email, nom, origine: window.location.origin } });
+      toast.success(
+        r.existant
+          ? `${email} avait déjà un compte : accès réactivé et mail de réinitialisation envoyé.`
+          : `Invitation envoyée à ${email}.`,
+      );
       setEmail("");
       setNom("");
       void qc.invalidateQueries({ queryKey: ["acces"] });
@@ -59,6 +64,15 @@ function Admin() {
       void qc.invalidateQueries({ queryKey: ["acces"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Modification impossible.");
+    }
+  }
+
+  async function motDePasse(mail: string) {
+    try {
+      await reinit({ data: { email: mail, origine: window.location.origin } });
+      toast.success(`Mail de réinitialisation envoyé à ${mail}.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Envoi impossible.");
     }
   }
 
@@ -81,7 +95,7 @@ function Admin() {
         {q.error && <p className="text-sm text-destructive">{(q.error as Error).message}</p>}
         <table className="w-full text-sm">
           <thead className="text-left text-xs text-muted-foreground">
-            <tr><th className="py-2">Nom</th><th>E-mail</th><th>Invité le</th><th>Retiré le</th><th>Accès</th></tr>
+            <tr><th className="py-2">Nom</th><th>E-mail</th><th>Invité le</th><th>Retiré le</th><th>Accès</th><th>Mot de passe</th></tr>
           </thead>
           <tbody>
             {(q.data ?? []).map((a) => (
@@ -93,6 +107,11 @@ function Admin() {
                 <td>
                   <Button variant={a.actif ? "secondary" : "primary"} onClick={() => void basculer(a.user_id, !a.actif)}>
                     {a.actif ? "Actif — retirer" : "Retiré — réactiver"}
+                  </Button>
+                </td>
+                <td>
+                  <Button variant="secondary" onClick={() => void motDePasse(a.email)}>
+                    Mot de passe
                   </Button>
                 </td>
               </tr>

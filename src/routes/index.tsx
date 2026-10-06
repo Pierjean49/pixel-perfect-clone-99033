@@ -3,7 +3,6 @@ import { useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { Button, Card, Encadre, PageHeader, Progress } from "@/components/ui-kit";
 import { ETAPES_GUIDE } from "@/data/reference";
-import { Invitation } from "@/components/Invitation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -140,8 +139,6 @@ function Accueil() {
           </div>
         </div>
       </Card>
-
-      <Invitation />
 
       <Encadre type="retenir">
         <p>
