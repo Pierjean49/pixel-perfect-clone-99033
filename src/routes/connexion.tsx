@@ -7,7 +7,7 @@ import { MESSAGE_FIN, verifierAcces } from "@/lib/acces";
 
 export const Route = createFileRoute("/connexion")({
   validateSearch: (s: Record<string, unknown>): { fin?: number } =>
-    s.fin ? { fin: 1 } : {},
+    s["fin"] ? { fin: 1 } : {},
   head: () => ({
     meta: [
       { title: "Connexion — Agent Trade & Gammes" },
