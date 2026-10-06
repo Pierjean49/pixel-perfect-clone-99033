@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ConnexionRouteImport } from './routes/connexion'
+import { Route as DefinirMotDePasseRouteImport } from './routes/definir-mot-de-passe'
 import { Route as FormulaireRouteImport } from './routes/formulaire'
 import { Route as GlossaireRouteImport } from './routes/glossaire'
 import { Route as GuideRouteImport } from './routes/guide'
@@ -19,6 +22,21 @@ import { Route as SecurisationRouteImport } from './routes/securisation'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnexionRoute = ConnexionRouteImport.update({
+  id: '/connexion',
+  path: '/connexion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DefinirMotDePasseRoute = DefinirMotDePasseRouteImport.update({
+  id: '/definir-mot-de-passe',
+  path: '/definir-mot-de-passe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormulaireRoute = FormulaireRouteImport.update({
@@ -49,6 +67,9 @@ const SecurisationRoute = SecurisationRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/connexion': typeof ConnexionRoute
+  '/definir-mot-de-passe': typeof DefinirMotDePasseRoute
   '/formulaire': typeof FormulaireRoute
   '/glossaire': typeof GlossaireRoute
   '/guide': typeof GuideRoute
@@ -57,6 +78,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/connexion': typeof ConnexionRoute
+  '/definir-mot-de-passe': typeof DefinirMotDePasseRoute
   '/formulaire': typeof FormulaireRoute
   '/glossaire': typeof GlossaireRoute
   '/guide': typeof GuideRoute
@@ -66,6 +90,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/connexion': typeof ConnexionRoute
+  '/definir-mot-de-passe': typeof DefinirMotDePasseRoute
   '/formulaire': typeof FormulaireRoute
   '/glossaire': typeof GlossaireRoute
   '/guide': typeof GuideRoute
@@ -75,13 +102,32 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/formulaire' | '/glossaire' | '/guide' | '/prompts' | '/securisation'
+    | '/'
+    | '/admin'
+    | '/connexion'
+    | '/definir-mot-de-passe'
+    | '/formulaire'
+    | '/glossaire'
+    | '/guide'
+    | '/prompts'
+    | '/securisation'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/formulaire' | '/glossaire' | '/guide' | '/prompts' | '/securisation'
+    | '/'
+    | '/admin'
+    | '/connexion'
+    | '/definir-mot-de-passe'
+    | '/formulaire'
+    | '/glossaire'
+    | '/guide'
+    | '/prompts'
+    | '/securisation'
   id:
     | '__root__'
     | '/'
+    | '/admin'
+    | '/connexion'
+    | '/definir-mot-de-passe'
     | '/formulaire'
     | '/glossaire'
     | '/guide'
@@ -91,6 +137,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ConnexionRoute: typeof ConnexionRoute
+  DefinirMotDePasseRoute: typeof DefinirMotDePasseRoute
   FormulaireRoute: typeof FormulaireRoute
   GlossaireRoute: typeof GlossaireRoute
   GuideRoute: typeof GuideRoute
@@ -105,6 +154,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connexion': {
+      id: '/connexion'
+      path: '/connexion'
+      fullPath: '/connexion'
+      preLoaderRoute: typeof ConnexionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/definir-mot-de-passe': {
+      id: '/definir-mot-de-passe'
+      path: '/definir-mot-de-passe'
+      fullPath: '/definir-mot-de-passe'
+      preLoaderRoute: typeof DefinirMotDePasseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/formulaire': {
@@ -147,6 +217,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ConnexionRoute: ConnexionRoute,
+  DefinirMotDePasseRoute: DefinirMotDePasseRoute,
   FormulaireRoute: FormulaireRoute,
   GlossaireRoute: GlossaireRoute,
   GuideRoute: GuideRoute,

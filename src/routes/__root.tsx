@@ -1,9 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -15,6 +16,8 @@ import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { FormProvider } from "../lib/store";
+import { GardeAcces, useSessionModule } from "../components/GardeAcces";
+import { supabase } from "../integrations/supabase/client";
 
 const ONGLETS = [
   { to: "/", label: "Accueil" },
@@ -140,6 +143,15 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function Navigation() {
+  const session = useSessionModule();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  async function deconnecter() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    void navigate({ to: "/connexion", replace: true });
+  }
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-[var(--color-background)]/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
@@ -170,6 +182,24 @@ function Navigation() {
               {o.label}
             </Link>
           ))}
+          {session?.admin && (
+            <Link
+              to="/admin"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              activeProps={{ className: "rounded-lg px-3 py-1.5 text-sm font-semibold bg-primary-soft text-primary transition" }}
+            >
+              Accès
+            </Link>
+          )}
+          {session && (
+            <button
+              type="button"
+              onClick={() => void deconnecter()}
+              className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            >
+              Se déconnecter
+            </button>
+          )}
         </nav>
       </div>
     </header>
@@ -183,9 +213,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <FormProvider>
         <div className="min-h-screen pt-[76px] lg:pt-[68px]">
-          <Navigation />
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
+          <GardeAcces>
+            <Navigation />
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </GardeAcces>
           <footer className="mt-16 border-t border-border py-8 text-center text-xs text-muted-foreground">
             Module Formation — Agent Trade &amp; Gammes · MaFormationOfficinale.com · Ta saisie
             reste dans ce navigateur. Seuls les documents que tu soumets à la lecture automatique

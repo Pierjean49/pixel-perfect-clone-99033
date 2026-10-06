@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, Output } from "ai";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { exigerAccesActif } from "@/lib/acces.server";
 import { verifierQuotaIA } from "./garde-ia";
 
 const Input = z.object({
@@ -72,8 +74,10 @@ const Schema = z.object({
 export type Extraction = z.infer<typeof Schema>;
 
 export const extraireDocument = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => Input.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    await exigerAccesActif(context.supabase, context.userId);
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Configuration IA manquante.");
     verifierQuotaIA();
