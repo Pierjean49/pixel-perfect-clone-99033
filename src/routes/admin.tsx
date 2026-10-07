@@ -3,8 +3,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 import { Button, Card } from "@/components/ui-kit";
-import { changerAcces, envoyerReinitialisation, inviter, listerAcces } from "@/lib/admin.functions";
+import { changerAcces, envoyerReinitialisation, inviter, supprimerAcces, listerAcces } from "@/lib/admin.functions";
 import { useSessionModule } from "@/components/GardeAcces";
 
 export const Route = createFileRoute("/admin")({
@@ -21,6 +22,9 @@ export const Route = createFileRoute("/admin")({
   component: Admin,
 });
 
+// Les liens des mails mènent toujours au module publié (l'aperçu n'est pas accessible aux invités).
+const ORIGINE_PUBLIQUE = "https://pixel-perfect-clone-99033.lovable.app";
+
 const date = (d: string | null) => (d ? new Date(d).toLocaleDateString("fr-FR") : "—");
 
 function Admin() {
@@ -30,6 +34,7 @@ function Admin() {
   const inv = useServerFn(inviter);
   const changer = useServerFn(changerAcces);
   const reinit = useServerFn(envoyerReinitialisation);
+  const suppr = useServerFn(supprimerAcces);
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [envoi, setEnvoi] = useState(false);
@@ -42,7 +47,7 @@ function Admin() {
     e.preventDefault();
     setEnvoi(true);
     try {
-      const r = await inv({ data: { email, nom, origine: window.location.origin } });
+      const r = await inv({ data: { email, nom, origine: ORIGINE_PUBLIQUE } });
       toast.success(
         r.existant
           ? `${email} avait déjà un compte : accès réactivé et mail de réinitialisation envoyé.`
@@ -69,10 +74,21 @@ function Admin() {
 
   async function motDePasse(mail: string) {
     try {
-      await reinit({ data: { email: mail, origine: window.location.origin } });
+      await reinit({ data: { email: mail, origine: ORIGINE_PUBLIQUE } });
       toast.success(`Mail de réinitialisation envoyé à ${mail}.`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Envoi impossible.");
+    }
+  }
+
+  async function supprimer(userId: string, mail: string) {
+    if (!window.confirm(`Supprimer définitivement ${mail} ? Son compte sera effacé ; il faudra le réinviter pour lui redonner accès.`)) return;
+    try {
+      await suppr({ data: { userId } });
+      toast.success(`${mail} a été supprimé.`);
+      void qc.invalidateQueries({ queryKey: ["acces"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Suppression impossible.");
     }
   }
 
@@ -95,7 +111,7 @@ function Admin() {
         {q.error && <p className="text-sm text-destructive">{(q.error as Error).message}</p>}
         <table className="w-full text-sm">
           <thead className="text-left text-xs text-muted-foreground">
-            <tr><th className="py-2">Nom</th><th>E-mail</th><th>Invité le</th><th>Retiré le</th><th>Accès</th><th>Mot de passe</th></tr>
+            <tr><th className="py-2">Nom</th><th>E-mail</th><th>Invité le</th><th>Retiré le</th><th>Accès</th><th>Mot de passe</th><th></th></tr>
           </thead>
           <tbody>
             {(q.data ?? []).map((a) => (
@@ -113,6 +129,17 @@ function Admin() {
                   <Button variant="secondary" onClick={() => void motDePasse(a.email)}>
                     Mot de passe
                   </Button>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    title="Supprimer"
+                    aria-label={`Supprimer ${a.email}`}
+                    onClick={() => void supprimer(a.user_id, a.email)}
+                    className="rounded-md p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </td>
               </tr>
             ))}
