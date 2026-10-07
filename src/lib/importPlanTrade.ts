@@ -96,6 +96,8 @@ async function lireWord(file: File): Promise<string> {
 }
 
 export async function lireFichier(file: File): Promise<ImportPlan> {
+  // Lecteurs de fichiers réservés au navigateur : jamais embarqués côté serveur.
+  if (import.meta.env.SSR) throw new Error("Lecture de fichier disponible dans le navigateur uniquement.");
   const ext = extension(file.name);
   let lignes: string[][] = [];
   let texte = "";
