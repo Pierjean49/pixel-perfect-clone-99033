@@ -95,3 +95,19 @@ async function trouverUtilisateur(admin: any, email: string): Promise<string | n
   }
   return null;
 }
+
+export const supprimerAcces = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ userId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await exigerAccesActif(context.supabase, context.userId);
+    await exigerAdmin(context.supabase, context.userId);
+    if (data.userId === context.userId) throw new Error("Tu ne peux pas supprimer ton propre compte.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("acces_module").delete().eq("user_id", data.userId);
+    if (error) throw new Error(error.message);
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
+    const { error: e2 } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (e2 && !/not found/i.test(e2.message)) throw new Error(e2.message);
+    return { ok: true };
+  });
