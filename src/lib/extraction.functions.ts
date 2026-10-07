@@ -1,7 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createOpenAI } from "@ai-sdk/openai";
-import { streamText, Output } from "ai";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { exigerAccesActif } from "@/lib/acces.server";
 import { verifierQuotaIA } from "./garde-ia";
@@ -78,40 +76,17 @@ export const extraireDocument = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data, context }) => {
     await exigerAccesActif(context.supabase, context.userId);
-    const key = process.env["LOVABLE_API_KEY"];
-    if (!key) throw new Error("Configuration IA manquante.");
     verifierQuotaIA();
-    const lovable = createOpenAI({
-      baseURL: "https://ai.gateway.lovable.dev/v1",
-      apiKey: key,
-      headers: { "Lovable-API-Key": key, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
-    });
     const consigne =
       data.mode === "achat"
         ? `Extrais les conditions commerciales de la marque « ${data.marque || "inconnue"} » (achat) ET le plan trade (opérations, paliers, contreparties).`
         : "Extrais tous les plans trade du document : un plan par laboratoire (ou par accord distinct). Laisse l'objet achat avec des chaînes vides." + (data.marque ? ` ${data.marque}.` : "");
-    try {
-      const result = streamText({
-        model: lovable.responses("openai/gpt-6-astra"),
-        output: Output.object({ schema: Schema }),
-        system:
-          "Tu es assistant achats en pharmacie d'officine. Tu lis un accord commercial ou un plan trade de laboratoire et remplis une fiche. N'invente rien : laisse une chaîne vide ou une liste vide si l'information est absente. Nombres sans symbole (18 et non 18 %). Réponds en français.",
-        prompt: `${consigne}\n\nDOCUMENT :\n${data.texte}`,
-        providerOptions: {
-          openai: {
-            forceReasoning: true,
-            reasoningEffort: "low",
-            reasoningSummary: "auto",
-            store: false,
-            include: ["reasoning.encrypted_content"],
-          },
-        },
-      });
-      return (await result.output) as Extraction;
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      if (msg.includes("402")) throw new Error("Crédits IA épuisés.");
-      if (msg.includes("429")) throw new Error("Trop de demandes, réessaie dans une minute.");
-      throw new Error("La lecture automatique a échoué.");
-    }
+    const { appelerIA } = await import("./ia.server");
+    return (await appelerIA({
+      schema: Schema,
+      nom: "extraction",
+      system:
+        "Tu es assistant achats en pharmacie d'officine. Tu lis un accord commercial ou un plan trade de laboratoire et remplis une fiche. N'invente rien : laisse une chaîne vide ou une liste vide si l'information est absente. Nombres sans symbole (18 et non 18 %). Réponds en français.",
+      contenu: `${consigne}\n\nDOCUMENT :\n${data.texte}`,
+    })) as Extraction;
   });
