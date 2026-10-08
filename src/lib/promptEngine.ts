@@ -1,6 +1,6 @@
 import { promptTemplates, type PromptTemplate } from "@/data/promptTemplates";
 import { EXTENSIONS } from "@/data/reference";
-import { STYLES_VISUELS, type FormState } from "./types";
+import { STYLES_VISUELS, type FormState, type Gamme } from "./types";
 
 const clean = (v: string | undefined | null) => (v ?? "").toString().trim();
 
@@ -14,6 +14,72 @@ function nomComplet(prenomNom: string) {
   return clean(prenomNom);
 }
 
+/** Conditions d'achat d'une gamme, en une ligne lisible. Vide si rien n'a été saisi. */
+function ligneAchat(g: Gamme): string {
+  const a = g.achat;
+  if (!a) return "";
+  const personne = (prenom?: string, nom?: string, tel?: string, mail?: string) =>
+    [[clean(prenom), clean(nom)].filter(Boolean).join(" "), clean(tel), clean(mail)]
+      .filter(Boolean)
+      .join(", ");
+  const representant = personne(a.representant_prenom, a.representant_nom, a.representant_tel, a.representant_mail);
+  const dr = personne(a.dr_prenom, a.dr_nom, a.dr_tel, a.dr_mail);
+  const labo = [clean(a.labo_tel), clean(a.labo_mail)].filter(Boolean).join(", ");
+  const marches = (a.remises_marches ?? [])
+    .filter((r) => clean(r.marche) && clean(r.taux))
+    .map((r) => `${clean(r.marche)} ${clean(r.taux)} %${clean(r.condition) ? ` (${clean(r.condition)})` : ""}`)
+    .join(", ");
+  const perimes = [
+    (a.perimes_modalites ?? []).filter(Boolean).join(" et ").toLowerCase(),
+    clean(a.perimes_abattement_pct) && `abattement ${a.perimes_abattement_pct} %`,
+    clean(a.gestion_perimes),
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const commandes = (a.commandes ?? [])
+    .filter((c) => clean(c.date) || clean(c.montant))
+    .map((c) => [clean(c.date), clean(c.montant) && `${c.montant} €`, clean(c.descriptif)].filter(Boolean).join(" "))
+    .join(" ; ");
+  return joinList([
+    clean(a.code_client) && `code client ${a.code_client}`,
+    representant && `représentant ${representant}`,
+    dr && `directeur régional ${dr}`,
+    labo && `laboratoire ${labo}`,
+    clean(a.remise_base) && `remise de base ${a.remise_base} %`,
+    clean(a.remises) && `remises ${a.remises}`,
+    marches && `remises par marché : ${marches}`,
+    clean(a.franco) && `franco ${a.franco} €`,
+    clean(a.rfa) && `RFA ${a.rfa}${/[%€a-z]/i.test(a.rfa) ? "" : " %"}`,
+    clean(a.rfa_versee_par) && `RFA versée par : ${a.rfa_versee_par.toLowerCase()}`,
+    perimes && `périmés : ${perimes}`,
+    clean(a.delai_livraison) && `délai de livraison ${a.delai_livraison}`,
+    clean(a.frequence_commande) && `commande ${a.frequence_commande.toLowerCase()}`,
+    commandes && `commandes passées : ${commandes}`,
+    clean(a.commentaire),
+  ] as string[]);
+}
+
+/** Fiche complète d'une gamme : tout ce que le pharmacien a saisi doit arriver dans l'agent. */
+function ficheGamme(g: Gamme, retrait = ""): string {
+  const fiche = joinList([
+    `${retrait}- ${clean(g.nom)}`,
+    clean(g.laboratoire) && `laboratoire ${g.laboratoire}`,
+    clean(g.statut) && `statut ${g.statut}`,
+    clean(g.positionnement) && `positionnement prix ${g.positionnement}`,
+    clean(g.emplacement) && `emplacement ${g.emplacement}`,
+    clean(g.lineaire_ml) && `linéaire ${g.lineaire_ml} ml`,
+    clean(g.descentes) && `${g.descentes} descentes`,
+    clean(g.referent) && `référent ${g.referent}`,
+    clean(g.ca_annuel) && `CA annuel estimé ${g.ca_annuel} €`,
+    clean(g.taux_marge) && `taux de marge constaté ${g.taux_marge} %`,
+    clean(g.formation_labo) && `formations du laboratoire : ${g.formation_labo.toLowerCase()}`,
+    clean(g.formations_par_an) && `${g.formations_par_an} formations par an`,
+    clean(g.commentaire),
+  ] as string[]);
+  const achat = ligneAchat(g);
+  return achat ? `${fiche}\n${retrait}  Achat : ${achat}` : fiche;
+}
+
 export function buildVariables(f: FormState): Record<string, string> {
   const id = f.identite;
   const gammesDermo = f.gammes.filter((g) => g.pole === "Dermo-cosmétique");
@@ -21,17 +87,7 @@ export function buildVariables(f: FormState): Record<string, string> {
 
   const listeGammesDermo = gammesDermo
     .filter((g) => !pilote || g.id !== pilote.id)
-    .map((g) =>
-      joinList([
-        `- ${g.nom}`,
-        clean(g.laboratoire) && `laboratoire ${g.laboratoire}`,
-        clean(g.statut),
-        clean(g.emplacement),
-        clean(g.lineaire_ml) && `${g.lineaire_ml} ml`,
-        clean(g.descentes) && `${g.descentes} descentes`,
-        clean(g.referent) && `référent ${g.referent}`,
-      ]),
-    )
+    .map((g) => ficheGamme(g))
     .join("\n");
 
   const autresPoles = f.poles.filter((p) => p.nom !== "Dermo-cosmétique");
@@ -55,17 +111,7 @@ export function buildVariables(f: FormState): Record<string, string> {
     .map((p) => {
       const gs = f.gammes.filter((g) => g.pole === p.nom);
       if (!gs.length) return "";
-      return `${p.nom} :\n${gs
-        .map((g) =>
-          joinList([
-            `  - ${g.nom}`,
-            clean(g.laboratoire),
-            clean(g.statut),
-            clean(g.emplacement),
-            clean(g.referent) && `référent ${g.referent}`,
-          ]),
-        )
-        .join("\n")}`;
+      return `${p.nom} :\n${gs.map((g) => ficheGamme(g, "  ")).join("\n")}`;
     })
     .filter(Boolean)
     .join("\n");
@@ -243,6 +289,7 @@ export function buildVariables(f: FormState): Record<string, string> {
     mode_import: clean(f.options.mode_import),
     responsable_dermo: nomComplet(f.poles.find((p) => p.nom === "Dermo-cosmétique")?.responsable ?? ""),
     gamme_pilote: clean(pilote?.nom),
+    fiche_gamme_pilote: pilote ? ficheGamme(pilote) : "",
     labo_pilote: clean(pilote?.laboratoire),
     statut_gamme_pilote: clean(pilote?.statut),
     referent_gamme_pilote: clean(pilote?.referent),
