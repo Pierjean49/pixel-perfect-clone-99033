@@ -1,8 +1,12 @@
 import { promptTemplates, type PromptTemplate } from "@/data/promptTemplates";
 import { EXTENSIONS } from "@/data/reference";
-import type { FormState } from "./types";
+import { STYLES_VISUELS, type FormState } from "./types";
 
 const clean = (v: string | undefined | null) => (v ?? "").toString().trim();
+
+/** Une couleur n'est transmise aux prompts que si c'est un code hexadécimal valide. */
+const couleurValide = (v: string | undefined, defaut: string) =>
+  /^#[0-9a-fA-F]{6}$/.test((v ?? "").trim()) ? (v as string).trim().toUpperCase() : defaut;
 
 const joinList = (arr: string[]) => arr.filter(Boolean).join(" · ");
 
@@ -223,7 +227,9 @@ export function buildVariables(f: FormState): Record<string, string> {
       .join(", "),
     nb_vitrines: clean(id.nb_vitrines),
     autres_infos: clean(id.autres_infos),
-    couleur_primaire: "#0E7A5F",
+    couleur_primaire: couleurValide(id.couleur_principale, "#0E7A5F"),
+    couleur_accent: couleurValide(id.couleur_accent, "#C9A227"),
+    style_visuel: STYLES_VISUELS[id.style_visuel] ?? STYLES_VISUELS["Sobre et professionnel"],
     positionnement_prix: clean(f.positionnement.prix),
     services_proposes: joinList(f.positionnement.services),
     axes_differenciation: joinList(f.positionnement.axes),

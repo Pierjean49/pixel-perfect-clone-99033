@@ -56,6 +56,7 @@ export function demoForm(): FormState {
   const f = emptyForm();
 
   f.identite = {
+    ...f.identite,
     nom_pharmacie: "Pharmacie du Marché",
     ville: "Chartres (28)",
     prenom_titulaire: "Claire",

@@ -11,7 +11,7 @@ import { estSauvegardeValide, useForm } from "@/lib/store";
 import { demoForm } from "@/data/demo";
 import { apercuPromptMaitre } from "@/lib/promptEngine";
 import { download } from "@/lib/documents";
-import { emptyAchat, uid, type AchatGamme, type FormState, type Gamme } from "@/lib/types";
+import { emptyAchat, STYLES_VISUELS, uid, type AchatGamme, type FormState, type Gamme } from "@/lib/types";
 import {
   AXES_DIFFERENCIATION,
   CONTREPARTIES,
@@ -423,6 +423,61 @@ function Formulaire() {
                 onChange={(v) => update((d) => void (d.identite.nb_vitrines = v))}
               />
             </Grid>
+
+            <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4">
+              <p className="text-sm font-semibold">Présentation de ton agent</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Les couleurs que portera ton agent de pilotage. Reprends celles de ton officine
+                (croix, enseigne, logo) pour que l'équipe s'y retrouve. Tu pourras les changer plus
+                tard.
+              </p>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                <ChoixCouleur
+                  label="Couleur principale"
+                  aide="En-têtes, boutons et liens."
+                  value={form.identite.couleur_principale}
+                  defaut="#0E7A5F"
+                  onChange={(v) => update((d) => void (d.identite.couleur_principale = v))}
+                />
+                <ChoixCouleur
+                  label="Couleur d'accent"
+                  aide="Mises en avant et chiffres clés."
+                  value={form.identite.couleur_accent}
+                  defaut="#C9A227"
+                  onChange={(v) => update((d) => void (d.identite.couleur_accent = v))}
+                />
+              </div>
+              <div
+                className="mt-3 flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+                aria-hidden
+              >
+                <span
+                  className="rounded-md px-3 py-1.5 text-xs font-semibold text-white"
+                  style={{ backgroundColor: form.identite.couleur_principale || "#0E7A5F" }}
+                >
+                  Bouton
+                </span>
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+                  style={{ backgroundColor: form.identite.couleur_accent || "#C9A227" }}
+                >
+                  +12 %
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Aperçu : vérifie que le texte blanc reste lisible sur tes deux couleurs.
+                </span>
+              </div>
+              <div className="mt-3">
+                <Radio
+                  label="Style souhaité"
+                  aide="L'ambiance générale de l'agent."
+                  options={Object.keys(STYLES_VISUELS)}
+                  value={form.identite.style_visuel}
+                  onChange={(v) => update((d) => void (d.identite.style_visuel = v))}
+                />
+              </div>
+            </div>
+
             <div className="mt-4">
               <Area
                 label="Autres informations utiles"
@@ -1963,6 +2018,50 @@ function AchatGammeBloc({
           onChange={(v) => set((a) => void (a.commentaire = v))}
         />
       </div>
+    </div>
+  );
+}
+
+function ChoixCouleur({
+  label,
+  aide,
+  value,
+  defaut,
+  onChange,
+}: {
+  label: string;
+  aide: string;
+  value: string;
+  defaut: string;
+  onChange: (v: string) => void;
+}) {
+  const valide = /^#[0-9a-fA-F]{6}$/.test(value);
+  return (
+    <div>
+      <Label>{label}</Label>
+      <span className="mb-1.5 block text-xs leading-snug text-muted-foreground/80">{aide}</span>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          aria-label={label}
+          className="h-9 w-14 shrink-0 rounded-lg border border-input bg-card"
+          value={valide ? value : defaut}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <input
+          className="field"
+          value={value}
+          placeholder={defaut}
+          maxLength={7}
+          aria-label={`${label} (code)`}
+          onChange={(e) => onChange(e.target.value.trim())}
+        />
+      </div>
+      <span className="mt-1 block text-xs text-muted-foreground">
+        {valide
+          ? "Clique sur le carré pour choisir, ou colle le code couleur de ta charte."
+          : `Code incomplet : ${defaut} sera utilisé tant qu'il n'a pas la forme #RRVVBB.`}
+      </span>
     </div>
   );
 }

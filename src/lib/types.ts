@@ -186,6 +186,9 @@ export type FormState = {
     nb_ecrans_vitrine: string;
     nb_vitrines: string;
     autres_infos: string;
+    couleur_principale: string;
+    couleur_accent: string;
+    style_visuel: string;
   };
   poles: Pole[];
   positionnement: {
@@ -275,6 +278,9 @@ export const emptyForm = (): FormState => ({
     nb_ecrans_vitrine: "",
     nb_vitrines: "",
     autres_infos: "",
+    couleur_principale: "#0E7A5F",
+    couleur_accent: "#C9A227",
+    style_visuel: "Sobre et professionnel",
   },
   poles: [
     {
@@ -330,5 +336,12 @@ export const emptyForm = (): FormState => ({
   suivi: { promptsValides: {}, promptsForces: {}, notes: {}, guide: {}, securisation: {} },
   meta: { savedAt: null },
 });
+
+export const STYLES_VISUELS: Record<string, string> = {
+  "Sobre et professionnel": "sobre et professionnel, beaucoup de blanc, peu d'effets",
+  "Chaleureux et naturel": "chaleureux et naturel, tons doux, angles arrondis",
+  "Moderne et épuré": "moderne et épuré, lignes nettes, grands chiffres bien lisibles",
+  "Coloré et dynamique": "coloré et dynamique, couleurs franches, sans jamais gêner la lecture des chiffres",
+};
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
