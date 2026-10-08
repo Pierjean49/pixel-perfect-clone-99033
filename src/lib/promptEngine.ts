@@ -8,6 +8,12 @@ const clean = (v: string | undefined | null) => (v ?? "").toString().trim();
 const couleurValide = (v: string | undefined, defaut: string) =>
   /^#[0-9a-fA-F]{6}$/.test((v ?? "").trim()) ? (v as string).trim().toUpperCase() : defaut;
 
+/** AAAA-MM-JJ → JJ/MM/AAAA ; toute autre forme est rendue telle quelle. */
+const dateFr = (v?: string) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(clean(v));
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : clean(v);
+};
+
 const joinList = (arr: string[]) => arr.filter(Boolean).join(" · ");
 
 function nomComplet(prenomNom: string) {
@@ -27,7 +33,14 @@ function ligneAchat(g: Gamme): string {
   const labo = [clean(a.labo_tel), clean(a.labo_mail)].filter(Boolean).join(", ");
   const marches = (a.remises_marches ?? [])
     .filter((r) => clean(r.marche) && clean(r.taux))
-    .map((r) => `${clean(r.marche)} ${clean(r.taux)} %${clean(r.condition) ? ` (${clean(r.condition)})` : ""}`)
+    .map(
+      (r) =>
+        `${clean(r.marche)} ${clean(r.taux)} %${clean(r.condition) ? ` (${clean(r.condition)})` : ""}${
+          clean(r.debut) || clean(r.fin)
+            ? `, valable${clean(r.debut) ? ` du ${dateFr(r.debut)}` : ""}${clean(r.fin) ? ` au ${dateFr(r.fin)}` : ""}`
+            : ""
+        }`,
+    )
     .join(", ");
   const perimes = [
     (a.perimes_modalites ?? []).filter(Boolean).join(" et ").toLowerCase(),
@@ -65,6 +78,7 @@ function ficheGamme(g: Gamme, retrait = ""): string {
     `${retrait}- ${clean(g.nom)}`,
     clean(g.laboratoire) && `laboratoire ${g.laboratoire}`,
     clean(g.statut) && `statut ${g.statut}`,
+    clean(g.tva) && `TVA ${g.tva} %`,
     clean(g.positionnement) && `positionnement prix ${g.positionnement}`,
     clean(g.emplacement) && `emplacement ${g.emplacement}`,
     clean(g.lineaire_ml) && `linéaire ${g.lineaire_ml} ml`,
@@ -401,7 +415,8 @@ const UNLOCK: Record<string, { by: string | null; label: string }> = {
   R0: { by: null, label: "À coller dans Settings → Knowledge, juste après la création du projet." },
   P1: { by: null, label: "" },
   V1: { by: "P1", label: "À utiliser après avoir collé le Prompt maître." },
-  P2: { by: "V1", label: "À utiliser après validation de l'audit V1 (étape 12 du guide)." },
+  P1B: { by: "V1", label: "À utiliser après validation de l'audit V1." },
+  P2: { by: "P1B", label: "À utiliser après le Prompt 1 bis et son tableau de contrôle." },
   V2: { by: "P2", label: "À utiliser après avoir collé le Prompt 2." },
   P3: { by: "V2", label: "À utiliser après validation de l'audit V2 (étape 15 du guide)." },
   V3: { by: "P3", label: "À utiliser après avoir collé le Prompt 3." },
@@ -451,7 +466,7 @@ export function generatePrompts(f: FormState): GeneratedPrompt[] {
     };
   });
 
-  const order = ["C0", "R0", "P1", "V1", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
+  const order = ["C0", "R0", "P1", "V1", "P1B", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
   const construction = order.map((k) => base.find((b) => b.id === k)!).filter(Boolean);
   const securisation = base.filter((b) => b.kind === "securisation");
   return [...construction, ...extensions, ...securisation];

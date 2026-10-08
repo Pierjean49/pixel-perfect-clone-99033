@@ -207,7 +207,11 @@ export const STATUTS_GAMME = [
   "Gamme pilier", "Gamme de complément", "Gamme en test", "Gamme à arbitrer", "Gamme sortante",
 ];
 
-export const POSITIONNEMENTS_GAMME = ["Premium", "Milieu de gamme", "Accessible"];
+export const POSITIONNEMENTS_GAMME = [
+  "Sélectif / luxe", "Premium", "Cœur de marché", "Accessible", "Premier prix",
+];
+
+export const TAUX_TVA = ["20", "10", "5,5", "2,1"];
 
 export const EMPLACEMENTS = [
   "Vitrine", "Comptoir", "Tête de gondole", "Linéaire principal", "Linéaire secondaire",
@@ -348,14 +352,14 @@ export type EtapeGuide = {
 export const ETAPES_GUIDE: EtapeGuide[] = [
   { n: 1, titre: "Générer ton prompt de démarrage", duree: "20 min", note: "Vérifie d'abord tes prérequis budgétaires : plan Lovable payant, crédits suffisants, domaine OVH (10 à 15 € / an), Cloudflare gratuit." },
   { n: 2, titre: "Créer un nouveau projet Lovable et le nommer", duree: "15 min", note: "Crée le projet avec la carte « Création du projet » de l'onglet Prompts : elle demande à Lovable d'attendre tes instructions au lieu de construire à sa façon. Colle ensuite les Règles permanentes dans Settings → Knowledge : elles s'appliqueront à toutes les briques." },
-  { n: 3, titre: "Activer Lovable Cloud (base de données + authentification, région Europe)", duree: "10 min" },
+  { n: 3, titre: "Activer Lovable Cloud (base de données + authentification, région Europe)", duree: "10 min", note: "La région se choisit AVANT d'activer le Cloud et ne se change plus ensuite : dans Lovable, ouvre Connectors, sélectionne Cloud, et choisis une région européenne sous « Where projects are hosted ». Après activation, vérifie-la dans Cloud → Overview → Advanced settings → Database location, et note-la pour ta fiche de registre RGPD." },
   { n: 4, titre: "Créer ton compte administrateur et te connecter", duree: "15 min" },
   { n: 5, titre: "Fenêtre « Set up emails » — fermer pour l'instant", duree: "5 min" },
   { n: 6, titre: "Fenêtre « Publish » — ne pas activer maintenant", duree: "5 min" },
   { n: 7, titre: "Ajouter le logo de la pharmacie", duree: "10 min", note: "Un prompt est du texte : dépose toi-même le fichier du logo dans le chat Lovable." },
   { n: 8, titre: "Tester le pôle Dermo et sa première gamme", duree: "20 min" },
   { n: 9, titre: "Saisir 3 mois de ventes sur 2 gammes (test uniquement)", duree: "20 min" },
-  { n: 10, titre: "Tester l'import d'un fichier CSV", duree: "25 min" },
+  { n: 10, titre: "Tester l'import d'un fichier CSV", duree: "25 min", note: "Prépare pour ta gamme pilote les trois fichiers du Prompt 1 bis : le catalogue du laboratoire, les ventes par produit de l'année précédente et celles du dernier mois. Exporte-les depuis ton logiciel et ne les ouvre pas dans Excel avant l'import : il transforme les codes EAN en « 3,28E+12 » et les rend inutilisables." },
   { n: 11, titre: "Comprendre les calculs : marge, taux de marge, progression N-1, CA au mètre linéaire", duree: "20 min" },
   { n: 12, titre: "Audit du Prompt 1 — étape charnière, ne pas l'ignorer", duree: "25 min", audit: true },
   { n: 13, titre: "Prompt 2 — Plans trade et analyse", duree: "20 min" },

@@ -26,7 +26,14 @@ export type Collaborateur = {
 
 export type Commande = { id: string; date: string; montant: string; descriptif: string };
 
-export type RemiseMarche = { id: string; marche: string; taux: string; condition: string };
+export type RemiseMarche = {
+  id: string;
+  marche: string;
+  taux: string;
+  condition: string;
+  debut?: string;
+  fin?: string;
+};
 
 export type AchatGamme = {
   code_client: string;
@@ -94,6 +101,7 @@ export type Gamme = {
   pole: string;
   statut: string;
   positionnement: string;
+  tva?: string;
   lineaire_ml: string;
   descentes: string;
   emplacement: string;

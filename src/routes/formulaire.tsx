@@ -26,6 +26,7 @@ import {
   PLV_DISPONIBLES,
   POLES,
   POSITIONNEMENTS_GAMME,
+  TAUX_TVA,
   RECOMPENSES_CHALLENGE,
   RESPONSABILITES_TRADE,
   ROLES_EQUIPE,
@@ -779,9 +780,20 @@ function Formulaire() {
                         <Select
                           label="Niveau de prix de la marque"
                           aide="Par rapport aux autres marques du même pôle."
-                          options={POSITIONNEMENTS_GAMME}
+                          options={
+                            g.positionnement && !POSITIONNEMENTS_GAMME.includes(g.positionnement)
+                              ? [...POSITIONNEMENTS_GAMME, g.positionnement]
+                              : POSITIONNEMENTS_GAMME
+                          }
                           value={g.positionnement}
                           onChange={(v) => update((d) => void (d.gammes[i].positionnement = v))}
+                        />
+                        <Select
+                          label="Taux de TVA"
+                          aide="20 % pour la cosmétique et l'hygiène, 5,5 % pour la plupart des compléments alimentaires, 10 % ou 2,1 % pour certains médicaments. En cas de doute, regarde une fiche produit dans ton logiciel."
+                          options={TAUX_TVA}
+                          value={g.tva ?? ""}
+                          onChange={(v) => update((d) => void (d.gammes[i].tva = v))}
                         />
                         <Text
                           label="Linéaire occupé"
@@ -1898,9 +1910,22 @@ function AchatGammeBloc({
                 />
                 <Text
                   label="Condition"
-                  placeholder="Ex. : 24 unités minimum, de mars à juin"
+                  placeholder="Ex. : 24 unités minimum"
                   value={r.condition}
                   onChange={(v) => set((a) => void (a.remises_marches[j].condition = v))}
+                />
+                <Text
+                  label="Valable du"
+                  aide="Laisse les deux dates vides si la remise vaut toute l'année."
+                  type="date"
+                  value={r.debut ?? ""}
+                  onChange={(v) => set((a) => void (a.remises_marches[j].debut = v))}
+                />
+                <Text
+                  label="Au"
+                  type="date"
+                  value={r.fin ?? ""}
+                  onChange={(v) => set((a) => void (a.remises_marches[j].fin = v))}
                 />
               </Grid>
               <div className="text-right">
