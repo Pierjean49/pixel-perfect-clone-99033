@@ -416,7 +416,8 @@ const UNLOCK: Record<string, { by: string | null; label: string }> = {
   P1: { by: null, label: "" },
   V1: { by: "P1", label: "À utiliser après avoir collé le Prompt maître." },
   P1B: { by: "V1", label: "À utiliser après validation de l'audit V1." },
-  P2: { by: "P1B", label: "À utiliser après le Prompt 1 bis et son tableau de contrôle." },
+  V1B: { by: "P1B", label: "À utiliser après le Prompt 1 bis, une fois les fichiers importés." },
+  P2: { by: "V1B", label: "À utiliser après validation de l'audit V1 bis." },
   V2: { by: "P2", label: "À utiliser après avoir collé le Prompt 2." },
   P3: { by: "V2", label: "À utiliser après validation de l'audit V2 (étape 15 du guide)." },
   V3: { by: "P3", label: "À utiliser après avoir collé le Prompt 3." },
@@ -466,7 +467,7 @@ export function generatePrompts(f: FormState): GeneratedPrompt[] {
     };
   });
 
-  const order = ["C0", "R0", "P1", "V1", "P1B", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
+  const order = ["C0", "R0", "P1", "V1", "P1B", "V1B", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
   const construction = order.map((k) => base.find((b) => b.id === k)!).filter(Boolean);
   const securisation = base.filter((b) => b.kind === "securisation");
   return [...construction, ...extensions, ...securisation];
