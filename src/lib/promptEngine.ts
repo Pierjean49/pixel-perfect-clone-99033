@@ -419,7 +419,9 @@ const UNLOCK: Record<string, { by: string | null; label: string }> = {
   V1B: { by: "P1B", label: "À utiliser après le Prompt 1 bis, une fois les fichiers importés." },
   P2: { by: "V1B", label: "À utiliser après validation de l'audit V1 bis." },
   V2: { by: "P2", label: "À utiliser après avoir collé le Prompt 2." },
-  P3: { by: "V2", label: "À utiliser après validation de l'audit V2 (étape 15 du guide)." },
+  P2B: { by: "V2", label: "À utiliser après validation de l'audit V2." },
+  V2B: { by: "P2B", label: "À utiliser après le Prompt 2 bis et un essai avec une vraie facture." },
+  P3: { by: "V2B", label: "À utiliser après validation de l'audit V2 bis." },
   V3: { by: "P3", label: "À utiliser après avoir collé le Prompt 3." },
   P4: { by: "V3", label: "À utiliser après validation de l'audit V3 (étape 16 du guide)." },
   V4: { by: "P4", label: "À utiliser après avoir collé le Prompt 4." },
@@ -467,7 +469,7 @@ export function generatePrompts(f: FormState): GeneratedPrompt[] {
     };
   });
 
-  const order = ["C0", "R0", "P1", "V1", "P1B", "V1B", "P2", "V2", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
+  const order = ["C0", "R0", "P1", "V1", "P1B", "V1B", "P2", "V2", "P2B", "V2B", "P3", "V3", "P4", "V4", "P5", "P6", "P7", "P8", "AF"];
   const construction = order.map((k) => base.find((b) => b.id === k)!).filter(Boolean);
   const securisation = base.filter((b) => b.kind === "securisation");
   return [...construction, ...extensions, ...securisation];
